@@ -3,8 +3,6 @@ import { userSignUp as userSignupService } from "./authServices.js";
 const userSignUp = async (req,res,next) => {
     try {
         const {username, password, email} = req.body;
-        
-        //sanitization
 
         const userData = {
             username, 

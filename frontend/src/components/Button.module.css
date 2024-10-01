@@ -1,0 +1,12 @@
+.submitbutton {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.submitbutton:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
