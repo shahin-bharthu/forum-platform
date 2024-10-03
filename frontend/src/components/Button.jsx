@@ -1,11 +1,10 @@
-import classes from './Button.module.css'
+// import classes from './Button.module.css'
+import Button from '@mui/material/Button';
 
-const Button = ({ type, label, disabled }) => {
+const ButtonComponent = ({ type, label, disabled }) => {
     return (
-      <button type={type} disabled={disabled} className={classes.submitbutton}>
-        {label}
-      </button>
+      <Button variant="contained"  type={type} disabled={disabled}>{label}</Button>
     );
 };
 
-export default Button;
+export default ButtonComponent;

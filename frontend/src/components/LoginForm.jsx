@@ -6,8 +6,7 @@ import Button from "./Button";
 import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
 
-
-const SignupForm = () => {
+const LoginForm = () => {
   const usernameInput = useRef();
   const passwordInput = useRef();
   const emailInput = useRef();
@@ -28,7 +27,7 @@ const SignupForm = () => {
     const formData = { username, password, email };
     try {
       setIsSubmitting(true);
-      const response = await fetch("http://localhost:8080/user/signup", {
+      const response = await fetch("", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,7 +52,7 @@ const SignupForm = () => {
 
   return (
     <div className={classes["signup-page"]}>
-      <AuthFormHeader authHeading='Sign Up' authPara='sign in' />
+      <AuthFormHeader authHeading='Login' authPara='login ' />
       <form onSubmit={submitHandler} className={classes["signup-form"]}>
         {errorMessage && (
           <div className={classes["error-message"]}>{errorMessage}</div>
@@ -65,13 +64,6 @@ const SignupForm = () => {
           placeholder="Set a username for your account"
           reference={usernameInput}
         />
-        <InputField
-          label="Email"
-          type="email"
-          name="email"
-          placeholder="Enter your email"
-          reference={emailInput}
-        />
         <PasswordInputField
           label="Password"
           type="password"
@@ -81,13 +73,13 @@ const SignupForm = () => {
         />
         <Button
           type="submit"
-          label={isSubmitting ? "Signing you in..." : "Sign Up"}
+          label={isSubmitting ? "Logging you in..." : "Login"}
           disabled={isSubmitting}
         />
       </form>
-      <AuthFormFooter authPara='Already have an account? ' authLink='/login' authLabelLink='Login'/>
+      <AuthFormFooter authPara="Don't have an account? " authLink='/signup' authLabelLink='Sign Up'/>
     </div>
   );
 };
 
-export default SignupForm;
+export default LoginForm;

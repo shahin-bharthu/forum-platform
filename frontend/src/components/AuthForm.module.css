@@ -1,0 +1,38 @@
+h3{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: xx-large;
+    margin-top: 1rem;
+    margin-bottom: 0;
+   
+}
+p{
+    font-family: 'Roboto', sans-serif;
+    color: rgb(39, 39, 39);
+}
+.constant-color-link {
+    color: rgb(25, 118, 210);
+    text-decoration: none;
+  }
+  
+  .constant-color-link:visited {
+    color:rgb(25, 118, 210); 
+  }
+.signup-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    gap: 10px;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+}
