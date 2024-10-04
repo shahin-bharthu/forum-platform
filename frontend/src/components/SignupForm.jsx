@@ -6,6 +6,9 @@ import Button from "./Button";
 import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
 
+import AuthFormHeader from "./AuthFormHeader";
+import AuthFormFooter from "./AuthFormFooter";
+
 
 const SignupForm = () => {
   const usernameInput = useRef();
@@ -13,6 +16,7 @@ const SignupForm = () => {
   const emailInput = useRef();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
 
   async function submitHandler(event) {
     event.preventDefault();
@@ -52,6 +56,40 @@ const SignupForm = () => {
   }
 
   return (
+    <div className={classes["signup-page"]}>
+      <AuthFormHeader authHeading='Sign Up' authPara='sign in' />
+      <form onSubmit={submitHandler} className={classes["signup-form"]}>
+        {errorMessage && (
+          <div className={classes["error-message"]}>{errorMessage}</div>
+        )}
+        <InputField
+          label="Username"
+          type="text"
+          name="username"
+          placeholder="Set a username for your account"
+          reference={usernameInput}
+        />
+        <InputField
+          label="Email"
+          type="email"
+          name="email"
+          placeholder="Enter your email"
+          reference={emailInput}
+        />
+        <PasswordInputField
+          label="Password"
+          type="password"
+          name="password"
+          placeholder="Set a strong password"
+          reference={passwordInput}
+        />
+        <Button
+          type="submit"
+          label={isSubmitting ? "Signing you in..." : "Sign Up"}
+          disabled={isSubmitting}
+        />
+      </form>
+      <AuthFormFooter authPara='Already have an account? ' authLink='/login' authLabelLink='Login'/>
     <div className={classes["signup-page"]}>
       <AuthFormHeader authHeading='Sign Up' authPara='sign in' />
       <form onSubmit={submitHandler} className={classes["signup-form"]}>
