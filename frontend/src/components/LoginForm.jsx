@@ -51,9 +51,9 @@ const LoginForm = () => {
   }
 
   return (
-    <div className={classes["signup-page"]}>
+    <div className={classes["auth-page"]}>
       <AuthFormHeader authHeading='Login' authPara='login ' />
-      <form onSubmit={submitHandler} className={classes["signup-form"]}>
+      <form onSubmit={submitHandler} className={classes["auth-form"]}>
         {errorMessage && (
           <div className={classes["error-message"]}>{errorMessage}</div>
         )}
@@ -61,14 +61,14 @@ const LoginForm = () => {
           label="Username"
           type="text"
           name="username"
-          placeholder="Set a username for your account"
+          placeholder="Enter username for your account"
           reference={usernameInput}
         />
         <PasswordInputField
           label="Password"
           type="password"
           name="password"
-          placeholder="Set a strong password"
+          placeholder="Enter your password"
           reference={passwordInput}
         />
         <Button

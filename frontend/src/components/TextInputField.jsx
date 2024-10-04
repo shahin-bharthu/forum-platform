@@ -19,6 +19,17 @@ const TextInputField = ({
         placeholder={placeholder}
         onChange={onChange}
         required variant="standard" />
+    <TextField 
+      label={label}
+      ref={reference}
+      type={type}
+      name={name}
+      id={name}
+      value={value}
+      placeholder={placeholder}
+      onChange={onChange}
+      required 
+      variant="standard" />
   );
 };
 

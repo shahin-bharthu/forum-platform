@@ -53,9 +53,9 @@ const SignupForm = () => {
   }
 
   return (
-    <div className={classes["signup-page"]}>
+    <div className={classes["auth-page"]}>
       <AuthFormHeader authHeading='Sign Up' authPara='sign in' />
-      <form onSubmit={submitHandler} className={classes["signup-form"]}>
+      <form onSubmit={submitHandler} className={classes["auth-form"]}>
         {errorMessage && (
           <div className={classes["error-message"]}>{errorMessage}</div>
         )}

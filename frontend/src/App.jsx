@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 
 import "./App.css";
 import SignupPage from "./pages/Signup";
@@ -11,6 +11,7 @@ function App() {
       path: "/",
       element: <AuthPage />,
       children: [
+        {index: true, element: <Navigate to="/signup" replace /> },
         {path:'signup' , element:<SignupPage /> },
         {path:'login' , element:<LoginPage/>  }
       ],
