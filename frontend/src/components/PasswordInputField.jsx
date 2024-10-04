@@ -32,7 +32,7 @@ const PasswordInputField = ({
     <InputLabel htmlFor="standard-adornment-password">{label} *</InputLabel>
     <Input
       type={showPassword ? "text" : "password"}
-      ref={reference}
+      inputRef={reference}
       name={name}
       id={name}
       value={value}

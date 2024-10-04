@@ -11,7 +11,7 @@ const TextInputField = ({
   reference,
 }) => {
   return (
-      <TextField label={label} ref={reference}
+      <TextField label={label} inputRef={reference}
         type={type}
         name={name}
         id={name}
