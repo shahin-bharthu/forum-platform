@@ -16,8 +16,8 @@ const findUser = async (email, username) => {
     const userExists = await db.User.findOne({
         where: {
             [Op.or]: [
-                { email: email },
-                { username: username }
+                { email},
+                { username }
             ]
         }
     });

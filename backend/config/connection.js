@@ -1,4 +1,4 @@
-import userModel from "../features/auth/authModel.js";
+import userModel from "../features/user/userModel.js";
 import Sequelize from "sequelize";
 
 const sequelize = new Sequelize(
@@ -23,7 +23,7 @@ const check = async () => {
     try {
       await sequelize.authenticate();
       console.log("Connection has been established successfully.");
-      await db.sequelize.sync({ alter: true, force: false }); 
+      await db.sequelize.sync({ force: false });   // alter: true
       console.log("All models were synchronized successfully.");
     } catch (error) {
       console.error("Unable to connect to the database:", error);

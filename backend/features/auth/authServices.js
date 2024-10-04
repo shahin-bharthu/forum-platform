@@ -14,4 +14,20 @@ const userSignUp = async (userData) => {
     return await createUser(userData);
 }
 
-export {userSignUp};
+
+const userLogin = async (userData) => {
+
+    const {email, password} = userData;
+
+    const existingUser = await findUser(email);
+
+    if(existingUser) {
+        throw new Error("user with given email or username exists")
+    }
+    console.log("services");
+    
+    return await createUser(userData);
+}
+
+
+export {userSignUp, userLogin};
