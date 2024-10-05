@@ -1,27 +1,62 @@
 import { Op } from 'sequelize';
+import crypto from 'crypto'
 
 import {db} from '../../config/connection.js'
 
 const createUser = async (userData) => {
     try {
         const user = await db.User.create(userData);
-        return {status: 'success', data: user};
+        return {status: 'success', data: user.id};
     } catch (error) {
         console.log(error);
         return {status: 'failure', data: error};
     }
 };
 
-const findUser = async (email, username) => {
-    const userExists = await db.User.findOne({
-        where: {
-            [Op.or]: [
-                { email},
-                { username }
-            ]
-        }
+const findUserByEmail = async (email) => {
+    const emailExists = await db.User.findOne({
+        where: {email}
     });
-    return userExists;
+    return emailExists;
 }
 
-export {createUser, findUser};
+const findUserByUsername = async (username) => {
+    const emailExists = await db.User.findOne({
+        where: {username}
+    });
+    return emailExists;
+}
+
+const findUserById = async (id) => {
+    return await db.User.findByPk(id);
+}
+
+const createToken = async (id) => {
+    try {
+        const token = await db.Token.create({
+            userId: id,
+            token: crypto.randomBytes(16).toString("hex"),
+        });
+        return token;
+    } catch (error) {
+        console.error('Error creating token:', error);
+        throw error;
+    }
+}
+
+const findTokenByUserId = async (userId) => {
+    return await db.Token.findOne({where: {userId}})
+}
+
+const setUserVerified = async (userId) => {
+    return await db.User.update(
+        { isVerified: true },
+        {
+        where: {
+            id: userId,
+        },
+        }
+    );  
+}
+
+export {createUser, findUserByEmail, findUserByUsername, createToken, findTokenByUserId, findUserById, setUserVerified};

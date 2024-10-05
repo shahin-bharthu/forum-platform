@@ -1,0 +1,29 @@
+import {createTransport} from 'nodemailer';
+
+const sendEmail = async({from, to, subject, text}) =>{
+
+  try {
+    let mailOptions = ({
+      from,
+      to,
+      subject,
+      text
+  })
+  
+  const Transporter = createTransport({
+      host: "sandbox.smtp.mailtrap.io",
+      port: 2525,
+      auth: {
+        user: process.env.SENDER_EMAIL,
+        pass: process.env.SENDER_EMAIL_PASSWORD,
+      },
+    });
+
+    return await Transporter.sendMail(mailOptions) 
+  } catch (error) {
+    console.log(error)
+  }
+    
+}
+
+export default sendEmail;

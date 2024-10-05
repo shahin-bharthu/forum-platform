@@ -48,12 +48,10 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             defaultValue: "https://cdn3.iconfinder.com/data/icons/web-design-and-development-2-6/512/87-1024.png"
         },
-        // isVerified is set to default false once a user signs up
-        // this will change later after email has been verified
-        // isVerified: {
-        //     type: Sequelize.BOOLEAN,
-        //     defaultValue: false
-        // }
+        isVerified: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
+        }
     }, 
     {
         tableName:'users',

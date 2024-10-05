@@ -1,15 +1,19 @@
-import { findUser, createUser } from "./authRepository.js";
+import { findUserByEmail, findUserByUsername, createUser } from "./authRepository.js";
 
 const userSignUp = async (userData) => {
 
     const {username, password, email} = userData;
 
-    const existingUser = await findUser(email, username);
+    const emailExists = await findUserByEmail(email);
+    const usernameExists = await findUserByUsername(username);
 
-    if(existingUser) {
-        throw new Error("user with given email or username exists")
+    if(emailExists) {
+        throw new Error("user with given email exists")
     }
-    console.log("services");
+
+    if(usernameExists) {
+        throw new Error("username already taken")
+    }
     
     return await createUser(userData);
 }
@@ -17,16 +21,20 @@ const userSignUp = async (userData) => {
 
 const userLogin = async (userData) => {
 
-    const {email, password} = userData;
+    // const {email, password} = userData;
 
-    const existingUser = await findUser(email);
+    // const emailExists = await findUserByEmail(email);
+    // const usernameExists = await findUserByUsername(username);
 
-    if(existingUser) {
-        throw new Error("user with given email or username exists")
-    }
-    console.log("services");
+    // if(emailExists) {
+    //     throw new Error("user with given email exists")
+    // }
+
+    // if(usernameExists) {
+    //     throw new Error("username already taken")
+    // }
     
-    return await createUser(userData);
+    // return await createUser(userData);
 }
 
 
