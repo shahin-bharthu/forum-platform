@@ -12,6 +12,7 @@ const PasswordInputField = ({
   value,
   placeholder,
   onChange,
+  onFocus,
   reference,
 }) => {
     
@@ -52,6 +53,7 @@ const PasswordInputField = ({
         </InputAdornment>
       }
       label={label}
+      onFocus={onFocus}
       required 
     />
     </FormControl>

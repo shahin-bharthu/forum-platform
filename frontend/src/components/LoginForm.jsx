@@ -17,13 +17,22 @@ const LoginForm = () => {
 
 
   const userSchema = z.object({
-    email: z.string().email("Invalid email address"),
+    email: z.string()
+      .superRefine((val, ctx) => {
+        if (val.length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Email is required",
+          });
+        } else if (!z.string().email().safeParse(val).success) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Invalid email address",
+          });
+        }
+      }),
     password: z.string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character")
+      .min(1, "Password is required")
   });
 
   const validateForm = (formData) => {
@@ -61,13 +70,8 @@ const LoginForm = () => {
     const email = emailInput.current.value.trim();
     const password = passwordInput.current.value.trim();
 
-
-    if (!password || !email) {
-      setErrorMessage("All fields are required!");
-      return;
-    }
-
     const formData = { password, email };
+
     if (!validateForm(formData)) {
       return;
     }
@@ -86,7 +90,6 @@ const LoginForm = () => {
       });
 
       const result = await response.json();
-      console.log('Sending data to backend:', formData);
       setIsSubmitting(false);
 
       if (response.ok) {
@@ -127,6 +130,8 @@ const LoginForm = () => {
           name="password"
           placeholder="Enter your password"
           reference={passwordInput}
+          onChange={handleInputChange}
+          onFocus={handleInputFocus}
         />
         <Button
           type="submit"

@@ -8,6 +8,7 @@ const TextInputField = ({
   value,
   placeholder,
   onChange,
+  onFocus,
   reference,
 }) => {
   return (
@@ -18,7 +19,9 @@ const TextInputField = ({
         value={value}
         placeholder={placeholder}
         onChange={onChange}
-        required variant="standard" />
+        required variant="standard"
+        onFocus={onFocus}
+        />
   );
 };
 
