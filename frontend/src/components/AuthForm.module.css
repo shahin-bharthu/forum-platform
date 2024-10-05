@@ -41,5 +41,7 @@ p {
 
 .error-message {
     color: red;
-    font-size: 14px;
+    font-size: 12px;
+    font-family: 'Roboto', sans-serif;
+    margin: 0.5rem 0rem;
 }

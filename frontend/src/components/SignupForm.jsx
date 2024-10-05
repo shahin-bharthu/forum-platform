@@ -5,7 +5,7 @@ import PasswordInputField from "./PasswordInputField";
 import Button from "./Button";
 import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
-
+import { z } from 'zod';
 
 const SignupForm = () => {
   const usernameInput = useRef();
@@ -29,7 +29,7 @@ const SignupForm = () => {
     const formData = { username, password, email };
     try {
       setIsSubmitting(true);
-      const response = await fetch("http://localhost:8080/user/signup", {
+      const response = await fetch("http://localhost:8080/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
