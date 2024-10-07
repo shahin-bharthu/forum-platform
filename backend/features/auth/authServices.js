@@ -1,11 +1,12 @@
-import { findUserByEmail, findUserByUsername, createUser } from "./authRepository.js";
+import { verifyPassword } from "../../lib/encryptPassword.js";
+import * as authRepository from "./authRepository.js";
 
 const userSignUp = async (userData) => {
 
     const {username, password, email} = userData;
 
-    const emailExists = await findUserByEmail(email);
-    const usernameExists = await findUserByUsername(username);
+    const emailExists = await authRepository.findUserByEmail(email);
+    const usernameExists = await authRepository.findUserByUsername(username);
 
     if(emailExists) {
         throw new Error("user with given email exists")
@@ -15,26 +16,30 @@ const userSignUp = async (userData) => {
         throw new Error("username already taken")
     }
     
-    return await createUser(userData);
+    return await authRepository.createUser(userData);
 }
 
 
-const userLogin = async (userData) => {
+const userLogin = async ({email, password}) => {
 
-    // const {email, password} = userData;
+    const user = await authRepository.findUserByEmail(email);
+    let hashedPassword;
 
-    // const emailExists = await findUserByEmail(email);
-    // const usernameExists = await findUserByUsername(username);
+    if (user) {
+        hashedPassword = await authRepository.getUserPassword(user.email);
+    }
+    else {
+        throw new Error("Incorrect email. Please try again");
+    }
 
-    // if(emailExists) {
-    //     throw new Error("user with given email exists")
-    // }
-
-    // if(usernameExists) {
-    //     throw new Error("username already taken")
-    // }
+    const isMatch = await verifyPassword(password, hashedPassword)
     
-    // return await createUser(userData);
+    if (isMatch) {
+        return user;
+    }
+    else {
+        throw new Error("Incorrect password. Please try again");
+    }
 }
 
 

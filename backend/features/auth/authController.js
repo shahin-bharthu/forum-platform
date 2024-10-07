@@ -2,6 +2,9 @@ import { validationResult } from "express-validator";
 import * as authServices from "./authServices.js";
 import * as authRepository from "./authRepository.js"
 import sendEmail from "../../util/sendEmail.js";
+import verificationMailBody from "../../util/verificationMailBody.js";
+import jwt from 'jsonwebtoken';
+
 import emailBody from "../../util/verificationMailBody.js";
 
 const userSignUp = async (req,res,next) => {
@@ -25,13 +28,12 @@ const userSignUp = async (req,res,next) => {
             const setToken = await authRepository.createToken(userId)
             
             if (setToken) {
-              sendEmail({
-                from: "forum@gmail.com",
-                to: `${email}`,
-                subject: "Account Verification Link",
-                html: emailBody(username, userId, setToken.token),
-              });
-      
+                sendEmail({
+                    from: "forum@gmail.com",
+                    to: `${email}`,
+                    subject: "Verify Your Account - Action Required",
+                    html: verificationMailBody(username, userId, setToken.token)
+                });
             } else {
               return res.status(500).json({ "message" : "Sorry! Token not created. Please try again later!"});
             }    
@@ -48,28 +50,41 @@ const userSignUp = async (req,res,next) => {
 
 const userLogin = async (req,res,next) => {
     try {
-        const {email, password} = req.body;
+        const userData = req.body;
+        const user = await authServices.userLogin(userData)
+        
+        if (user) { // no need
+            const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        const userData = {email, password}
-
-        const user = await userSignupService(userData);
-        return res.json({message: 'user created', user: user})
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production', 
+                sameSite: 'Strict',
+                maxAge: 3600000 
+            });
+            return res.status(200).json({message: 'User logged in successfully'})
+        } else {
+            throw new Error("User not found");
+        }
     } catch (error) {
         console.log(error)
-        return res.status(500).json({message: JSON.stringify(error.message) || 'Error creating user'})
+        return res.status(500).json({message: JSON.stringify(error.message) || 'Error during login'})
     }
 }
 
 const verifyEmail = async (req, res) => {
     const userId = req.params.id;
-    console.log(userId);
     
     try {
         const userToken = await authRepository.findTokenByUserId(userId);
+
+        // TODO: 
+        // 1. verify the expiration time
+
         if (!userToken) {
             return res.status(400).json({
                 error: true,
-                msg: "Your verification link may have expired. Please click on resend for verifying your Email.",
+                msg: "Your verification link may have expired. Please click on resend for verifying your Email.", // change
             });
         }
 
@@ -77,7 +92,7 @@ const verifyEmail = async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 error: true,
-                msg: "We were unable to find a user for this verification. Please SignUp!",
+                msg: "We were unable to find a user for this verification. Please Sign Up!",
             });
         }
 
@@ -97,11 +112,12 @@ const verifyEmail = async (req, res) => {
             });
         }
 
-        console.log("User verified successfully.");
-        return res.status(200).json({
-            error: false,
-            msg: "Your account has been successfully verified. Login to access our services.",
-        });
+        // return res.status(200).json({
+        //     error: false,
+        //     msg: "Your account has been successfully verified. Login to access our services.",
+        // });
+        const token = await authRepository.deleteTokenById(userToken.id)
+        return res.redirect('http://localhost:5173/login')
     } catch (error) {
         console.error("Error during email verification:", error);
         return res.status(500).json({
