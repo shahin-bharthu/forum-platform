@@ -5,6 +5,6 @@ import  {updateUserDetails}  from './userController.js';
 
 const router = Router();
 
-router.post('/update-user', updateUserDetails);
+router.put('/update', updateUserDetails);
 
 export default router;

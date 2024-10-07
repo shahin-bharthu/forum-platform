@@ -1,6 +1,13 @@
+import { validationResult } from 'express-validator';
+
 import * as userService from './userService.js';
 
 const updateUserDetails = async (req,res,next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+
     try {
         const {id, firstname, lastname, gender, dob, country, avatar} = req.body;
         const user = await userService.updateUserDetails(id, {firstname, lastname, gender, dob, country, avatar});

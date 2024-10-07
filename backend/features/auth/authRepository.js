@@ -16,10 +16,18 @@ const createUser = async (userData) => {
 };
 
 const findUserByEmail = async (email) => {
-    const emailExists = await db.User.findOne({
+    const user = await db.User.findOne({
         where: {email}
     });
-    return emailExists;
+    return user;
+}
+
+const getUserPassword = async(email) => {
+    const user = await db.User.findOne({
+        where: {email}
+    });
+
+    return user.password;
 }
 
 const findUserByUsername = async (username) => {
@@ -61,4 +69,32 @@ const setUserVerified = async (userId) => {
     );  
 }
 
-export {createUser, findUserByEmail, findUserByUsername, createToken, findTokenByUserId, findUserById, setUserVerified};
+const deleteTokenById = async (tokenId) => {
+    try {
+        const result = await db.Token.destroy({
+            where: { id: tokenId }
+        });
+
+        if (result === 0) {
+            // No rows were deleted, meaning the ID was not found
+            return { message: 'No token found with the provided ID' };
+        }
+
+        return { message: 'Token deleted successfully' };
+    } catch (error) {
+        console.error('Error deleting token:', error);
+        throw new Error('Error deleting token');
+    }
+};
+
+export {
+    createUser, 
+    findUserByEmail, 
+    findUserByUsername, 
+    createToken, 
+    findTokenByUserId, 
+    findUserById, 
+    setUserVerified, 
+    getUserPassword, 
+    deleteTokenById
+};
