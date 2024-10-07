@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import * as authServices from "./authServices.js";
 import * as authRepository from "./authRepository.js"
 import sendEmail from "../../util/sendEmail.js";
+import verificationMailBody from "../../util/verificationMailBody.js";
 
 const userSignUp = async (req,res,next) => {
     const errors = validationResult(req);
@@ -24,12 +25,14 @@ const userSignUp = async (req,res,next) => {
             const setToken = await authRepository.createToken(userId)
       
             if (setToken) {
-              sendEmail({
-                from: "forum@gmail.com",
-                to: `${email}`,
-                subject: "Account Verification Link",
-                text: `Hello, ${username} \nPlease verify your email by clicking this link: http://localhost:8080/auth/verify-email/${userId}/${setToken.token} `,
-              });
+                if (setToken) {
+                    sendEmail({
+                      from: "forum@gmail.com",
+                      to: `${email}`,
+                      subject: "Verify Your Account - Action Required",
+                      html: verificationMailBody(username, userId, setToken.token)
+                    });
+                  }
       
             } else {
               return res.status(500).json({ "message" : "Sorry! Token not created. Please try again later!"});
@@ -61,7 +64,6 @@ const userLogin = async (req,res,next) => {
 
 const verifyEmail = async (req, res) => {
     const userId = req.params.id;
-    console.log(userId);
     
     try {
         const userToken = await authRepository.findTokenByUserId(userId);
@@ -95,12 +97,12 @@ const verifyEmail = async (req, res) => {
                 msg: "Couldn't update user's verified status. Please try again later.",
             });
         }
-
-        console.log("User verified successfully.");
-        return res.status(200).json({
-            error: false,
-            msg: "Your account has been successfully verified. Login to access our services.",
-        });
+        
+        // return res.status(200).json({
+        //     error: false,
+        //     msg: "Your account has been successfully verified. Login to access our services.",
+        // });
+        return res.redirect('http://localhost:5173/login')
     } catch (error) {
         console.error("Error during email verification:", error);
         return res.status(500).json({

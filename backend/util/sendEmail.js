@@ -1,13 +1,13 @@
 import {createTransport} from 'nodemailer';
 
-const sendEmail = async({from, to, subject, text}) =>{
+const sendEmail = async({from, to, subject, html}) =>{
 
   try {
     let mailOptions = ({
       from,
       to,
       subject,
-      text
+      html
   })
   
   const Transporter = createTransport({
