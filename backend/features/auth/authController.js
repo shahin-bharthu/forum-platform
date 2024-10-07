@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import * as authServices from "./authServices.js";
 import * as authRepository from "./authRepository.js"
 import sendEmail from "../../util/sendEmail.js";
+import emailBody from "../../util/verificationMailBody.js";
 
 const userSignUp = async (req,res,next) => {
     const errors = validationResult(req);
@@ -22,13 +23,13 @@ const userSignUp = async (req,res,next) => {
 
         if (userId) {
             const setToken = await authRepository.createToken(userId)
-      
+            
             if (setToken) {
               sendEmail({
                 from: "forum@gmail.com",
                 to: `${email}`,
                 subject: "Account Verification Link",
-                text: `Hello, ${username} \nPlease verify your email by clicking this link: http://localhost:8080/auth/verify-email/${userId}/${setToken.token} `,
+                html: emailBody(username, userId, setToken.token),
               });
       
             } else {
