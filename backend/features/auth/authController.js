@@ -5,8 +5,6 @@ import sendEmail from "../../util/sendEmail.js";
 import verificationMailBody from "../../util/verificationMailBody.js";
 import jwt from 'jsonwebtoken';
 
-import emailBody from "../../util/verificationMailBody.js";
-
 const userSignUp = async (req,res,next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -53,19 +51,16 @@ const userLogin = async (req,res,next) => {
         const userData = req.body;
         const user = await authServices.userLogin(userData)
         
-        if (user) { // no need
-            const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-            res.cookie('token', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production', 
-                sameSite: 'Strict',
-                maxAge: 3600000 
-            });
-            return res.status(200).json({message: 'User logged in successfully'})
-        } else {
-            throw new Error("User not found");
-        }
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', 
+            sameSite: 'Strict',
+            maxAge: 3600000 
+        });
+        return res.status(200).json({message: 'User logged in successfully'})
+                
     } catch (error) {
         console.log(error)
         return res.status(500).json({message: JSON.stringify(error.message) || 'Error during login'})
@@ -73,51 +68,53 @@ const userLogin = async (req,res,next) => {
 }
 
 const verifyEmail = async (req, res) => {
-    const userId = req.params.id;
+    const { id: userId, token } = req.params;
     
     try {
-        const userToken = await authRepository.findTokenByUserId(userId);
-
-        // TODO: 
-        // 1. verify the expiration time
-
-        if (!userToken) {
-            return res.status(400).json({
-                error: true,
-                msg: "Your verification link may have expired. Please click on resend for verifying your Email.", // change
-            });
-        }
-
         const user = await authRepository.findUserById(userId);
         if (!user) {
             return res.status(404).json({
                 error: true,
-                msg: "We were unable to find a user for this verification. Please Sign Up!",
+                msg: "No user found for this verification. Please sign up.",
             });
         }
 
         if (user.isVerified) {
             return res.status(200).json({
                 error: false,
-                msg: "User has already been verified. Please Login.",
+                msg: "User is already verified. Please log in.",
             });
         }
 
-        const updated = await authRepository.setUserVerified(userId);
-        if (!updated) {
-            console.error("Failed to update user's verified status.");
+        const userToken = await authRepository.findTokenByUserId(userId);
+        if (!userToken || userToken.token !== token) {
+            return res.status(400).json({
+                error: true,
+                msg: "Invalid or expired verification link. Please request a new one.",
+            });
+        }
+
+        const currentTime = new Date();
+        if (new Date(userToken.expiresAt) < currentTime) {
+            return res.status(400).json({
+                error: true,
+                msg: "The verification link has expired. Please request a new one.",
+            });
+        }
+
+        const verificationSuccess = await authRepository.setUserVerified(userId);
+        if (!verificationSuccess) {
+            console.error("Failed to update user's verification status.");
             return res.status(500).json({
                 error: true,
-                msg: "Couldn't update user's verified status. Please try again later.",
+                msg: "Couldn't update user's verification status. Please try again later.",
             });
         }
 
-        // return res.status(200).json({
-        //     error: false,
-        //     msg: "Your account has been successfully verified. Login to access our services.",
-        // });
-        const token = await authRepository.deleteTokenById(userToken.id)
-        return res.redirect('http://localhost:5173/login')
+        await authRepository.deleteTokenById(userToken.id);
+
+        return res.redirect('http://localhost:5173/login');
+
     } catch (error) {
         console.error("Error during email verification:", error);
         return res.status(500).json({
@@ -126,6 +123,7 @@ const verifyEmail = async (req, res) => {
         });
     }
 };
+
   
 
 export {userSignUp, userLogin, verifyEmail};

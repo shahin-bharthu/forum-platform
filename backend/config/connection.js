@@ -26,7 +26,7 @@ const check = async () => {
     try {
       await sequelize.authenticate();
       console.log("Connection has been established successfully.");
-      await db.sequelize.sync({ force: false });   // alter: true, force: false
+      await db.sequelize.sync({ force: false, alter: true });   // alter: true, force: false
       console.log("All models were synchronized successfully.");
     } catch (error) {
       console.error("Unable to connect to the database:", error);
