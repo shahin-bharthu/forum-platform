@@ -2,10 +2,12 @@ import { Op } from 'sequelize';
 import crypto from 'crypto'
 
 import {db} from '../../config/connection.js'
+import { verifyPassword, encryptPassword } from '../../lib/encryptPassword.js';
 
 const createUser = async (userData) => {
     try {
-        const user = await db.User.create(userData);
+        const hashedPassword = await encryptPassword(userData.password)
+        const user = await db.User.create({username: userData.username, email: userData.email, password: hashedPassword});
         return {status: 'success', data: user.id};
     } catch (error) {
         console.log(error);

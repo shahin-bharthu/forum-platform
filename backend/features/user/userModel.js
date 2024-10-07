@@ -1,7 +1,3 @@
-import crypto from "crypto";
-import { DataTypes } from "sequelize";
-import validator from "validator";
-
 export default (sequelize, Sequelize) => {
     const User = sequelize.define("user", {
         id: {
@@ -56,12 +52,6 @@ export default (sequelize, Sequelize) => {
     {
         tableName:'users',
         timeStamp: true,
-        hooks: {
-          beforeCreate: async (user) => {
-              validatePassword(user.password);
-              user.password = await encryptPassword(user.password);
-          },
-        },
     }
 );
 
@@ -69,26 +59,6 @@ export default (sequelize, Sequelize) => {
     const encryptedPassword = await encryptPassword(password);
     return this.password === encryptedPassword;
   };
-
-  const encryptPassword = async (password) => {
-    return crypto.createHash("sha256").update(password).digest("hex");
-  };
-
-  const validatePassword = (password) => {
-    if (
-      !validator.isStrongPassword(password, {
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 1,
-        minSymbols: 1,
-      })
-    ) {
-      throw new Error(
-        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-      );
-    }
-};
 
   return User;
 };
