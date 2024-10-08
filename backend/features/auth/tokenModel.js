@@ -21,7 +21,7 @@ export default (sequelize, Sequelize) => {
             allowNull: false,
             defaultValue: () => {
                 const date = new Date();
-                date.setDate(date.getDate() + 7); 
+                date.setDate(date.getDate() + 7);
                 return date;
             },
         },

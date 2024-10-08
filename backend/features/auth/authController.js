@@ -54,13 +54,11 @@ const userLogin = async (req,res,next) => {
         const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', 
-            sameSite: 'Strict',
-            maxAge: 3600000 
+                httpOnly: true,
+                maxAge: 3600000 
         });
+
         return res.status(200).json({message: 'User logged in successfully'})
-                
     } catch (error) {
         console.log(error)
         return res.status(500).json({message: JSON.stringify(error.message) || 'Error during login'})
@@ -68,8 +66,7 @@ const userLogin = async (req,res,next) => {
 }
 
 const verifyEmail = async (req, res) => {
-    const { id: userId, token } = req.params;
-    
+    const { id: userId, token } = req.params;    
     try {
         const user = await authRepository.findUserById(userId);
         if (!user) {
@@ -77,31 +74,27 @@ const verifyEmail = async (req, res) => {
                 error: true,
                 msg: "No user found for this verification. Please sign up.",
             });
-        }
-
+        }        
         if (user.isVerified) {
             return res.status(200).json({
                 error: false,
                 msg: "User is already verified. Please log in.",
             });
-        }
-
+        }        
         const userToken = await authRepository.findTokenByUserId(userId);
         if (!userToken || userToken.token !== token) {
             return res.status(400).json({
                 error: true,
-                msg: "Invalid or expired verification link. Please request a new one.",
+                msg: "Invalid verification link. Please request a new one.",
             });
-        }
-
+        }        
         const currentTime = new Date();
         if (new Date(userToken.expiresAt) < currentTime) {
             return res.status(400).json({
                 error: true,
                 msg: "The verification link has expired. Please request a new one.",
             });
-        }
-
+        }        
         const verificationSuccess = await authRepository.setUserVerified(userId);
         if (!verificationSuccess) {
             console.error("Failed to update user's verification status.");
@@ -109,13 +102,11 @@ const verifyEmail = async (req, res) => {
                 error: true,
                 msg: "Couldn't update user's verification status. Please try again later.",
             });
-        }
-
-        await authRepository.deleteTokenById(userToken.id);
-
-        return res.redirect('http://localhost:5173/login');
-
-    } catch (error) {
+        }        
+        await authRepository.deleteTokenById(userToken.id);        
+        return res.redirect('http://localhost:5173/login');    
+    } 
+    catch (error) {
         console.error("Error during email verification:", error);
         return res.status(500).json({
             error: true,
@@ -124,6 +115,60 @@ const verifyEmail = async (req, res) => {
     }
 };
 
+
+const forgotPassword = async (req, res) => {
+    try {
+        const {email} = req.body;
+        const message = await authServices.forgotPassword(email);
+        return res.status(200).json({message});
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({message: error.message || 'Failed to send reset password link'})
+    }
+}
+
+const resetPasswordRequest = async (req, res) => {
+    const { id: userId, token } = req.params;    
+    try {
+        const user = await authRepository.findUserById(userId);
+        if (!user) {
+            return res.status(404).json({
+                error: true,
+                msg: "No user found for this verification. Please sign up.",
+            });
+        }        
+       
+        const userToken = await authRepository.findTokenByUserId(userId);
+        if (!userToken || userToken.token !== token) {
+            return res.status(400).json({
+                error: true,
+                msg: "Invalid link. Please request a new one.",
+            });
+        }        
+        const currentTime = new Date();
+        if (new Date(userToken.expiresAt) < currentTime) {
+            return res.status(400).json({
+                error: true,
+                msg: "The reset password link has expired. Please request a new one.",
+            });
+        }        
+       
+        await authRepository.deleteTokenById(userToken.id);        
+        return res.redirect('http://localhost:5173/reset-password');    
+    } 
+    catch (error) {
+        console.error("Error during password reset request:", error);
+        return res.status(500).json({
+            error: true,
+            msg: "An internal server error occurred. Please try again later.",
+        });
+    }
+}
+
+const resetPassword = async (req,res) => {
+    const { token, password } = req.body;    
+    // const user = 
+}
   
 
-export {userSignUp, userLogin, verifyEmail};
+export {userSignUp, userLogin, verifyEmail, forgotPassword, resetPasswordRequest, resetPassword};

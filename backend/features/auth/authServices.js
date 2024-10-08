@@ -1,4 +1,6 @@
 import { verifyPassword } from "../../lib/encryptPassword.js";
+import passwordResetMailBody from "../../util/passwordResetMailBody.js";
+import sendEmail from "../../util/sendEmail.js";
 import * as authRepository from "./authRepository.js";
 
 const userSignUp = async (userData) => {
@@ -22,25 +24,38 @@ const userSignUp = async (userData) => {
 
 const userLogin = async ({email, password}) => {
 
+    const user = await authServices.findUserByEmail(email);
+    if (!user) {
+        throw new Error('User with given email not found');
+    }
+
+    const isPasswordValid = await verifyPassword(password, user.password); 
+    if (!isPasswordValid) {
+        throw new Error('Incorrect password');
+    }
+
+    if (!user.verified) {
+        throw new Error('User is not verified');
+    }
+
+    return user
+}
+
+const forgotPassword = async (email) => {
     const user = await authRepository.findUserByEmail(email);
-    let hashedPassword;
 
-    if (user) {
-        hashedPassword = await authRepository.getUserPassword(user.email);
-    }
-    else {
-        throw new Error("Incorrect email. Please try again");
-    }
-
-    const isMatch = await verifyPassword(password, hashedPassword)
+    if (!user) {
+        throw new Error("User with given email not found");
+    } 
     
-    if (isMatch) {
-        return user;
+    const resetToken = await authRepository.createToken(user.id);
+    if (!resetToken) {
+        throw new Error("Token not created. Try again later");
     }
-    else {
-        throw new Error("Incorrect password. Please try again");
-    }
+
+    sendEmail({from: process.env.SENDER_EMAIL, to: user.email, subject: 'Password Reset', html: passwordResetMailBody(user.username, user.id, resetToken.token)});
+    return { message: 'Check your email for link to reset your password'};
 }
 
 
-export {userSignUp, userLogin};
+export {userSignUp, userLogin, forgotPassword};
