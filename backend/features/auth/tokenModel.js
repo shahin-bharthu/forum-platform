@@ -16,6 +16,15 @@ export default (sequelize, Sequelize) => {
         token: {
             type: Sequelize.STRING,
         },
+        expiration: {
+            type: Sequelize.DATE,
+            allowNull: false,
+            defaultValue: () => {
+                const date = new Date();
+                date.setDate(date.getDate() + 7);
+                return date;
+            },
+        },
     }, { timestamps: true });
 
     return Token;
