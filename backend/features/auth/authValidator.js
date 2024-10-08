@@ -1,4 +1,4 @@
-import { body, check, validationResult } from 'express-validator';
+import { body, check } from 'express-validator';
 
 export const validateSignup = (req, res, next) => {
     return [
@@ -7,17 +7,20 @@ export const validateSignup = (req, res, next) => {
             .isEmail()
             .withMessage('Please enter a valid email')
             .normalizeEmail(),
+        
         body('username')
+            .trim()  
             .notEmpty()
-            .trim()
-            .isLength({min: 3})
+            .isLength({ min: 3 })
             .matches(/^[a-zA-Z0-9_]+$/)
             .withMessage('Username must contain only letters, numbers, and underscores.'),
+        
         body('password')
+            .trim()  
             .notEmpty()
-            .trim()
             .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/)
             .withMessage('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.'),
+
         // body('confirmPassword', 'Passwords do not match!')
         //     .custom((value, { req }) => {
         //         if (value !== req.body.password) {
@@ -26,6 +29,22 @@ export const validateSignup = (req, res, next) => {
         //         return true;
         //     })
         //     .trim()
+    ];
+};
+
+
+export const validateLogin = (req, res, next) => {
+    return [
+        check('email')
+            .notEmpty()
+            .isEmail()
+            .withMessage('Please enter a valid email')
+            .normalizeEmail(),
+        
+        body('password')
+            .trim()
+            .notEmpty()
+            .withMessage('Password is required to sign in')
     ];
 };
 

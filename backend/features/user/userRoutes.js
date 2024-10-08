@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import {body, check} from 'express-validator';
 
 import  {updateUserDetails}  from './userController.js';
+import { validateUpdateProfile } from './userDetailValidator.js';
 
 const router = Router();
 
-router.put('/update', updateUserDetails);
+router.put('/update', validateUpdateProfile(), updateUserDetails);
 
 export default router;

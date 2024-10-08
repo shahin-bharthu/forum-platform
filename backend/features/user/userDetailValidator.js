@@ -1,6 +1,6 @@
-import { body, check, validationResult } from 'express-validator';
+import { body } from 'express-validator';
 
-export const validateSignup = (req, res, next) => {
+export const validateUpdateProfile = (req, res, next) => {
     return [
         body('firstname')
             .trim()
