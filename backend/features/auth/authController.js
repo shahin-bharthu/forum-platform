@@ -86,7 +86,7 @@ const verifyEmail = async (req, res) => {
         if (!userToken || userToken.token !== token) {
             return res.status(400).json({
                 error: true,
-                msg: "Invalid or expired verification link. Please request a new one.",
+                msg: "Invalid verification link. Please request a new one.",
             });
         }        
         const currentTime = new Date();
@@ -128,7 +128,7 @@ const forgotPassword = async (req, res) => {
     }
 }
 
-const resetPasswordRequest = async () => {
+const resetPasswordRequest = async (req, res) => {
     const { id: userId, token } = req.params;    
     try {
         const user = await authRepository.findUserById(userId);
@@ -138,39 +138,27 @@ const resetPasswordRequest = async () => {
                 msg: "No user found for this verification. Please sign up.",
             });
         }        
-        if (user.isVerified) {
-            return res.status(200).json({
-                error: false,
-                msg: "User is already verified. Please log in.",
-            });
-        }        
+       
         const userToken = await authRepository.findTokenByUserId(userId);
         if (!userToken || userToken.token !== token) {
             return res.status(400).json({
                 error: true,
-                msg: "Invalid or expired verification link. Please request a new one.",
+                msg: "Invalid link. Please request a new one.",
             });
         }        
         const currentTime = new Date();
         if (new Date(userToken.expiresAt) < currentTime) {
             return res.status(400).json({
                 error: true,
-                msg: "The verification link has expired. Please request a new one.",
+                msg: "The reset password link has expired. Please request a new one.",
             });
         }        
-        const verificationSuccess = await authRepository.setUserVerified(userId);
-        if (!verificationSuccess) {
-            console.error("Failed to update user's verification status.");
-            return res.status(500).json({
-                error: true,
-                msg: "Couldn't update user's verification status. Please try again later.",
-            });
-        }        
+       
         await authRepository.deleteTokenById(userToken.id);        
-        return res.redirect('http://localhost:5173/login');    
+        return res.redirect('http://localhost:5173/reset-password');    
     } 
     catch (error) {
-        console.error("Error during email verification:", error);
+        console.error("Error during password reset request:", error);
         return res.status(500).json({
             error: true,
             msg: "An internal server error occurred. Please try again later.",
@@ -178,8 +166,9 @@ const resetPasswordRequest = async () => {
     }
 }
 
-const resetPassword = async () => {
-
+const resetPassword = async (req,res) => {
+    const { token, password } = req.body;    
+    // const user = 
 }
   
 
