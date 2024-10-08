@@ -51,20 +51,15 @@ const userLogin = async (req,res,next) => {
     try {
         const userData = req.body;
         const user = await authServices.userLogin(userData)
-        
-        if (user) { // no need
-            const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-            res.cookie('token', token, {
+        res.cookie('token', token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production', 
-                sameSite: 'Strict',
                 maxAge: 3600000 
-            });
-            return res.status(200).json({message: 'User logged in successfully'})
-        } else {
-            throw new Error("User not found");
-        }
+        });
+
+        return res.status(200).json({message: 'User logged in successfully'})
     } catch (error) {
         console.log(error)
         return res.status(500).json({message: JSON.stringify(error.message) || 'Error during login'})
