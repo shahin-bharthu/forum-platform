@@ -47,6 +47,7 @@ const userSignUp = async (req,res,next) => {
     }
 }
 
+
 const userLogin = async (req,res,next) => {
     try {
         const userData = req.body;
@@ -65,6 +66,7 @@ const userLogin = async (req,res,next) => {
         return res.status(500).json({message: JSON.stringify(error.message) || 'Error during login'})
     }
 }
+
 
 const verifyEmail = async (req, res) => {
     const { id: userId, token } = req.params;    
@@ -128,6 +130,7 @@ const forgotPassword = async (req, res) => {
     }
 }
 
+
 const resetPassword = async (req,res) => {
     try {
         const token = req.params.token;
@@ -140,5 +143,17 @@ const resetPassword = async (req,res) => {
         return res.status(500).json({message: error.message || 'Error while resetting password'})
     } 
 }
+
+
+const userLogout = (req, res, next) => {
+    try {
+        res.clearCookie('token');
+        return res.status(200).json({ message: 'User logged out successfully' });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Error during logout' });
+    }
+};
+
   
-export {userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword};
+export {userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword, userLogout};

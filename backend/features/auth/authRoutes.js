@@ -15,4 +15,6 @@ router.post('/forgot-password', forgotPassword);
 
 router.post('/reset-password/:token', resetPassword);
 
+router.post('/logout', userLogout);
+
 export default router;
