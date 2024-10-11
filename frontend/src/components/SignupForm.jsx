@@ -24,7 +24,7 @@ const SignupForm = () => {
         if (val.length === 0) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Email is required",
+            message: "Username is required",
           });
         }
       }),
