@@ -1,6 +1,6 @@
 import Avatar from "@mui/material/Avatar";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { blue } from "@mui/material/colors";
+import {blue } from "@mui/material/colors";
 
 const AuthFormHeader = ({ authHeading,authPara }) => {
   return (
