@@ -54,10 +54,9 @@ const userLogin = async (req,res,next) => {
         const user = await authServices.userLogin(userData)
         
         const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
         res.cookie('token', token, {
                 httpOnly: true,
-                maxAge: 3600000 
+                maxAge: 3600000,
         });
 
         return res.status(200).json({message: 'User logged in successfully'})

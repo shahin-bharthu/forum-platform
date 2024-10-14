@@ -11,11 +11,11 @@ const userSignUp = async (userData) => {
     const usernameExists = await authRepository.findUserByUsername(username);
 
     if(emailExists) {
-        throw new Error("user with given email exists")
+        throw new Error("User with given email exists")
     }
 
     if(usernameExists) {
-        throw new Error("username already taken")
+        throw new Error("Username already taken")
     }
     
     return await authRepository.createUser(userData);

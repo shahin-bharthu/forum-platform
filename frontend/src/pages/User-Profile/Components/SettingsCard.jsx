@@ -46,9 +46,9 @@ export default function SettingsCard(props) {
   // FORM STATES
   const [user, setUser] = useState({
     // DEFAULT VALUES
-    firstName: props.firstName,
-    lastName: props.lastName,
-    dateOfBirth: props.dateofBirth,
+    firstname: props.firstname,
+    lastname: props.lastname,
+    dob: props.dob,
     gender: props.gender,
     email: props.email,
     country: props.country || "",
@@ -67,11 +67,16 @@ export default function SettingsCard(props) {
   // EDIT -> UPDATE
   const changeButton = (event) => {
     event.preventDefault();
+    
     user.showPassword = false;
     edit.disabled = !edit.disabled;
     edit.isEdit = !edit.isEdit;
     update({ ...edit });
-    console.log("user: ", user);
+
+    if(edit.isEdit) {
+      const formData = {firstname: user.firstname, lastname: user.lastname, dob: user.dob, gender: user.gender, country: user.country};
+      console.log("user: ", formData);
+    }
   };
 
   //RETURN
@@ -109,9 +114,9 @@ export default function SettingsCard(props) {
               {/* ROW 1: FIRST NAME */}
               <Grid  size={{xs:12, md:6}}>
                 <CustomInput
-                  id="firstName"
-                  name="firstName"
-                  value={user.firstName}
+                  id="firstname"
+                  name="firstname"
+                  value={user.firstname}
                   onChange={changeField}
                   title="First Name"
                   dis={edit.disabled}
@@ -122,9 +127,9 @@ export default function SettingsCard(props) {
               {/* ROW 1: LAST NAME */}
               <Grid  size={{xs:12, md:6}}>
                 <CustomInput
-                  id="lastName"
-                  name="lastName"
-                  value={user.lastName}
+                  id="lastname"
+                  name="lastname"
+                  value={user.lastname}
                   onChange={changeField}
                   title="Last Name"
                   dis={edit.disabled}

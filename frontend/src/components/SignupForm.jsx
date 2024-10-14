@@ -5,6 +5,7 @@ import PasswordInputField from "./PasswordInputField";
 import Button from "./Button";
 import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
+import axios from 'axios';
 import { z } from 'zod';
 
 const SignupForm = () => {
@@ -14,6 +15,7 @@ const SignupForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState({});
 
   const userSchema = z.object({
@@ -114,26 +116,34 @@ const SignupForm = () => {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch("http://localhost:8080/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await axios.post("http://localhost:8080/auth/signup", formData, {
+        "Content-Type": "application/json",
+        withCredentials: true
+      })
 
-      const result = await response.json();
+      console.log(response);
       setIsSubmitting(false);
+      setSuccessMessage(response.data.message);
+      // const response = await fetch("http://localhost:8080/auth/signup", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(formData),
+      // });
 
-      if (response.ok) {
-        alert("User registered successfully!");
-      } else {
-        setErrorMessage(result.message || "Something went wrong!");
-      }
+      // const result = await response.json();
+      // setIsSubmitting(false);
+
+      // if (response.ok) {
+      //   alert("User registered successfully!");
+      // } else {
+      //   setErrorMessage(result.message || "Something went wrong!");
+      // }
     } catch (error) {
+      console.error("Error: ", error);
       setIsSubmitting(false);
-      setErrorMessage("An error occurred. Please try again later.");
-      console.error("Error:", error);
+      setErrorMessage(JSON.parse(error.response.data.message) || "An error occurred. Please try again later.");
     }
   }
 
@@ -141,6 +151,9 @@ const SignupForm = () => {
     <div className={classes["auth-page"]}>
       <AuthFormHeader authHeading='Sign Up' authPara='sign in' />
       <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
+        {successMessage && (
+          <div className={classes["success-message"]}>{successMessage}</div>
+        )}
         {errorMessage && (
           <div className={classes["error-message"]}>{errorMessage}</div>
         )}

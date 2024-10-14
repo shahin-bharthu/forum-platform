@@ -12,15 +12,15 @@ export default function Index() {
     dt1: 32,
     dt2: 40,
     dt3: 50,
-    firstName: 'Jane',
-    lastName: "Doe",
-    dateOfBirth: '12/23/2024',
+    firstname: 'Jane',
+    lastname: "Doe",
+    dob: '12/23/2024',
     gender: "female",
     email: "janedoe@gmail.com",
     country:''
   };
 
-  const fullName = `${mainUser.firstName.text} ${mainUser.lastName}`;
+  const fullName = `${mainUser.firstname.text} ${mainUser.lastname}`;
 
   return (
     <Grid container direction="column">
@@ -59,8 +59,8 @@ export default function Index() {
         <Grid size={{xs:12,md:8, lg:9}}>
           <SettingsCard
             expose={(v) => setText(v)}
-            firstName={mainUser.firstName}
-            lastName={mainUser.lastName}
+            firstname={mainUser.firstname}
+            lastname={mainUser.lastname}
             midName={mainUser.midName}
             phone={mainUser.phone}
             email={mainUser.email}
