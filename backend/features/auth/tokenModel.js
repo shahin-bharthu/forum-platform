@@ -13,7 +13,10 @@ export default (sequelize, Sequelize) => {
             onDelete: "cascade",
             references: { model: "users", key: "id" },
         },
-        token: {
+        verificationToken: {
+            type: Sequelize.STRING,
+        },
+        resetToken: {
             type: Sequelize.STRING,
         },
         expiration: {

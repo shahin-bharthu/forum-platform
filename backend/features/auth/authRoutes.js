@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { userSignUp, userLogin, verifyEmail, forgotPassword, resetPasswordRequest, resetPassword }  from './authController.js';
+import { userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword, userLogout }  from './authController.js';
 import { validateSignup, validateLogin } from './authValidator.js';
 
 const router = Router();
@@ -13,8 +13,8 @@ router.get('/verify-email/:id/:token', verifyEmail);
 
 router.post('/forgot-password', forgotPassword);
 
-router.get('/reset-password/:id/:token', resetPasswordRequest);
+router.post('/reset-password/:token', resetPassword);
 
-router.post('/reset-password', resetPassword);
+router.post('/logout', userLogout);
 
 export default router;

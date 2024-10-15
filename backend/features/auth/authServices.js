@@ -1,4 +1,4 @@
-import { verifyPassword } from "../../lib/encryptPassword.js";
+import { encryptPassword, verifyPassword } from "../../lib/encryptPassword.js";
 import passwordResetMailBody from "../../util/passwordResetMailBody.js";
 import sendEmail from "../../util/sendEmail.js";
 import * as authRepository from "./authRepository.js";
@@ -11,11 +11,11 @@ const userSignUp = async (userData) => {
     const usernameExists = await authRepository.findUserByUsername(username);
 
     if(emailExists) {
-        throw new Error("user with given email exists")
+        throw new Error("User with given email exists")
     }
 
     if(usernameExists) {
-        throw new Error("username already taken")
+        throw new Error("Username already taken")
     }
     
     return await authRepository.createUser(userData);
@@ -24,7 +24,7 @@ const userSignUp = async (userData) => {
 
 const userLogin = async ({email, password}) => {
 
-    const user = await authServices.findUserByEmail(email);
+    const user = await authRepository.findUserByEmail(email);
     if (!user) {
         throw new Error('User with given email not found');
     }
@@ -34,7 +34,7 @@ const userLogin = async ({email, password}) => {
         throw new Error('Incorrect password');
     }
 
-    if (!user.verified) {
+    if (!user.isVerified) {
         throw new Error('User is not verified');
     }
 
@@ -48,28 +48,55 @@ const forgotPassword = async (email) => {
         throw new Error("User with given email not found");
     } 
     
-    const resetToken = await authRepository.createToken(user.id);
+    const resetToken = (await authRepository.createResetToken(user.id)).resetToken;
     if (!resetToken) {
         throw new Error("Token not created. Try again later");
     }
 
-    sendEmail({from: process.env.SENDER_EMAIL, to: user.email, subject: 'Password Reset', html: passwordResetMailBody(user.username, user.id, resetToken.token)});
+    sendEmail({from: process.env.SENDER_EMAIL, to: user.email, subject: 'Password Reset', html: passwordResetMailBody(user.username, user.id, resetToken)});
     return { message: 'Check your email for link to reset your password'};
 }
 
-
-const resetPassword = async ({token, password, id}) => {
-    const user = await authRepository.findUserById(id);
-    if (!user) {
-        throw new Error("No user found with given id");
-    }
-
-    const userToken = await authRepository.findTokenByUserId(id);
+const resetPassword = async (token, password, confirmPassword) => {
+    const userToken = (await authRepository.findResetToken(token));
     if (!userToken) {
-        throw new Error("No reset password token found for given user");
+        throw new Error("Reset token not found");
     }
 
-    
+    const user = await authRepository.findUserById(userToken.userId);
+    if (!user) {
+        throw new Error("No user found");
+    }
+
+    if (password !== confirmPassword) {
+        return {message: 'Passwords must match'}
+    }
+
+    user.password = await encryptPassword(password);
+    await user.save()
+    const result = await authRepository.deleteTokenById(userToken.id);
+    return {message: 'Password has been reset'}
+}
+
+const resetPassword = async (token, password, confirmPassword) => {
+    const userToken = (await authRepository.findResetToken(token));
+    if (!userToken) {
+        throw new Error("Reset token not found");
+    }
+
+    const user = await authRepository.findUserById(userToken.userId);
+    if (!user) {
+        throw new Error("No user found");
+    }
+
+    if (password !== confirmPassword) {
+        return {message: 'Passwords must match'}
+    }
+
+    user.password = await encryptPassword(password);
+    await user.save()
+    const result = await authRepository.deleteTokenById(userToken.id);
+    return {message: 'Password has been reset'}
 }
 
 

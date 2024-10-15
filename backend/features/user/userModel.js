@@ -29,7 +29,7 @@ export default (sequelize, Sequelize) => {
             allowNull: true
         },
         gender: {
-            type: Sequelize.ENUM('male', 'female', 'other'), 
+            type: Sequelize.ENUM('male', 'female', 'other', 'prefer not to say'), 
             allowNull: true
         },
         dob: {

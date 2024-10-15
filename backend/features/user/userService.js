@@ -4,4 +4,8 @@ const updateUserDetails = async (id, userData) => {
     return await userRepository.updateUser(id, userData);
 }
 
-export {updateUserDetails}
+const getUserDetails = async (id) => {
+    return await userRepository.getUserById(id);
+}
+
+export {updateUserDetails, getUserDetails}

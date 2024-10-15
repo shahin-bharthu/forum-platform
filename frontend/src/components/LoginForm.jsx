@@ -5,6 +5,7 @@ import PasswordInputField from "./PasswordInputField";
 import Button from "./Button";
 import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
+import axios from 'axios';
 import { z } from 'zod';
 
 const LoginForm = () => {
@@ -81,8 +82,27 @@ const LoginForm = () => {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch("http://localhost:8080/auth/login", {
+      const response = await axios.post("http://localhost:8080/auth/login", formData, {
+        "Content-Type": "application/json",
+        withCredentials: true
+      })
+
+      console.log(response);
+      setIsSubmitting(false);
+      
+    }
+    catch (error) {
+      setIsSubmitting(false);
+      setErrorMessage( JSON.parse(error.response.data.message) ||"An error occurred. Please try again later.");
+      console.error("Error:", error);
+    }
+  }
+
+
+  /**
+   * const response = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
+        credentials: 'include',
         headers: {
           "Content-Type": "application/json",
         },
@@ -97,14 +117,7 @@ const LoginForm = () => {
       } else {
         setErrorMessage(result.message || "Something went wrong!");
       }
-    }
-    catch (error) {
-      setIsSubmitting(false);
-      setErrorMessage("An error occurred. Please try again later.");
-      console.error("Error:", error);
-    }
-  }
-
+   */
 
   return (
     <div className={classes["auth-page"]}>

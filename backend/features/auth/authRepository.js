@@ -41,11 +41,24 @@ const findUserById = async (id) => {
     return await db.User.findByPk(id);
 }
 
-const createToken = async (id) => {
+const createVerificationToken = async (id) => {
     try {
         const token = await db.Token.create({
             userId: id,
-            token: crypto.randomBytes(16).toString("hex"),
+            verificationToken: crypto.randomBytes(16).toString("hex"),
+        });
+        return token;
+    } catch (error) {
+        console.error('Error creating token:', error);
+        throw error;
+    }
+}
+
+const createResetToken = async (id) => {
+    try {
+        const token = await db.Token.create({
+            userId: id,
+            resetToken: crypto.randomBytes(16).toString("hex"),
         });
         return token;
     } catch (error) {
@@ -56,6 +69,10 @@ const createToken = async (id) => {
 
 const findTokenByUserId = async (userId) => {
     return await db.Token.findOne({where: {userId}})
+}
+
+const findResetToken = async (resetToken) => {
+    return await db.Token.findOne({where: {resetToken}})
 }
 
 const setUserVerified = async (userId) => {
@@ -91,8 +108,10 @@ export {
     createUser, 
     findUserByEmail, 
     findUserByUsername, 
-    createToken, 
+    createVerificationToken,
+    createResetToken, 
     findTokenByUserId, 
+    findResetToken,
     findUserById, 
     setUserVerified, 
     getUserPassword, 
