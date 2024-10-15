@@ -2,6 +2,17 @@ import { validationResult } from 'express-validator';
 
 import * as userService from './userService.js';
 
+const getUserDetails = async (req,res,next) => {
+    try {
+        const id = req.params.id;
+        const user = await userService.getUserDetails(id)
+        return res.status(200).json({message: 'user fetched', user: user})
+    } catch (error) {
+        console.error("Error getting user details: ", error);
+        return res.status(500).json({message: JSON.stringify(error.message) || 'Error getting user details'})
+    }
+}
+
 const updateUserDetails = async (req,res,next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -19,4 +30,4 @@ const updateUserDetails = async (req,res,next) => {
     }
 }
 
-export {updateUserDetails}
+export {updateUserDetails, getUserDetails}

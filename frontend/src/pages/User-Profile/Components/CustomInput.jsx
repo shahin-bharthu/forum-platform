@@ -1,10 +1,9 @@
 import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
 
 export default function CustomInput(props) {
   return (
     <>
-      <label style={{ fontWeight: "bold" }} htmlFor={props.id}>
+      <label style={{ fontWeight: "bold" }} htmlFor={props.id || ''}>
         {props.title}
       </label>
       <TextField
@@ -18,7 +17,6 @@ export default function CustomInput(props) {
         variant="outlined"
         required={props.req}
         type={props.type}
-        InputProps={props.InputProps}
         select={props.select}
       >
         {props.content}
