@@ -2,24 +2,34 @@ import { encryptPassword, verifyPassword } from "../../lib/encryptPassword.js";
 import passwordResetMailBody from "../../util/passwordResetMailBody.js";
 import sendEmail from "../../util/sendEmail.js";
 import * as authRepository from "./authRepository.js";
+import verificationMailBody from "../../util/verificationMailBody.js";
 
 const userSignUp = async (userData) => {
-
-    const {username, password, email} = userData;
-
+    const { username, email } = userData;
+    
     const emailExists = await authRepository.findUserByEmail(email);
-    const usernameExists = await authRepository.findUserByUsername(username);
-
-    if(emailExists) {
-        throw new Error("User with given email exists")
-    }
-
-    if(usernameExists) {
-        throw new Error("Username already taken")
+    if (emailExists) {
+        throw new Error('User with given email already exists');
     }
     
-    return await authRepository.createUser(userData);
-}
+    const usernameExists = await authRepository.findUserByUsername(username);
+    if (usernameExists) {
+        throw new Error('Username already taken');
+    }
+    
+    const user = await authRepository.createUser(userData);
+        
+    const verificationToken = await authRepository.createVerificationToken(user.id);
+    
+    await sendEmail({
+        from: 'forum@gmail.com',
+        to: email,
+        subject: 'Verify Your Account - Action Required',
+        html: verificationMailBody(username, user.id, verificationToken),
+    });
+    
+    return user;
+};
 
 
 const userLogin = async ({email, password}) => {

@@ -1,10 +1,11 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import authRoutes from "./features/auth/authRoutes.js";
 import userRoutes from "./features/user/userRoutes.js";
 import {check} from "./config/connection.js";
-import cookieParser from "cookie-parser";
+import { globalErrorHandler } from "./util/globalErrorHandler.js";
 
 const port = process.env.PORT;
 
@@ -21,6 +22,7 @@ app.use(express.json());
 
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
+app.use(globalErrorHandler);
 
 try {
     await check();

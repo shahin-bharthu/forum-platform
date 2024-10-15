@@ -1,53 +1,27 @@
 import { validationResult } from "express-validator";
-import * as authServices from "./authServices.js";
-import * as authRepository from "./authRepository.js"
-import sendEmail from "../../util/sendEmail.js";
-import verificationMailBody from "../../util/verificationMailBody.js";
 import jwt from 'jsonwebtoken';
 
-const userSignUp = async (req,res,next) => {
+import * as authServices from "./authServices.js";
+import * as authRepository from "./authRepository.js"
+import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
+
+const userSignUp = asyncErrorHandler(async (req,res,next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     }
 
-    try {
-        const {username, password, email} = req.body;
+    const { username, password, email } = req.body;
 
-        const userData = {
-            username, 
-            password, 
-            email
-        }
+    const userData = { username, password, email };
 
-        const userId = (await authServices.userSignUp(userData)).data;
+    const user = await authServices.userSignUp(userData);
 
-        if (userId) {
-            const setToken = await authRepository.createVerificationToken(userId)
-      
-            if (setToken) {
-                sendEmail({
-                    from: "forum@gmail.com",
-                    to: `${email}`,
-                    subject: "Verify Your Account - Action Required",
-                    html: verificationMailBody(username, userId, setToken.verificationToken)
-                });
-            } else {
-              return res.status(500).json({ "message" : "Sorry! Token not created. Please try again later!"});
-            }    
-
-            return res.status(201).json({"message" : "We've sent you a verification link on the email you entered!"})
-          } else {
-            return res.json({"message" : "Sorry, we faced some problem in registering your details. Please try again."})
-          }
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({message: JSON.stringify(error.message) || 'Error creating user'})
-    }
-}
+    return res.status(201).json({ message: "We've sent you a verification link on the email you entered!" });
+})
 
 
-const userLogin = async (req,res,next) => {
+const userLogin = asyncErrorHandler(async (req,res,next) => {
     try {
         const userData = req.body;
         const user = await authServices.userLogin(userData)
@@ -63,10 +37,10 @@ const userLogin = async (req,res,next) => {
         console.log(error)
         return res.status(500).json({message: JSON.stringify(error.message) || 'Error during login'})
     }
-}
+})
 
 
-const verifyEmail = async (req, res) => {
+const verifyEmail = asyncErrorHandler(async (req, res) => {
     const { id: userId, token } = req.params;    
     try {
         const user = await authRepository.findUserById(userId);
@@ -114,10 +88,10 @@ const verifyEmail = async (req, res) => {
             msg: "An internal server error occurred. Please try again later.",
         });
     }
-};
+})
 
 
-const forgotPassword = async (req, res) => {
+const forgotPassword = asyncErrorHandler(async (req, res) => {
     try {
         const {email} = req.body;
         const message = await authServices.forgotPassword(email);
@@ -126,10 +100,10 @@ const forgotPassword = async (req, res) => {
         console.error(error);
         return res.status(500).json({message: error.message || 'Failed to send reset password link'})
     }
-}
+})
 
 
-const resetPassword = async (req,res) => {
+const resetPassword = asyncErrorHandler(async (req,res) => {
     try {
         const token = req.params.token;
         const { password, confirmPassword} = req.body;
@@ -140,7 +114,7 @@ const resetPassword = async (req,res) => {
         console.error("Error while resetting password: ", error);
         return res.status(500).json({message: error.message || 'Error while resetting password'})
     } 
-}
+})
 
 
 const userLogout = (req, res, next) => {
