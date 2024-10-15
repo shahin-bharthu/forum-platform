@@ -21,23 +21,18 @@ const userSignUp = asyncErrorHandler(async (req,res,next) => {
 })
 
 
-const userLogin = asyncErrorHandler(async (req,res,next) => {
-    try {
-        const userData = req.body;
-        const user = await authServices.userLogin(userData)
-        
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.cookie('token', token, {
-                // httpOnly: true,
-                maxAge: 3600000,
-        });
-        
-        return res.status(200).json({data: user, message: 'User logged in successfully'})
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({message: JSON.stringify(error.message) || 'Error during login'})
-    }
-})
+const userLogin = asyncErrorHandler(async (req, res, next) => {
+    const userData = req.body;
+
+    const user = await authServices.userLogin(userData);
+
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.cookie('token', token, {
+        maxAge: 3600000, 
+    });
+
+    return res.status(200).json({ data: user, message: 'User logged in successfully' });
+});
 
 
 const verifyEmail = asyncErrorHandler(async (req, res) => {

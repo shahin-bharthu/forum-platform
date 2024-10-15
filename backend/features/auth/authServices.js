@@ -31,15 +31,13 @@ const userSignUp = async (userData) => {
     return user;
 };
 
-
-const userLogin = async ({email, password}) => {
-
+const userLogin = async ({ email, password }) => {
     const user = await authRepository.findUserByEmail(email);
     if (!user) {
         throw new Error('User with given email not found');
     }
 
-    const isPasswordValid = await verifyPassword(password, user.password); 
+    const isPasswordValid = await verifyPassword(password, user.password);
     if (!isPasswordValid) {
         throw new Error('Incorrect password');
     }
@@ -48,8 +46,8 @@ const userLogin = async ({email, password}) => {
         throw new Error('User is not verified');
     }
 
-    return user
-}
+    return user;
+};
 
 const forgotPassword = async (email) => {
     const user = await authRepository.findUserByEmail(email);
