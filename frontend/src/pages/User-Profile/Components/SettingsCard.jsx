@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
+import dayjs from 'dayjs'; 
 import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
 import MenuItem from "@mui/material/MenuItem";
@@ -44,7 +45,7 @@ export default function SettingsCard(props) {
       id: props.id,
       firstname: props.firstname,
       lastname: props.lastname,
-      dob: props.dob,
+      dob: props.dob ? new Date(props.dob) : null, // Ensure DOB is set as a Date object
       gender: props.gender,
       email: props.email,
       country: props.country || "",
@@ -66,7 +67,13 @@ export default function SettingsCard(props) {
 
   const handleConfirmUpdate = async () => {
     try {
-      const response = await axios.put('http://localhost:8080/user/update', user, {
+      const formattedUser = {
+        ...user,
+        dob: dayjs(user.dob).format('YYYY-MM-DD'), // Format DOB as 'YYYY-MM-DD'
+      };
+      console.log("FORMATTED USER: ", formattedUser);
+      
+      const response = await axios.put('http://localhost:8080/user/update', formattedUser, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -130,10 +137,13 @@ export default function SettingsCard(props) {
 
               {/* ROW 2: DoB */}
               <Grid size={{ xs: 12, md: 6 }}>
-                <DatePicker 
-                  value={new Date(user.dob)} 
-                  onChange={(newValue) => setUser({ ...user, dob: new Date(newValue) })} 
-                  dis={!edit} 
+                <DatePicker
+                  value={user.dob} // Pass the current dob value
+                  onChange={(newValue) => {
+                    console.log("Selected DOB:", newValue); // Log the selected date
+                    setUser({ ...user, dob: newValue });
+                  }}
+                  dis={!edit}
                 />
               </Grid>
 

@@ -78,26 +78,5 @@ const resetPassword = async (token, password, confirmPassword) => {
     return {message: 'Password has been reset'}
 }
 
-const resetPassword = async (token, password, confirmPassword) => {
-    const userToken = (await authRepository.findResetToken(token));
-    if (!userToken) {
-        throw new Error("Reset token not found");
-    }
-
-    const user = await authRepository.findUserById(userToken.userId);
-    if (!user) {
-        throw new Error("No user found");
-    }
-
-    if (password !== confirmPassword) {
-        return {message: 'Passwords must match'}
-    }
-
-    user.password = await encryptPassword(password);
-    await user.save()
-    const result = await authRepository.deleteTokenById(userToken.id);
-    return {message: 'Password has been reset'}
-}
-
 
 export {userSignUp, userLogin, forgotPassword, resetPassword};

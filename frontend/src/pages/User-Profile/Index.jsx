@@ -54,7 +54,7 @@ export default function Index() {
         id: data.id,
         firstname: data.firstname,
         lastname: data.lastname,
-        dob: data.dob || new Date(Date.now()),
+        dob: data.dob || '',
         country: data.country,
         gender: data.gender || 'male',
         email: data.email,
