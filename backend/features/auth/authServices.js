@@ -58,4 +58,19 @@ const forgotPassword = async (email) => {
 }
 
 
-export {userSignUp, userLogin, forgotPassword};
+const resetPassword = async ({token, password, id}) => {
+    const user = await authRepository.findUserById(id);
+    if (!user) {
+        throw new Error("No user found with given id");
+    }
+
+    const userToken = await authRepository.findTokenByUserId(id);
+    if (!userToken) {
+        throw new Error("No reset password token found for given user");
+    }
+
+    
+}
+
+
+export {userSignUp, userLogin, forgotPassword, resetPassword};
