@@ -5,7 +5,6 @@ const getUserById = async (id) => {
 }
 
 const updateUser = async (id, {firstname, lastname, gender, dob, country, avatar }) => {
-    try {
         const user = await db.User.findByPk(id);
         if (!user) {
             throw new Error('User not found');
@@ -21,11 +20,7 @@ const updateUser = async (id, {firstname, lastname, gender, dob, country, avatar
 
         await user.save();
 
-        return { status: 'success', data: user };
-    } catch (error) {
-        console.log(error);
-        return {status: 'failure', data: error};
-    }
+        return user;
 };
 
 export {updateUser, getUserById}

@@ -45,7 +45,7 @@ const userLogin = async ({ email, password }) => {
     }
 
     if (!user.isVerified) {
-        throw new Error('User is not verified');
+        throw new CustomError('User is not verified');
     }
 
     return user;
