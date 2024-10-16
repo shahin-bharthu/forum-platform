@@ -11,8 +11,8 @@ export default function DatePickerValue({ value, onChange }) {
       <DatePicker
         fullWidth
         margin="dense"
-        value={dayjs(value)} // Ensure it's in the correct dayjs format
-        onChange={(newValue) => onChange(newValue?.toDate())} // Pass the new date back as a JS Date object
+        value={dayjs(value)} 
+        onChange={(newValue) => onChange(newValue?.toDate())} 
         variant='standard'
         required
       />
