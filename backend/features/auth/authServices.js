@@ -88,17 +88,19 @@ const forgotPassword = async (email) => {
     const user = await authRepository.findUserByEmail(email);
 
     if (!user) {
-        throw new Error("User with given email not found");
+        throw new CustomError("User with given email not found", 404);
     } 
     
     const resetToken = (await authRepository.createResetToken(user.id)).resetToken;
     if (!resetToken) {
-        throw new Error("Token not created. Try again later");
+        throw new CustomError("Token not created. Try again later");
     }
 
     sendEmail({from: process.env.SENDER_EMAIL, to: user.email, subject: 'Password Reset', html: passwordResetMailBody(user.username, user.id, resetToken)});
-    return { message: 'Check your email for link to reset your password'};
-}
+
+    return 'Check your email for a link to reset your password';
+};
+
 
 const resetPassword = async (token, password, confirmPassword) => {
     const userToken = (await authRepository.findResetToken(token));
