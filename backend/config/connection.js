@@ -1,5 +1,6 @@
 import userModel from "../features/user/userModel.js";
 import tokenModel from "../features/auth/tokenModel.js";
+import auditTrailModel from "../features/auditLogs/auditTrailModel.js";
 
 import Sequelize from "sequelize";
 
@@ -21,6 +22,7 @@ db.sequelize = sequelize;
 
 db.User = userModel(sequelize, Sequelize);
 db.Token = tokenModel(sequelize, Sequelize);
+db.AuditTrail = auditTrailModel(sequelize, Sequelize);
 
 const check = async () => {
     try {
