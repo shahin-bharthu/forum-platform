@@ -2,7 +2,6 @@ import { validationResult } from "express-validator";
 import jwt from 'jsonwebtoken';
 
 import * as authServices from "./authServices.js";
-import * as authRepository from "./authRepository.js"
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 
 const userSignUp = asyncErrorHandler(async (req,res,next) => {
