@@ -2,11 +2,12 @@ import classes from "./AuthForm.module.css";
 import { useRef, useState } from "react";
 import InputField from "./TextInputField";
 import PasswordInputField from "./PasswordInputField";
-import Button from "./Button";
+import CustomButton from "./Button";
 import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
 import axios from 'axios';
 import { z } from 'zod';
+import { Link } from "react-router-dom";
 
 const LoginForm = () => {
   const emailInput = useRef();
@@ -87,9 +88,8 @@ const LoginForm = () => {
         withCredentials: true
       })
 
-      console.log(response);
-      setIsSubmitting(false);
-      
+      // console.log(response);
+      setIsSubmitting(false);   
     }
     catch (error) {
       setIsSubmitting(false);
@@ -146,7 +146,8 @@ const LoginForm = () => {
           onChange={handleInputChange}
           onFocus={handleInputFocus}
         />
-        <Button
+        <p className={classes["forgot-password"]}><Link className={classes["constant-color-link"]} to='/forgot-password' >Forgot password?</Link></p>
+        <CustomButton
           type="submit"
           label={isSubmitting ? "Logging you in..." : "Login"}
           disabled={isSubmitting}

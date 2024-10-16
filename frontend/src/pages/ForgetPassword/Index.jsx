@@ -1,0 +1,129 @@
+import classes from "../../components/AuthForm.module.css";
+import { useRef, useState } from "react";
+import InputField from "../../components/TextInputField";
+import CustomButton from "../../components/Button";
+import axios from "axios";
+import { z } from "zod";
+import Button from "@mui/material/Button";
+import LockPersonOutlinedIcon from '@mui/icons-material/LockPersonOutlined';
+import Avatar from "@mui/material/Avatar";
+import {blue } from "@mui/material/colors";
+
+const Index = () => {
+  const emailInput = useRef();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const userSchema = z.object({
+    email: z.string()
+      .superRefine((val, ctx) => {
+        if (val.length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Email is required",
+          });
+        } else if (!z.string().email().safeParse(val).success) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Invalid email address",
+          });
+        }
+      }),
+  });
+
+  const validateForm = (formData) => {
+    try {
+      userSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors = {};
+        error.errors.forEach((err) => {
+          newErrors[err.path[0]] = err.message;
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const { name } = event.target;
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    setErrorMessage("");
+  };
+
+  const handleInputFocus = (event) => {
+    const { name } = event.target;
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    setErrorMessage("");
+  };
+
+  async function submitHandler(event) {
+    event.preventDefault();
+
+    const email = emailInput.current.value.trim();
+
+    // Pass the email inside an object
+    if (!validateForm({ email })) {
+      return;
+    }
+
+    setErrorMessage("");
+    setErrors({});
+
+    try {
+      setIsSubmitting(true);
+      const response = await axios.post("http://localhost:8080/auth/forgot-password", email, {
+        "Content-Type": "application/json",
+        withCredentials: true
+      })
+
+      // setIsSubmitting(false);
+    } catch (error) {
+      setIsSubmitting(false);
+      setErrorMessage(
+        error.response?.data?.message || "An error occurred. Please try again later."
+      );
+      console.error("Error:", error);
+    }
+  }
+
+  return (
+    <div className={classes["auth-page"]}>
+      <Avatar sx={{ bgcolor: blue[600] }}>
+        <LockPersonOutlinedIcon  sx={{ fontSize: 25 }}/>
+      </Avatar>
+      <h3 className={classes["heading"]}>Forgot Password</h3>
+      <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
+        {errorMessage && (
+          <div className={classes["error-message"]}>{errorMessage}</div>
+        )}
+        {errors.email && <p className={classes["error-message"]}>{errors.email}</p>}
+        <InputField
+          label="Email"
+          type="email"
+          name="email"
+          placeholder="Enter your email"
+          reference={emailInput}
+          onChange={handleInputChange}
+          onFocus={handleInputFocus}
+        />
+        <p>We’ll send a link to reset password to the email if it matches an existing account.</p>
+        <CustomButton
+          type="submit"
+          label={isSubmitting ? "Sending Email" : "Send Mail"}
+          disabled={isSubmitting}
+        />
+        <Button href="login" disableElevation>
+          Back
+        </Button>
+      </form>
+    </div>
+  );
+};
+
+export default Index;

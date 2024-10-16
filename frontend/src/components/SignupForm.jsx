@@ -2,7 +2,7 @@ import classes from "./AuthForm.module.css";
 import { useRef, useState } from "react";
 import InputField from "./TextInputField";
 import PasswordInputField from "./PasswordInputField";
-import Button from "./Button";
+import CustomButton from "./Button";
 import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
 import axios from 'axios';
@@ -187,7 +187,7 @@ const SignupForm = () => {
           onChange={handleInputChange}
           onFocus={handleInputFocus}
         />
-        <Button
+        <CustomButton
           type="submit"
           label={isSubmitting ? "Signing you in..." : "Sign Up"}
           disabled={isSubmitting}
