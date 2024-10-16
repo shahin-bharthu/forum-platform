@@ -20,14 +20,6 @@ export default (sequelize, Sequelize) => {
         query: {
             type: Sequelize.STRING,
             allowNull: false
-        },
-        payload: {
-            type: Sequelize.STRING,
-            allowNull: false
-        },
-        response: {
-            type: Sequelize.TEXT,
-            allowNull: false
         }
     }, 
     {
