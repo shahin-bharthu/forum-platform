@@ -103,25 +103,27 @@ const forgotPassword = async (email) => {
 
 
 const resetPassword = async (token, password, confirmPassword) => {
-    const userToken = (await authRepository.findResetToken(token));
+    const userToken = await authRepository.findResetToken(token);
     if (!userToken) {
-        throw new Error("Reset token not found");
+        throw new CustomError("Reset token not found. Invalid Link", 404);
     }
 
     const user = await authRepository.findUserById(userToken.userId);
     if (!user) {
-        throw new Error("No user found");
+        throw new CustomError("No user found", 404);
     }
 
     if (password !== confirmPassword) {
-        return {message: 'Passwords must match'}
+        throw new CustomError('Passwords must match', 400);
     }
 
     user.password = await encryptPassword(password);
-    await user.save()
-    const result = await authRepository.deleteTokenById(userToken.id);
-    return {message: 'Password has been reset'}
-}
+    await user.save();
+    await authRepository.deleteTokenById(userToken.id);
+
+    return { message: 'Password has been reset' };
+};
+
 
 
 export {userSignUp, userLogin, forgotPassword, resetPassword, verifyUserEmail};

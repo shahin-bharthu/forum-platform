@@ -51,18 +51,14 @@ const forgotPassword = asyncErrorHandler(async (req, res, next) => {
 });
 
 
-const resetPassword = asyncErrorHandler(async (req,res) => {
-    try {
-        const token = req.params.token;
-        const { password, confirmPassword} = req.body;
+const resetPassword = asyncErrorHandler(async (req, res, next) => {
+    const token = req.params.token;
+    const { password, confirmPassword } = req.body;
 
-        const response = await authServices.resetPassword(token, password, confirmPassword);
-        return res.status(200).json({message: response.message || 'Password has been reset!'})
-    } catch (error) {
-        console.error("Error while resetting password: ", error);
-        return res.status(500).json({message: error.message || 'Error while resetting password'})
-    } 
-})
+    const message = await authServices.resetPassword(token, password, confirmPassword);
+    return res.status(200).json({ message: message || 'Password has been reset!' });
+});
+
 
 
 const userLogout = (req, res, next) => {
