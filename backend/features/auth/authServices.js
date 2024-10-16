@@ -121,7 +121,7 @@ const resetPassword = async (token, password, confirmPassword) => {
     await user.save();
     await authRepository.deleteTokenById(userToken.id);
 
-    return { message: 'Password has been reset' };
+    return 'Password has been reset';
 };
 
 
