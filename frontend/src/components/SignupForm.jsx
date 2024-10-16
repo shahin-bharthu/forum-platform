@@ -124,26 +124,11 @@ const SignupForm = () => {
       console.log(response);
       setIsSubmitting(false);
       setSuccessMessage(response.data.message);
-      // const response = await fetch("http://localhost:8080/auth/signup", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(formData),
-      // });
 
-      // const result = await response.json();
-      // setIsSubmitting(false);
-
-      // if (response.ok) {
-      //   alert("User registered successfully!");
-      // } else {
-      //   setErrorMessage(result.message || "Something went wrong!");
-      // }
     } catch (error) {
       console.error("Error: ", error);
       setIsSubmitting(false);
-      setErrorMessage(JSON.parse(error.response.data.message) || "An error occurred. Please try again later.");
+      setErrorMessage(error.response.data.message || "An error occurred. Please try again later.");
     }
   }
 

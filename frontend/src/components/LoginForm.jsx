@@ -93,31 +93,9 @@ const LoginForm = () => {
     }
     catch (error) {
       setIsSubmitting(false);
-      setErrorMessage( JSON.parse(error.response.data.message) ||"An error occurred. Please try again later.");
-      console.error("Error:", error);
+      setErrorMessage( error.response.data.message ||"An error occurred. Please try again later.");
     }
   }
-
-
-  /**
-   * const response = await fetch("http://localhost:8080/auth/login", {
-        method: "POST",
-        credentials: 'include',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-      setIsSubmitting(false);
-
-      if (response.ok) {
-        alert("User logged in successfully!");
-      } else {
-        setErrorMessage(result.message || "Something went wrong!");
-      }
-   */
 
   return (
     <div className={classes["auth-page"]}>
