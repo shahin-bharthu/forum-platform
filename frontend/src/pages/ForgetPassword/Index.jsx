@@ -2,14 +2,17 @@ import classes from "../../components/AuthForm.module.css";
 import { useRef, useState } from "react";
 import InputField from "../../components/TextInputField";
 import CustomButton from "../../components/Button";
+import Dashboard from "../Dashboard/Index.jsx";
 import axios from "axios";
 import { z } from "zod";
 import Button from "@mui/material/Button";
 import LockPersonOutlinedIcon from '@mui/icons-material/LockPersonOutlined';
 import Avatar from "@mui/material/Avatar";
 import {blue } from "@mui/material/colors";
+import { useRouteLoaderData } from "react-router-dom";
 
 const Index = () => {
+  const token = useRouteLoaderData('root');
   const emailInput = useRef();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -87,7 +90,7 @@ const Index = () => {
         "Content-Type": "application/json",
         withCredentials: true
       })
-      console.log(response);
+      console.log(response.data.message);
       
       // setIsSubmitting(false);
     } catch (error) {
@@ -99,13 +102,18 @@ const Index = () => {
     }
   }
 
-  return (
+  return ( 
+
     <div className={classes["auth-page"]}>
+      {token && <Dashboard></Dashboard>}
+      {!token && 
+      <>
       <Avatar sx={{ bgcolor: blue[600] }}>
         <LockPersonOutlinedIcon  sx={{ fontSize: 25 }}/>
       </Avatar>
       <h3 className={classes["heading"]}>Forgot Password</h3>
       <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
+
         {errorMessage && (
           <div className={classes["error-message"]}>{errorMessage}</div>
         )}
@@ -129,6 +137,7 @@ const Index = () => {
           Back
         </Button>
       </form>
+      </> }
     </div>
   );
 };

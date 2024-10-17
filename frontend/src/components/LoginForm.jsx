@@ -7,11 +7,12 @@ import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
 import axios from 'axios';
 import { z } from 'zod';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const emailInput = useRef();
   const passwordInput = useRef();
+  const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -86,8 +87,11 @@ const LoginForm = () => {
         "Content-Type": "application/json",
         withCredentials: true
       })
+      
+      if(response.status === 200) {
+        navigate("/dashboard", { replace: true });
+      }
 
-      console.log(response);
       setIsSubmitting(false); 
     }
     catch (error) {
