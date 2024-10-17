@@ -44,9 +44,11 @@ const verifyEmail = asyncErrorHandler(async (req, res, next) => {
 
 
 const forgotPassword = asyncErrorHandler(async (req, res, next) => {
-    const { email } = req.body;
+    
+    const {email} = req.body;
+    
     const message = await authServices.forgotPassword(email);
-    return res.status(200).json({ message: message || 'Failed to send reset password link' });
+    return res.status(200).json({ message: message || 'Sent reset password link' });
 });
 
 
