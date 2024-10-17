@@ -6,6 +6,7 @@ import AuthPage from "./pages/AuthPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Index from './pages/Dashboard/Index.jsx'
 
 const router = createBrowserRouter([
   {
@@ -17,7 +18,8 @@ const router = createBrowserRouter([
       { path: "login", element: <LoginPage /> },
       { path: "user-profile", element: <UserProfilePage /> },
       { path: "forgot-password", element: <ForgotPassword /> },
-      { path: "reset-password/:token", element: <ResetPassword /> }
+      { path: "reset-password/:token", element: <ResetPassword /> },
+      { path: "dashboard", element: <Index/> }
     ],
   },
 ]);
