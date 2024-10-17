@@ -23,6 +23,7 @@ app.use(logAuditTrails)
 
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
+
 app.use(globalErrorHandler);
 
 try {
