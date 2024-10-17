@@ -4,7 +4,6 @@ import  {updateUserDetails, getUserDetails}  from './userController.js';
 import { validateUpdateProfile } from './userDetailValidator.js';
 import uploadAvatar from '../../util/uploadAvatar.js';
 
-
 const router = Router();
 
 router.get('/:id', getUserDetails)
