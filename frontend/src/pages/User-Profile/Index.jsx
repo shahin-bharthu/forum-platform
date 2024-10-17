@@ -101,7 +101,7 @@ export default function Index() {
         {/* PROFILE CARD */}
         <Grid size={{xs:12, md:4, lg:3}}>
           <ProfileCard
-            name={fullName}
+            name={fullName !== 'null null' ? fullName:'anonymous'}
             sub={user.username}
             dt1={user.dt1}
             dt2={user.dt2}

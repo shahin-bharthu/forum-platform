@@ -2,7 +2,7 @@ import ClippedDrawer from "./Components/Drawer";
 
 const Index = () => {
     return (
-        <ClippedDrawer/>
+        <ClippedDrawer />
     )
 }
 

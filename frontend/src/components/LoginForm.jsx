@@ -17,7 +17,6 @@ const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [errors, setErrors] = useState({});
 
-
   const userSchema = z.object({
     email: z.string()
       .superRefine((val, ctx) => {
@@ -88,8 +87,8 @@ const LoginForm = () => {
         withCredentials: true
       })
 
-      // console.log(response);
-      setIsSubmitting(false);   
+      console.log(response);
+      setIsSubmitting(false); 
     }
     catch (error) {
       setIsSubmitting(false);
@@ -98,6 +97,7 @@ const LoginForm = () => {
   }
 
   return (
+    
     <div className={classes["auth-page"]}>
       <AuthFormHeader authHeading='Login' authPara='login ' />
       <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>

@@ -1,25 +1,30 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
-import SignupPage from "./pages/Signup";
-import LoginPage from "./pages/Login";
-import AuthPage from "./pages/AuthPage";
-import UserProfilePage from "./pages/UserProfilePage";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
+import SignupPage from "./pages/Signup.jsx";
+import LoginPage from "./pages/Login.jsx";
+import AuthPage from "./pages/AuthPage.jsx";
+import UserProfilePage from "./pages/UserProfilePage.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 import Index from './pages/Dashboard/Index.jsx'
+import { tokenLoader } from "../utils/auth.js";
+import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <AuthPage />,
+    loader: tokenLoader,
+    id: "root",
     children: [
-      { index: true, element: <Navigate to="/signup" replace /> },
+      // { index: true, element: <Navigate to="/login" replace /> },
+      { index: true, element: (<ProtectedRoute><Index /></ProtectedRoute>) },
       { path: "signup", element: <SignupPage /> },
       { path: "login", element: <LoginPage /> },
-      { path: "user-profile", element: <UserProfilePage /> },
-      { path: "forgot-password", element: <ForgotPassword /> },
+      { path: "user-profile", element: (<ProtectedRoute><UserProfilePage /></ProtectedRoute>)},
+      { path: "forgot-password", element: (<ProtectedRoute><ForgotPassword /></ProtectedRoute>) },
       { path: "reset-password/:token", element: <ResetPassword /> },
-      { path: "dashboard", element: <Index/> }
+      { path: "dashboard", element: (<ProtectedRoute><Index /></ProtectedRoute>) }
     ],
   },
 ]);

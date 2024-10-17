@@ -39,6 +39,8 @@ const Index = () => {
       setErrors({});
       return true;
     } catch (error) {
+      console.log("ERROR IN VALIDATEFORM: ", error);
+      
       if (error instanceof z.ZodError) {
         const newErrors = {};
         error.errors.forEach((err) => {
@@ -65,23 +67,28 @@ const Index = () => {
   async function submitHandler(event) {
     event.preventDefault();
 
-    const email = emailInput.current.value.trim();
-
+    const enteredEmail = emailInput.current.value.trim();
+    console.log("Inside submit handler of forgot password. Email entered: ", enteredEmail);
+    const formData={email:enteredEmail}
     // Pass the email inside an object
-    if (!validateForm({ email })) {
+    if (!validateForm( formData )) {
+      console.log("inside validation check");
+      
       return;
     }
+    console.log("outside validation check");
 
     setErrorMessage("");
     setErrors({});
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post("http://localhost:8080/auth/forgot-password", email, {
+      const response = await axios.post("http://localhost:8080/auth/forgot-password", formData, {
         "Content-Type": "application/json",
         withCredentials: true
       })
-
+      console.log(response);
+      
       // setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
