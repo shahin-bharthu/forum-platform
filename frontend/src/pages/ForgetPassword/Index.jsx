@@ -1,22 +1,20 @@
-import classes from "./AuthForm.module.css";
+import classes from "../../components/AuthForm.module.css";
 import { useRef, useState } from "react";
-import InputField from "./TextInputField";
-import PasswordInputField from "./PasswordInputField";
-import CustomButton from "./Button";
-import AuthFormHeader from "./AuthFormHeader";
-import AuthFormFooter from "./AuthFormFooter";
-import axios from 'axios';
-import { z } from 'zod';
-import { Link } from "react-router-dom";
+import InputField from "../../components/TextInputField";
+import CustomButton from "../../components/Button";
+import axios from "axios";
+import { z } from "zod";
+import Button from "@mui/material/Button";
+import LockPersonOutlinedIcon from '@mui/icons-material/LockPersonOutlined';
+import Avatar from "@mui/material/Avatar";
+import {blue } from "@mui/material/colors";
 
-const LoginForm = () => {
+const Index = () => {
   const emailInput = useRef();
-  const passwordInput = useRef();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [errors, setErrors] = useState({});
-
 
   const userSchema = z.object({
     email: z.string()
@@ -33,8 +31,6 @@ const LoginForm = () => {
           });
         }
       }),
-    password: z.string()
-      .min(1, "Password is required")
   });
 
   const validateForm = (formData) => {
@@ -45,7 +41,7 @@ const LoginForm = () => {
     } catch (error) {
       if (error instanceof z.ZodError) {
         const newErrors = {};
-        error.errors.forEach(err => {
+        error.errors.forEach((err) => {
           newErrors[err.path[0]] = err.message;
         });
         setErrors(newErrors);
@@ -56,13 +52,13 @@ const LoginForm = () => {
 
   const handleInputChange = (event) => {
     const { name } = event.target;
-    setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     setErrorMessage("");
   };
 
   const handleInputFocus = (event) => {
     const { name } = event.target;
-    setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     setErrorMessage("");
   };
 
@@ -70,11 +66,9 @@ const LoginForm = () => {
     event.preventDefault();
 
     const email = emailInput.current.value.trim();
-    const password = passwordInput.current.value.trim();
 
-    const formData = { password, email };
-
-    if (!validateForm(formData)) {
+    // Pass the email inside an object
+    if (!validateForm({ email })) {
       return;
     }
 
@@ -83,23 +77,27 @@ const LoginForm = () => {
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post("http://localhost:8080/auth/login", formData, {
+      const response = await axios.post("http://localhost:8080/auth/forgot-password", email, {
         "Content-Type": "application/json",
         withCredentials: true
       })
 
-      // console.log(response);
-      setIsSubmitting(false);   
-    }
-    catch (error) {
+      // setIsSubmitting(false);
+    } catch (error) {
       setIsSubmitting(false);
-      setErrorMessage( error.response.data.message ||"An error occurred. Please try again later.");
+      setErrorMessage(
+        error.response?.data?.message || "An error occurred. Please try again later."
+      );
+      console.error("Error:", error);
     }
   }
 
   return (
     <div className={classes["auth-page"]}>
-      <AuthFormHeader authHeading='Login' authPara='login ' />
+      <Avatar sx={{ bgcolor: blue[600] }}>
+        <LockPersonOutlinedIcon  sx={{ fontSize: 25 }}/>
+      </Avatar>
+      <h3 className={classes["heading"]}>Forgot Password</h3>
       <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
         {errorMessage && (
           <div className={classes["error-message"]}>{errorMessage}</div>
@@ -114,26 +112,18 @@ const LoginForm = () => {
           onChange={handleInputChange}
           onFocus={handleInputFocus}
         />
-        {errors.password && <p className={classes["error-message"]}>{errors.password}</p>}
-        <PasswordInputField
-          label="Password"
-          type="password"
-          name="password"
-          placeholder="Enter your password"
-          reference={passwordInput}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
-        />
-        <p className={classes["forgot-password"]}><Link className={classes["constant-color-link"]} to='/forgot-password' >Forgot password?</Link></p>
+        <p>We’ll send a link to reset password to the email if it matches an existing account.</p>
         <CustomButton
           type="submit"
-          label={isSubmitting ? "Logging you in..." : "Login"}
+          label={isSubmitting ? "Sending Email" : "Send Mail"}
           disabled={isSubmitting}
         />
+        <Button href="login" disableElevation>
+          Back
+        </Button>
       </form>
-      <AuthFormFooter authPara="Don't have an account? " authLink='/signup' authLabelLink='Sign Up' />
     </div>
   );
 };
 
-export default LoginForm;
+export default Index;
