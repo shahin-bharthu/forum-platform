@@ -84,7 +84,7 @@ export default function Index() {
           alt="avatar"
           style={{
             width: "100%",
-            height: "35vh",
+            height: "40vh",
             objectFit: "cover",
             objectPosition: "50% 50%",
           }}

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import dayjs from 'dayjs'; 
 import Card from "@mui/material/Card";
-import Divider from "@mui/material/Divider";
 import MenuItem from "@mui/material/MenuItem";
 import CardContent from "@mui/material/CardContent";
 import Grid from '@mui/material/Grid2';
@@ -89,9 +88,7 @@ export default function SettingsCard(props) {
 
   return (
     <Card variant="outlined" sx={{ height: "100%", width: "100%" }}>
-      <br />
-      <Divider />
-
+      <br />   
       {/* MAIN CONTENT CONTAINER */}
       <form>
         <CardContent
@@ -204,7 +201,7 @@ export default function SettingsCard(props) {
                 size={{ xs: 12 }}
               >
                 <Button
-                  sx={{ p: "1rem 2rem", my: 2, height: "3rem" }}
+                  sx={{ p: "1rem 2rem", my: 2, height: "2.5rem" }}
                   component="button"
                   variant="contained"
                   color="primary"

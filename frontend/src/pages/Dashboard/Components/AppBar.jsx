@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import { AppBar, Box, Toolbar, IconButton, Typography, InputBase, Badge, MenuItem, Menu } from '@mui/material';
 import { Menu as MenuIcon, Search as SearchIcon, AccountCircle, Mail as MailIcon, Notifications as NotificationsIcon, MoreVert as MoreIcon, Adb as AdbIcon } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
-import { grey } from '@mui/material/colors';
-
+import { Link, useNavigate } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import LogoutIcon from '@mui/icons-material/Logout';
+import axios from 'axios';
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -48,8 +49,25 @@ function CombinedAppBar({ handleDrawerToggle }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
 
+  const navigate = useNavigate();
+
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const handleEditProfile=useCallback(()=>{
+    handleMenuClose();
+    navigate('/user-profile');
+  },[navigate,handleDrawerToggle])
+
+  const handleLogout=useCallback(async()=>{
+    handleMenuClose();
+    try {
+      const response=axios.post("http://localhost:8080/auth/logout")
+      navigate('/login');
+    } catch (error) {
+      console.error("couldn't log user out", error)
+    }
+  })
 
   const handleProfileMenuOpen = useCallback((event) => {
     setAnchorEl(event.currentTarget);
@@ -87,8 +105,19 @@ function CombinedAppBar({ handleDrawerToggle }) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleEditProfile}>
+        <IconButton size="medium" color="inherit" sx={{ mr: 1 }}>
+          <EditIcon />
+        </IconButton>
+        Edit Profile
+      </MenuItem>
+
+      <MenuItem onClick={handleLogout}>
+        <IconButton size="medium" color="inherit" sx={{ mr: 1 }}>
+          <LogoutIcon />
+        </IconButton>
+        Logout
+      </MenuItem>
     </Menu>
   );
 
@@ -145,7 +174,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 } }>
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <IconButton
             size="large"
@@ -157,11 +186,11 @@ function CombinedAppBar({ handleDrawerToggle }) {
           >
             <MenuIcon />
           </IconButton>
-          <AdbIcon sx={{ display: 'flex', mr: 1 }} />
+          <AdbIcon sx={{ display: 'flex', mr: 2 }} />
           <Typography
             variant="h6"
             noWrap
-            component={Link} 
+            component={Link}
             to="/dashboard"
             sx={{ display: { xs: 'none', md: 'flex' }, mr: 2, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', textDecoration: 'none', color: 'inherit' }}
           >
@@ -225,4 +254,4 @@ function CombinedAppBar({ handleDrawerToggle }) {
   );
 }
 
-export default React.memo(CombinedAppBar);
+export default memo(CombinedAppBar);
