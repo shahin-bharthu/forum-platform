@@ -17,6 +17,7 @@ const Index = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState({});
 
   const userSchema = z.object({
@@ -72,7 +73,7 @@ const Index = () => {
 
     const enteredEmail = emailInput.current.value.trim();
     const formData={email:enteredEmail}
-    // Pass the email inside an object
+    
     if (!validateForm( formData )) {      
       return;
     }
@@ -85,15 +86,15 @@ const Index = () => {
         "Content-Type": "application/json",
         withCredentials: true
       })
-      console.log(response.data.message);
+      setSuccessMessage(response.data.message);
       
       // setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
+      console.error("Error:", error);
       setErrorMessage(
         error.response?.data?.message || "An error occurred. Please try again later."
       );
-      // console.error("Error:", error);
     }
   }
 
@@ -108,7 +109,9 @@ const Index = () => {
       </Avatar>
       <h3 className={classes["heading"]}>Forgot Password</h3>
       <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
-
+        {successMessage && (
+          <div className={classes["success-message"]}>{successMessage}</div>
+        )}
         {errorMessage && (
           <div className={classes["error-message"]}>{errorMessage}</div>
         )}
@@ -125,7 +128,7 @@ const Index = () => {
         <p>We’ll send a link to reset password to the email if it matches an existing account.</p>
         <CustomButton
           type="submit"
-          label={isSubmitting ? "Sending Email" : "Send Mail"}
+          label={isSubmitting ? "Email Sent" : "Send Mail"}
           disabled={isSubmitting}
         />
         <Button href="login" disableElevation>

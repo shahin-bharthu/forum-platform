@@ -119,8 +119,8 @@ const Index = () => {
         }
         catch (error) {
             setIsSubmitting(false);
-            setErrorMessage(JSON.parse(error.response.data.message) || "An error occurred. Please try again later.");
-            console.error("Error:", error);
+            setErrorMessage(error.response.data.message || "An error occurred. Please try again later.");
+            console.error("Error:", error.response);
         }
     }
 

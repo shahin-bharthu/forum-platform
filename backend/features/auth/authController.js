@@ -52,9 +52,7 @@ const forgotPassword = asyncErrorHandler(async (req, res, next) => {
 });
 
 
-const resetPassword = asyncErrorHandler(async (req, res, next) => {
-    console.log("in reset password controller");
-    
+const resetPassword = asyncErrorHandler(async (req, res, next) => {    
     const token = req.params.token;
     const { password, confirmPassword } = req.body;
 
