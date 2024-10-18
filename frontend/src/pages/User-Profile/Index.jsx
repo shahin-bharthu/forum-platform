@@ -11,7 +11,7 @@ export default function Index() {
     firstname: ' ',
     lastname: ' ',
     dob: new Date(Date.now()),
-    country: 'IN',
+    country: '',
     gender: 'male',
     email: ' ',
     username: ' ',
@@ -22,9 +22,7 @@ export default function Index() {
 
 
   useEffect(() => {
-    const fetchData = async () => { 
-      console.log("first useEffect");
-      
+    const fetchData = async () => {       
       const token = getCookie('token');
       
       if (token) {
@@ -69,11 +67,11 @@ export default function Index() {
     }
   };
 
-  useEffect(() => {
-    console.log("second useeffect");
+  // useEffect(() => {
+  //   console.log("second useeffect");
     
-    console.log("USER: ", user);
-  }, [user]);
+  //   console.log("USER: ", user);
+  // }, [user]);
   
   const fullName = `${user.firstname} ${user.lastname}`;
 

@@ -113,7 +113,8 @@ const Index = () => {
                 "Content-Type": "application/json",
                 withCredentials: true
             })
-
+            console.log(response);
+            
             navigate("/login", { replace: true });
         }
         catch (error) {
@@ -134,6 +135,7 @@ const Index = () => {
                     <div className={classes["error-message"]}>{errorMessage}</div>
                 )}
                 {errors.password && <p className={classes["error-message"]}>{errors.password}</p>}
+                {errors.confirmPassword && <p className={classes["error-message"]}>{errors.confirmPassword}</p>}
                 <PasswordInputField
                     label="Password"
                     type="password"
@@ -143,7 +145,6 @@ const Index = () => {
                     onChange={handleInputChange}
                     onFocus={handleInputFocus}
                 />
-                {errors.password && <p className={classes["error-message"]}>{errors.confirmPassword}</p>}
                 <PasswordInputField
                     label="Confirm Password"
                     type="password"

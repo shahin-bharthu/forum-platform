@@ -19,7 +19,7 @@ const updateUserDetails = asyncErrorHandler(async (req,res,next) => {
     const avatar = req.file?.path ?? "";
     const user = await userService.updateUserDetails(id, {firstname, lastname, gender, dob, country, avatar});
 
-    return res.status(200).json({message: 'user updated', user: user})
+    return res.status(200).json({message: 'Your details have been updated!', user: user})
 })
 
 export {updateUserDetails, getUserDetails}

@@ -27,7 +27,7 @@ const userLogin = asyncErrorHandler(async (req, res, next) => {
 
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.cookie('token', token, {
-        maxAge: 3600000, 
+        maxAge: 3600000
     });
 
     return res.status(200).json({ data: user, message: 'User logged in successfully' });
@@ -53,6 +53,8 @@ const forgotPassword = asyncErrorHandler(async (req, res, next) => {
 
 
 const resetPassword = asyncErrorHandler(async (req, res, next) => {
+    console.log("in reset password controller");
+    
     const token = req.params.token;
     const { password, confirmPassword } = req.body;
 
@@ -64,13 +66,22 @@ const resetPassword = asyncErrorHandler(async (req, res, next) => {
 
 const userLogout = (req, res, next) => {
     try {
-        res.clearCookie('token');
+        console.log("in logout controller");
+        
+        // res.clearCookie('token', { path: '/' });
+        // res.cookie('token', '', {
+        //     expires: new Date(0), // Set to a date in the past
+        //     path: '/' // Ensure this matches the path used when setting the cookie
+        // });
+        // res.clearCookie("token", {maxAge: 0});
+        // res.setHeader('Set-Cookie', 'token=; Max-Age=0;');
+        console.log("after clear cookie");
+
         return res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: 'Error during logout' });
+        return res.status(500).json({ message: error.message || 'Error during logout' });
     }
 };
 
-  
 export {userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword, userLogout};

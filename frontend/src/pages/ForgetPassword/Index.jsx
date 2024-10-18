@@ -71,16 +71,11 @@ const Index = () => {
     event.preventDefault();
 
     const enteredEmail = emailInput.current.value.trim();
-    console.log("Inside submit handler of forgot password. Email entered: ", enteredEmail);
     const formData={email:enteredEmail}
     // Pass the email inside an object
-    if (!validateForm( formData )) {
-      console.log("inside validation check");
-      
+    if (!validateForm( formData )) {      
       return;
     }
-    console.log("outside validation check");
-
     setErrorMessage("");
     setErrors({});
 
@@ -98,7 +93,7 @@ const Index = () => {
       setErrorMessage(
         error.response?.data?.message || "An error occurred. Please try again later."
       );
-      console.error("Error:", error);
+      // console.error("Error:", error);
     }
   }
 

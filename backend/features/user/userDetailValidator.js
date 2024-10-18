@@ -17,8 +17,8 @@ export const validateUpdateProfile = (req, res, next) => {
             .isAlpha()
             .isLength({min: 2}),
         body('gender')
-            .isIn(['male', 'female', 'other'])
-            .withMessage('Gender must be one of the following: male, female, other')
+            .isIn(['male', 'female', 'other','pnts'])
+            .withMessage('Gender must be one of the following: male, female, other, prefer not to say')
     ];
 };
 

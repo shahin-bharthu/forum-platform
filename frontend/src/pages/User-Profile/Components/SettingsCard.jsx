@@ -1,43 +1,46 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
-import dayjs from 'dayjs'; 
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import dayjs from "dayjs";
 import Card from "@mui/material/Card";
 import MenuItem from "@mui/material/MenuItem";
 import CardContent from "@mui/material/CardContent";
-import Grid from '@mui/material/Grid2';
+import Grid from "@mui/material/Grid2";
 import FormControl from "@mui/material/FormControl";
 import Button from "@mui/material/Button";
 import CustomInput from "./CustomInput";
 import DatePicker from "./DatePicker.jsx";
 import useCountries from "../Hooks/useCountries.js";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import { Divider } from "@mui/material";
 
 export default function SettingsCard(props) {
-
   const genderSelect = [
     { value: "male", label: "Male" },
     { value: "female", label: "Female" },
     { value: "other", label: "Other" },
-    { value: "prefer not to say", label: "Prefer not to say" },
+    { value: "pnts", label: "Prefer not to say" },
   ];
 
   const [user, setUser] = useState({
-    id: '',
-    firstname: 'firstname',
-    lastname: 'lastname',
-    dob: 'dob',
-    gender: 'male',
-    email: 'abc@gmail.com',
-    country: '',
+    id: "",
+    firstname: "firstname",
+    lastname: "lastname",
+    dob: "dob",
+    gender: "male",
+    email: "abc@gmail.com",
+    country: "",
   });
 
   const { countries, isLoading, error } = useCountries();
-  
+
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [edit, setEdit] = useState(true); 
+  const [edit, setEdit] = useState(true);
+  const [updateMessage, setUpdateMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setUser({
@@ -57,30 +60,36 @@ export default function SettingsCard(props) {
 
   const handleUpdateClick = (event) => {
     event.preventDefault();
-    setDialogOpen(true); 
+    setDialogOpen(true);
   };
 
   const handleDialogClose = () => {
-    setDialogOpen(false); 
+    setDialogOpen(false);
   };
 
   const handleConfirmUpdate = async () => {
     try {
       const formattedUser = {
         ...user,
-        dob: dayjs(user.dob).format('YYYY-MM-DD'), // Format DOB as 'YYYY-MM-DD'
+        dob: dayjs(user.dob).format("YYYY-MM-DD"), // Format DOB as 'YYYY-MM-DD'
       };
-      console.log("FORMATTED USER: ", formattedUser);
-      
-      const response = await axios.put('http://localhost:8080/user/update', formattedUser, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      console.log("User updated successfully", response.data);
-      setDialogOpen(false); 
-      
+
+      const response = await axios.put(
+        "http://localhost:8080/user/update",
+        formattedUser,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setUpdateMessage(response.data.message);
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+
+      setDialogOpen(false);
     } catch (error) {
       console.error("Error updating user:", error);
     }
@@ -88,7 +97,14 @@ export default function SettingsCard(props) {
 
   return (
     <Card variant="outlined" sx={{ height: "100%", width: "100%" }}>
-      <br />   
+      <br />
+      {updateMessage && (
+        <>
+          <p style={{ color: "skyblue" }}>{updateMessage}</p>
+          <Divider />
+        </>
+      )}
+
       {/* MAIN CONTENT CONTAINER */}
       <form>
         <CardContent
@@ -114,7 +130,7 @@ export default function SettingsCard(props) {
                   value={user.firstname}
                   onChange={changeField}
                   title="First Name"
-                  dis={!edit} 
+                  dis={!edit}
                   req={true}
                 />
               </Grid>
@@ -135,9 +151,9 @@ export default function SettingsCard(props) {
               {/* ROW 2: DoB */}
               <Grid size={{ xs: 12, md: 6 }}>
                 <DatePicker
-                  value={user.dob} // Pass the current dob value
+                  value={user.dob}
                   onChange={(newValue) => {
-                    console.log("Selected DOB:", newValue); // Log the selected date
+                    console.log("Selected DOB:", newValue);
                     setUser({ ...user, dob: newValue });
                   }}
                   dis={!edit}
@@ -156,7 +172,9 @@ export default function SettingsCard(props) {
                   dis={!edit}
                   req={true}
                   content={genderSelect.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
                   ))}
                 />
               </Grid>
@@ -174,7 +192,7 @@ export default function SettingsCard(props) {
                   req={true}
                 />
               </Grid>
-              
+
               {/* ROW 3: Country */}
               <Grid size={{ xs: 12, md: 6 }}>
                 <CustomInput

@@ -5,7 +5,8 @@ import { Menu as MenuIcon, Search as SearchIcon, AccountCircle, Mail as MailIcon
 import { Link, useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import LogoutIcon from '@mui/icons-material/Logout';
-import axios from 'axios';
+import deleteCookie from '../../../../utils/deleteCookie.js';
+
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -54,21 +55,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const handleEditProfile=useCallback(()=>{
-    handleMenuClose();
-    navigate('/user-profile');
-  },[navigate,handleDrawerToggle])
-
-  const handleLogout=useCallback(async()=>{
-    handleMenuClose();
-    try {
-      const response=axios.post("http://localhost:8080/auth/logout")
-      navigate('/login');
-    } catch (error) {
-      console.error("couldn't log user out", error)
-    }
-  })
-
   const handleProfileMenuOpen = useCallback((event) => {
     setAnchorEl(event.currentTarget);
   }, []);
@@ -85,6 +71,21 @@ function CombinedAppBar({ handleDrawerToggle }) {
   const handleMobileMenuOpen = useCallback((event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   }, []);
+
+  const handleEditProfile=useCallback(()=>{
+    handleMenuClose();
+    navigate('/user-profile');
+  },[navigate,handleMenuClose])
+
+  const handleLogout=useCallback(async()=>{
+    handleMenuClose();
+    try {
+      deleteCookie();
+      window.location.reload();
+    } catch (error) {
+      console.error("couldn't log user out", error)
+    }
+  },[handleMenuClose])
 
   const menuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
