@@ -100,7 +100,7 @@ export default function SettingsCard(props) {
       <br />
       {updateMessage && (
         <>
-          <p style={{ color: "skyblue" }}>{updateMessage}</p>
+          <p style={{ color: "#1e88e5" }}>{updateMessage}</p>
           <Divider />
         </>
       )}
