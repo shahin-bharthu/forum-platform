@@ -52,35 +52,40 @@ const userLogin = async ({ email, password }) => {
 };
 
 
-const verifyUserEmail = async (userId, token) => {    
+const verifyUserEmail = async (userId, token) => {
     const user = await authRepository.findUserById(userId);
     if (!user) {
-        throw new CustomError("No user found for this verification. Please sign up.", 404);
+        return { message: "No user found for this verification. Please sign up.", status: 100 };
+        // throw new CustomError("No user found for this verification. Please sign up.", 404);
     }    
 
     if (user.isVerified) {
-        throw new CustomError("User is already verified. Please log in.", 200);
-    }    
+        return { message: "User is already verified. Please log in.", status: 101 };
+        // throw new CustomError("User is already verified. Please log in.", 200);
+    }
 
     const userToken = await authRepository.findTokenByUserId(userId);
-    
+
     if (!userToken || userToken.verificationToken !== token) {
-        throw new CustomError("Invalid verification link. Please request a new one.", 400);
+        return { message: "Invalid verification link. Please request a new one.", status: 102 };
+        // throw new CustomError("Invalid verification link. Please request a new one.", 400);
     }    
 
     const currentTime = new Date();
     if (new Date(userToken.expiresAt) < currentTime) {
-        throw new CustomError("The verification link has expired. Please request a new one.", 400);
+        return { message: "The verification link has expired. Please request a new one.", status: 103 };
+        // throw new CustomError("The verification link has expired. Please request a new one.", 400);
     }    
 
     const verificationSuccess = await authRepository.setUserVerified(userId);
     if (!verificationSuccess) {
         console.error("Failed to update user's verification status.");
-        throw new CustomError("Couldn't update user's verification status. Please try again later.", 500);
+        return { message: "Couldn't update user's verification status. Please try again later.", status: 104 };
+        // throw new CustomError("Couldn't update user's verification status. Please try again later.", 500);
     }    
 
     await authRepository.deleteTokenById(userToken.id);    
-    return { message: "User verified successfully." }; // Return success message
+    return { message: "User verified successfully.", status: 200 }; // Return success message
 };
 
 

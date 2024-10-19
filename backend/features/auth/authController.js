@@ -37,9 +37,9 @@ const userLogin = asyncErrorHandler(async (req, res, next) => {
 const verifyEmail = asyncErrorHandler(async (req, res, next) => {
     const { id: userId, token } = req.params;
 
-    const verificationResponse = await authServices.verifyUserEmail(userId, token);
+    const {message, status} = await authServices.verifyUserEmail(userId, token);
     
-    return res.redirect('http://localhost:5173/login');
+    return res.redirect(`http://localhost:5173/login/${status}`);
 });
 
 
