@@ -8,6 +8,7 @@ import AuthFormFooter from "./AuthFormFooter";
 import axios from "axios";
 import { z } from "zod";
 import { Link, useLoaderData, useNavigate, useRouteLoaderData } from "react-router-dom";
+import PositionedSnackbar from "./SnackBar";
 
 const LoginForm = () => {
   const emailInput = useRef();
@@ -113,15 +114,16 @@ const LoginForm = () => {
         className={classes["auth-form"]}
         noValidate
       >
-        {message && (
+        {/* {message && (
           <div>{message}</div>
-        )}
+        )} */}
         {errorMessage && (
           <div className={classes["error-message"]}>{errorMessage}</div>
         )}
         {errors.email && (
           <p className={classes["error-message"]}>{errors.email}</p>
         )}
+        {message && <PositionedSnackbar message={message} />}
         <InputField
           label="Email"
           type="email"
