@@ -10,8 +10,14 @@ export default function DatePickerValue({ value, onChange }) {
       <br />
       <DatePicker
       sx={{mt:1, mb:0.5, width:'100%'}}
-        fullWidth
-        margin="dense"
+      slotProps={{
+        textField: {
+          error: false,
+          variant: 'outlined',
+          fullWidth: true,
+          margin: "dense",
+        },
+      }}
         value={dayjs(value)} 
         onChange={(newValue) => onChange(newValue?.toDate())} 
         variant='standard'
