@@ -4,7 +4,7 @@ const storage = diskStorage({
   destination: `./avatars/`,
 
   filename: function (req, file, callBack) {
-    callBack(null, `${req.body.email}-${file.originalname}`);
+    callBack(null, `${req.params.id}-${file.originalname}`);
   },
 });
 
