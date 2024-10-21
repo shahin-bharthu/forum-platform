@@ -5,6 +5,8 @@ import Avatar from "@mui/material/Avatar";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import Badge from "@mui/material/Badge";
 import Button from "@mui/material/Button";
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
 
 const styles = {
   details: {
@@ -18,6 +20,27 @@ const styles = {
   }
 };
 
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+ const handleFileUpload=(event)=>{
+  const file=event.target.files
+
+  if(!file){
+    console.log('No avtar uploaded');
+    return
+  }
+  console.log(file);
+  
+ }
 
 export default function ProfileCard(props) {
   return (
@@ -35,17 +58,21 @@ export default function ProfileCard(props) {
             overlap="circular"
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             badgeContent={
-              <PhotoCameraIcon
-                sx={{
-                  border: "4px solid white",
+              <IconButton component="label" aria-label="delete">
+                <PhotoCameraIcon sx={{
                   backgroundColor: '#eeeeee',
                   borderRadius: "50%",
                   padding: ".2rem",
                   width: 30,
                   height: 30,
-                  color:'#1e88e5'
-                }}
-              ></PhotoCameraIcon>
+                  color: '#1e88e5'
+                }} />
+                <VisuallyHiddenInput
+                  type="file"
+                  onChange={handleFileUpload}
+                  multiple
+                />
+              </IconButton>
             }
           >
             <Avatar
