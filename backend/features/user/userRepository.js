@@ -23,4 +23,18 @@ const updateUser = async (id, {firstname, lastname, gender, dob, country, avatar
         return user;
 };
 
-export {updateUser, getUserById}
+const updateUserAvatar = async (id, { avatar }) => {
+    const user = await db.User.findByPk(id);
+    if (!user) {
+        throw new Error('User not found');
+    }
+    await user.update({
+        avatar,
+    });
+
+    await user.save();
+
+    return user;
+};
+
+export {updateUser, getUserById, updateUserAvatar}

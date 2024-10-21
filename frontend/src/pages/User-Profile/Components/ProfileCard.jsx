@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import Grid from '@mui/material/Grid2';
@@ -20,6 +21,11 @@ const styles = {
 
 
 export default function ProfileCard(props) {
+
+  useEffect(() => {
+    console.log("User ID in profile card: ", props);
+  }, []);
+
   return (
     <Card variant="outlined">
       <Grid

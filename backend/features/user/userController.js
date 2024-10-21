@@ -17,9 +17,19 @@ const updateUserDetails = asyncErrorHandler(async (req,res,next) => {
 
     const {id, firstname, lastname, gender, dob, country} = req.body;
     const avatar = req.file?.path ?? "";
-    const user = await userService.updateUserDetails(id, {firstname, lastname, gender, dob, country, avatar});
+    const user = await userService.updateUserDetails(id, {firstname, lastname, gender, dob, country});
 
     return res.status(200).json({message: 'Your details have been updated!', user: user})
 })
 
-export {updateUserDetails, getUserDetails}
+
+const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.body;
+    const avatar = req.file?.path ?? "";
+    const user = await userService.updateUserAvatar(id, {avatar});
+
+    return res.status(200).json({message: 'Your avatar has been updated!', user: user})
+
+})
+
+export {updateUserDetails, getUserDetails, updateUserAvatar}

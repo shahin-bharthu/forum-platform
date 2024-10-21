@@ -28,7 +28,7 @@ export default function Index() {
       if (token) {
         try {
           const decoded = jwtDecode(token);
-          await fetchUserDetails(decoded.id); 
+          await fetchUserDetails(decoded.id);           
         } catch (error) {
           console.error("Failed to decode token:", error);
         }
@@ -101,6 +101,7 @@ export default function Index() {
           <ProfileCard
             name={fullName !== 'null null' ? fullName:'anonymous'}
             sub={user.username}
+            id={user.id}
             dt1={user.dt1}
             dt2={user.dt2}
             dt3={user.dt3}
