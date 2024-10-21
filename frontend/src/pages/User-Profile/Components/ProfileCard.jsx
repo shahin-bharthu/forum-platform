@@ -8,6 +8,7 @@ import Badge from "@mui/material/Badge";
 import Button from "@mui/material/Button";
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
+import axios from "axios";
 
 const styles = {
   details: {
@@ -32,22 +33,22 @@ const VisuallyHiddenInput = styled('input')({
   whiteSpace: 'nowrap',
   width: 1,
 });
- const handleFileUpload=(event)=>{
-  const file=event.target.files
-
-  if(!file){
-    console.log('No avtar uploaded');
-    return
-  }
-  console.log(file);
+ const handleFileUpload = async (event, id, email)=>{
+  event.preventDefault();
+  console.log("onsubmit", typeof(event.target));
   
+  const formData = new FormData(event.target);
+  formData.append("email", email)
+  console.log(formData.get('avatar'));
+  
+  const response = await axios.put(
+    "http://localhost:8080/user/update/avatar/" + id,
+    formData,
+    {}
+  );
  }
 
 export default function ProfileCard(props) {
-
-  useEffect(() => {
-    console.log("User ID in profile card: ", props);
-  }, []);
 
   return (
     <Card variant="outlined">
@@ -73,11 +74,14 @@ export default function ProfileCard(props) {
                   height: 30,
                   color: '#1e88e5'
                 }} />
+                <form onSubmit={(e) => handleFileUpload(e, props.id, props.email)} encType="multipart/form-data">
                 <VisuallyHiddenInput
                   type="file"
-                  onChange={handleFileUpload}
-                  multiple
+                  single
+                  name="avatar"
                 />
+                <button type="submit">Upload Avatar</button>
+                </form>
               </IconButton>
             }
           >
@@ -96,12 +100,14 @@ export default function ProfileCard(props) {
         {/* DETAILS */}
         <Grid container>
           <Grid >
+          <Typography style={styles.details}>Detail ID</Typography>
             <Typography style={styles.details}>Detail 1</Typography>
             <Typography style={styles.details}>Detail 2</Typography>
             <Typography style={styles.details}>Detail 3</Typography>
           </Grid>
           {/* VALUES */}
           <Grid sx={{ textAlign: "end" }}>
+          <Typography style={styles.value}>{props.id}</Typography>
             <Typography style={styles.value}>{props.dt1}</Typography>
             <Typography style={styles.value}>{props.dt2}</Typography>
             <Typography style={styles.value}>{props.dt3}</Typography>

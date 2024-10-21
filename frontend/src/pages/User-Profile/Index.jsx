@@ -102,6 +102,7 @@ export default function Index() {
             name={fullName !== 'null null' ? fullName:'anonymous'}
             sub={user.username}
             id={user.id}
+            email={user.email}
             dt1={user.dt1}
             dt2={user.dt2}
             dt3={user.dt3}
