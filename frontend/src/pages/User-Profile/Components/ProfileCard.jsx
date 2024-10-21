@@ -100,14 +100,14 @@ export default function ProfileCard(props) {
         {/* DETAILS */}
         <Grid container>
           <Grid >
-          <Typography style={styles.details}>Detail ID</Typography>
+          {/* <Typography style={styles.details}>Detail ID</Typography> */}
             <Typography style={styles.details}>Detail 1</Typography>
             <Typography style={styles.details}>Detail 2</Typography>
             <Typography style={styles.details}>Detail 3</Typography>
           </Grid>
           {/* VALUES */}
           <Grid sx={{ textAlign: "end" }}>
-          <Typography style={styles.value}>{props.id}</Typography>
+          {/* <Typography style={styles.value}>{props.id}</Typography> */}
             <Typography style={styles.value}>{props.dt1}</Typography>
             <Typography style={styles.value}>{props.dt2}</Typography>
             <Typography style={styles.value}>{props.dt3}</Typography>

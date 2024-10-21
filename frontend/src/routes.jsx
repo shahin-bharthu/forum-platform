@@ -10,12 +10,14 @@ import ResetPassword from "./pages/ResetPassword.jsx";
 import Index from './pages/Dashboard/Index.jsx'
 import { tokenLoader } from "../utils/auth.js";
 import ProtectedRoute from "../utils/ProtectedRoute.jsx";
+import ErrorPage from "./pages/ErrorPage.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <AuthPage />,
     loader: tokenLoader,
+    errorElement: <ErrorPage />,
     id: "root",
     children: [
       // { index: true, element: <Navigate to="/login" replace /> },

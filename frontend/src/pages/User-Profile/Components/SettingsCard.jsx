@@ -81,6 +81,7 @@ export default function SettingsCard(props) {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true
         }
       );
 

@@ -1,5 +1,5 @@
 import classes from "./AuthForm.module.css";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import InputField from "./TextInputField";
 import PasswordInputField from "./PasswordInputField";
 import CustomButton from "./Button";
@@ -7,7 +7,7 @@ import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
 import axios from "axios";
 import { z } from "zod";
-import { Link, useLoaderData, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { Link, useLoaderData, useNavigate, redirect } from "react-router-dom";
 import PositionedSnackbar from "./SnackBar";
 
 const LoginForm = () => {
@@ -19,6 +19,12 @@ const LoginForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (message === null) {
+      navigate("/login/201");
+    }
+  }, [message, navigate]);
 
   const userSchema = z.object({
     email: z.string().superRefine((val, ctx) => {
@@ -185,7 +191,9 @@ export async function loader({ request, params }) {
       return {message: "Couldn't update user's verification status. Please try again later."};
     case "201":
       return {message: null};
-    default:
+    case "200":
       return {message: "User verified successfully"};
+    default:
+      throw redirect("/login/201");
   }
 }

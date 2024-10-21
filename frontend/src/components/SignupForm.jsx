@@ -178,7 +178,7 @@ const SignupForm = () => {
           disabled={isSubmitting}
         />
       </form>
-      <AuthFormFooter authPara='Already have an account? ' authLink='/login' authLabelLink='Login' />
+      <AuthFormFooter authPara='Already have an account? ' authLink='/login/201' authLabelLink='Login' />
     </div>
   );
 };
