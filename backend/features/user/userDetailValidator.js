@@ -4,18 +4,12 @@ export const validateUpdateProfile = (req, res, next) => {
     return [
         body('firstname')
             .trim()
-            .isAlpha()
-            .isLength({min: 2}),
+            .isAlpha(),
         body('lastname')
             .trim()
-            .isAlpha()
-            .isLength({min: 2}),
-        // body('dob')
-        //     .isDate()
-        //     .withMessage('Invalid date of birth'),
+            .isAlpha(),
         body('country')
-            .isAlpha()
-            .isLength({min: 2}),
+            .isAlpha(),
         body('gender')
             .isIn(['male', 'female', 'other','pnts'])
             .withMessage('Gender must be one of the following: male, female, other, prefer not to say')
