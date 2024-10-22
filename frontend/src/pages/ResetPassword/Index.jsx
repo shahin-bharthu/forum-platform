@@ -115,7 +115,7 @@ const Index = () => {
             })
             console.log(response);
             
-            navigate("/login", { replace: true });
+            navigate("/login/201", { replace: true });
         }
         catch (error) {
             setIsSubmitting(false);
