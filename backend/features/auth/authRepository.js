@@ -39,12 +39,23 @@ const createVerificationToken = async (id) => {
 };
 
 const createResetToken = async (id) => {
-    const token = await db.Token.create({
-        userId: id,
-        resetToken: crypto.randomBytes(16).toString("hex"),
-    });
-    return token;
+    const newToken = crypto.randomBytes(16).toString("hex");
+    
+    const existingToken = await db.Token.findOne({ where: { userId: id } });
+
+    if (existingToken) {
+        existingToken.resetToken = newToken;
+        await existingToken.save();
+        return existingToken;
+    } else {
+        const token = await db.Token.create({
+            userId: id,
+            resetToken: newToken,
+        });
+        return token;
+    }
 };
+
 
 const findTokenByUserId = async (userId) => {
     return await db.Token.findOne({ where: { userId } });

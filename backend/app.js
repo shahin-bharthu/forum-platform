@@ -28,7 +28,7 @@ app.use(globalErrorHandler);
 
 try {
     await check();
-    app.listen(port, () => {console.log("server started at port ", port)});
+    app.listen(port, () => {console.log("server started at port", port)});
 } catch (error) {
     console.error("Failed to start server");
     process.exit(1);

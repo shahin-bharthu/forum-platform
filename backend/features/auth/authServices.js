@@ -110,7 +110,7 @@ const forgotPassword = async (email) => {
 const resetPassword = async (token, password, confirmPassword) => {
     const userToken = await authRepository.findResetToken(token);
     if (!userToken) {
-        throw new CustomError("Reset token not found. Invalid Link", 404);
+        throw new CustomError("This reset password link is now invalid. Please request a new one!", 404);
     }
 
     const user = await authRepository.findUserById(userToken.userId);
