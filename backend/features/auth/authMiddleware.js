@@ -5,13 +5,9 @@ import jwt from 'jsonwebtoken'
 
 export const authMiddleware = asyncErrorHandler(async (req, res, next) => {
     // 1. Read the jwtToken and check if it exists
-    // const testjwtToken = req.headers.authorization;
-    const { token } = req.cookies;
-    let jwtToken = token;
+    const {token} = req.cookies;
+    let jwtToken = token;    
   
-    // if (testjwtToken && testjwtToken.startsWith("Bearer ")) {
-    //   jwtToken = testjwtToken.split(" ")[1];
-    // }
     if (!jwtToken) {
       next(new CustomError("You are not logged in!", 401));
     }
@@ -19,12 +15,11 @@ export const authMiddleware = asyncErrorHandler(async (req, res, next) => {
     // 2. Validate the jwtToken
     const decodedjwtToken = jwt.verify(jwtToken, process.env.JWT_SECRET);
   
-    
     // 3. Check if the vendor exists
     const user = await db.User.findByPk(decodedjwtToken.id);
   
     if (!user) {
-        const error = new CustomError("Vendor with the given credential does not exist!", 401);
+        const error = new CustomError("User with the given credential does not exist!", 401);
         return next(error);
     }
   
@@ -35,7 +30,7 @@ export const authMiddleware = asyncErrorHandler(async (req, res, next) => {
     //     return next(err);
     // }
   
-    // 5. Attach vendor details to request object
+    // 5. Attach user details to request object
     req.user = user;
     next();
 })

@@ -27,7 +27,8 @@ const userLogin = asyncErrorHandler(async (req, res, next) => {
 
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.cookie('token', token, {
-        maxAge: 3600000
+        maxAge: 3600000,
+        secure: true
     });
 
     return res.status(200).json({ data: user, message: 'User logged in successfully' });

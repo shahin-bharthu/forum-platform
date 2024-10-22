@@ -15,12 +15,14 @@ export const logAuditTrails = (req,res,next) => {
             const statusCode = res.statusCode; 
             const resourceName = req.originalUrl.split("/").pop(); 
             const activity = `${methodMappers[req.method]} ${resourceName} (Status: ${statusCode})`;
-            
+            const username = req.user ? req.user.username : 'Unknown User'; // Use the username from req.user
+
             await db.AuditTrail.create({
                 url: req.originalUrl,
+                username: username,
                 activity: activity,
                 params: JSON.stringify(req.params),
-                query: JSON.stringify(req.query),                
+                query: JSON.stringify(req.query),  
             });
             return originalJson.call(this,body);
         }

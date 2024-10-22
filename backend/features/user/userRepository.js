@@ -4,8 +4,12 @@ const getUserById = async (id) => {
     return await db.User.findByPk(id);
 }
 
-const updateUser = async (id, {firstname, lastname, gender, dob, country, avatar }) => {
+const updateUser = async (id, {firstname, lastname, gender, dob, country }) => {
+    console.log(id);
+    
         const user = await db.User.findByPk(id);
+        console.log(firstname, lastname, gender);
+        
         if (!user) {
             throw new Error('User not found');
         }
@@ -15,7 +19,6 @@ const updateUser = async (id, {firstname, lastname, gender, dob, country, avatar
             gender,
             dob,
             country,
-            avatar,
         });
 
         await user.save();

@@ -9,6 +9,9 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
+        username: {
+            type: Sequelize.STRING,
+        },
         activity: {
             type: Sequelize.STRING,
             allowNull: false

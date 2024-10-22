@@ -45,8 +45,8 @@ export default function SettingsCard(props) {
   useEffect(() => {
     setUser({
       id: props.id,
-      firstname: props.firstname,
-      lastname: props.lastname,
+      firstname: props.firstname || '',
+      lastname: props.lastname || '',
       dob: props.dob ? new Date(props.dob) : null, // Ensure DOB is set as a Date object
       gender: props.gender,
       email: props.email,

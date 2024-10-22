@@ -24,10 +24,13 @@ export default function Index() {
   useEffect(() => {
     const fetchData = async () => {       
       const token = getCookie('token');
+      console.log("Cookie: ", token);
       
       if (token) {
         try {
           const decoded = jwtDecode(token);
+          console.log("DECODED: ", decoded);
+          
           await fetchUserDetails(decoded.id);           
         } catch (error) {
           console.error("Failed to decode token:", error);
@@ -46,7 +49,12 @@ export default function Index() {
 
   const fetchUserDetails = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/user/${userId}`); 
+      const response = await axios.get(`http://localhost:8080/user/${userId}`,
+        {
+          withCredentials: true
+        }
+      ); 
+      
       const data = response.data.user;
       setUser({
         id: data.id,
@@ -67,11 +75,11 @@ export default function Index() {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("second useeffect");
+  useEffect(() => {
+    console.log("second useeffect");
     
-  //   console.log("USER: ", user);
-  // }, [user]);
+    console.log("USER: ", user);
+  }, [user]);
   
   const fullName = `${user.firstname} ${user.lastname}`;
 

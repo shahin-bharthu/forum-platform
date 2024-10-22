@@ -7,6 +7,7 @@ import userRoutes from "./features/user/userRoutes.js";
 import {check} from "./config/connection.js";
 import { globalErrorHandler } from "./util/globalErrorHandler.js";
 import { logAuditTrails } from "./features/auditLogs/auditTrailMiddleware.js";
+import { authMiddleware } from "./features/auth/authMiddleware.js";
 
 const port = process.env.PORT;
 
@@ -19,10 +20,10 @@ app.use(cors({
 app.use(cookieParser())
 
 app.use(express.json());
-app.use(logAuditTrails)
+// app.use(logAuditTrails)
 
-app.use('/auth', authRoutes);
-app.use('/user', userRoutes);
+app.use('/auth', logAuditTrails, authRoutes);
+app.use('/user', authMiddleware, logAuditTrails, userRoutes);
 
 app.use(globalErrorHandler);
 
