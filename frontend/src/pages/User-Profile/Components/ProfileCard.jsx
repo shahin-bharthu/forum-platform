@@ -1,12 +1,18 @@
-import { useEffect } from "react";
-import Card from "@mui/material/Card";
-import Typography from "@mui/material/Typography";
+import { useCallback, useEffect, useState } from "react";
+import { 
+  Card, 
+  Typography, 
+  Avatar, 
+  Badge, 
+  Button, 
+  Box, 
+  Modal, 
+  IconButton,
+  Stack
+} from "@mui/material";
 import Grid from '@mui/material/Grid2';
-import Avatar from "@mui/material/Avatar";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-import Badge from "@mui/material/Badge";
-import Button from "@mui/material/Button";
-import IconButton from '@mui/material/IconButton';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import axios from "axios";
 
@@ -19,6 +25,32 @@ const styles = {
     padding: "1rem 2rem",
     borderTop: "1px solid #e1e1e1",
     color: "#899499"
+  },
+  modal: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: 2,
+    outline: 'none'
+  },
+  previewContainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 2,
+    mt: 2
+  },
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: 2,
+    mt: 2
   }
 };
 
@@ -33,22 +65,51 @@ const VisuallyHiddenInput = styled('input')({
   whiteSpace: 'nowrap',
   width: 1,
 });
- const handleFileUpload = async (event, id, email)=>{
-  event.preventDefault();
-  console.log("onsubmit", typeof(event.target));
-  
-  const formData = new FormData(event.target);
-  formData.append("email", email)
-  console.log(formData.get('avatar'));
-  
-  const response = await axios.put(
-    "http://localhost:8080/user/update/avatar/" + id,
-    formData,
-    {}
-  );
- }
 
 export default function ProfileCard(props) {
+  const [open, setOpen] = useState(false)
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedFile(null);
+    setPreviewUrl(null);
+  };
+  //To preview the selected image and it's url before upload
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  //Handles the submit of the aavtar image to send to the backend
+  const handleFileUpload = useCallback(async (event) => {
+    event.preventDefault();
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("avatar", selectedFile);
+    formData.append("email", props.email);
+  
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/user/update/avatar/${props.id}`,
+        formData
+      );
+      handleClose();
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  }, [props.id, props.email, selectedFile]);
 
   return (
     <Card variant="outlined">
@@ -65,7 +126,7 @@ export default function ProfileCard(props) {
             overlap="circular"
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             badgeContent={
-              <IconButton component="label" aria-label="delete">
+              <IconButton onClick={handleOpen}>
                 <PhotoCameraIcon sx={{
                   backgroundColor: '#eeeeee',
                   borderRadius: "50%",
@@ -74,14 +135,6 @@ export default function ProfileCard(props) {
                   height: 30,
                   color: '#1e88e5'
                 }} />
-                <form onSubmit={(e) => handleFileUpload(e, props.id, props.email)} encType="multipart/form-data">
-                <VisuallyHiddenInput
-                  type="file"
-                  single
-                  name="avatar"
-                />
-                <button type="submit">Upload Avatar</button>
-                </form>
               </IconButton>
             }
           >
@@ -100,14 +153,14 @@ export default function ProfileCard(props) {
         {/* DETAILS */}
         <Grid container>
           <Grid >
-          {/* <Typography style={styles.details}>Detail ID</Typography> */}
+            {/* <Typography style={styles.details}>Detail ID</Typography> */}
             <Typography style={styles.details}>Detail 1</Typography>
             <Typography style={styles.details}>Detail 2</Typography>
             <Typography style={styles.details}>Detail 3</Typography>
           </Grid>
           {/* VALUES */}
           <Grid sx={{ textAlign: "end" }}>
-          {/* <Typography style={styles.value}>{props.id}</Typography> */}
+            {/* <Typography style={styles.value}>{props.id}</Typography> */}
             <Typography style={styles.value}>{props.dt1}</Typography>
             <Typography style={styles.value}>{props.dt2}</Typography>
             <Typography style={styles.value}>{props.dt3}</Typography>
@@ -125,6 +178,84 @@ export default function ProfileCard(props) {
           </Button>
         </Grid>
       </Grid>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="upload-modal-title"
+      >
+        <Box sx={styles.modal}>
+          <Typography 
+            id="upload-modal-title" 
+            variant="h6" 
+            component="h2" 
+            sx={{ mb: 3 }}
+          >
+            Upload Profile Photo
+          </Typography>
+
+          {/* Preview Container */}
+          {previewUrl && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+              <Avatar
+                src={previewUrl}
+                sx={{ width: 120, height: 120 }}
+              />
+            </Box>
+          )}
+
+          <form onSubmit={handleFileUpload}>
+            <Stack spacing={2} alignItems="center">
+              <Box sx={styles.buttonContainer}>
+                <VisuallyHiddenInput
+                  type="file"
+                  accept="image/*"
+                  id="file-input"
+                  onChange={handleFileSelect}
+                />
+                <label htmlFor="file-input">
+                  <Button
+                    component="span"
+                    variant="outlined"
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Choose File
+                  </Button>
+                </label>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={!selectedFile}
+                >
+                  Upload Avatar
+                </Button>
+              </Box>
+              
+              {selectedFile && (
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  Selected: {selectedFile.name}
+                </Typography>
+              )}
+            </Stack>
+          </form>
+        </Box>
+      </Modal>
     </Card>
   );
 }
+
+
+
+// const handleFileUpload = async (event, id, email) => {
+//   event.preventDefault();
+//   console.log("onsubmit", typeof (event.target));
+
+//   const formData = new FormData(event.target);
+//   formData.append("email", email)
+//   console.log(formData.get('avatar'));
+
+//   const response = await axios.put(
+//     "http://localhost:8080/user/update/avatar/" + id,
+//     formData,
+//     {}
+//   );
+// }
