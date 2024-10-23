@@ -1,6 +1,7 @@
 import userModel from "../features/user/userModel.js";
 import tokenModel from "../features/auth/tokenModel.js";
 import auditTrailModel from "../features/auditLogs/auditTrailModel.js";
+import forumModel from "../features/forum/forumModel.js";
 
 import Sequelize from "sequelize";
 
@@ -23,6 +24,7 @@ db.sequelize = sequelize;
 db.User = userModel(sequelize, Sequelize);
 db.Token = tokenModel(sequelize, Sequelize);
 db.AuditTrail = auditTrailModel(sequelize, Sequelize);
+db.Forum = forumModel(sequelize, Sequelize);
 
 const check = async () => {
     try {
@@ -46,5 +48,15 @@ db.Token.belongsTo(db.User, {
   foreignKey:"userId"
 })
 
+
+db.User.hasMany(db.Forum, {
+  as: 'forum',
+  foreignKey:"createdBy"
+})
+
+db.Forum.belongsTo(db.User, {
+  as: 'user',
+  foreignKey: "createdBy"
+})
 
 export { db, check };

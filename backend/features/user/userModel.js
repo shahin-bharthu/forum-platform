@@ -42,7 +42,7 @@ export default (sequelize, Sequelize) => {
         },
         avatar: {
             type: Sequelize.STRING,
-            defaultValue: "https://cdn3.iconfinder.com/data/icons/web-design-and-development-2-6/512/87-1024.png"
+            defaultValue: "avatars/defaultAvatar.png"
         },
         isVerified: {
             type: Sequelize.BOOLEAN,

@@ -30,7 +30,7 @@ const userLogin = asyncErrorHandler(async (req, res, next) => {
         maxAge: 3600000,
         secure: true
     });
-
+    user.password = null
     return res.status(200).json({ data: user, message: 'User logged in successfully' });
 });
 
