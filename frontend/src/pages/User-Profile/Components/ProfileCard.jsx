@@ -71,13 +71,25 @@ export default function ProfileCard(props) {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [avatar, setAvatar]=useState(null)
+  const [avatrUrl,setAvatarUrl]=useState(null)
 
   const handleOpen = () => setOpen(true);
+  
   const handleClose = () => {
     setOpen(false);
     setSelectedFile(null);
     setPreviewUrl(null);
   };
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      const data = await handleFileRead();
+    }
+    
+    fetchAvatar().catch(console.error);
+  }, [])
+
   //To preview the selected image and it's url before upload
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -88,6 +100,25 @@ export default function ProfileCard(props) {
         setPreviewUrl(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFileRead = async() => {
+    const file = await axios.get(
+      `http://localhost:8080/user/avatar/`,
+      {
+        withCredentials: true,
+        responseType: 'blob'
+      }
+    );
+    
+    if (file.data) {
+      setAvatar(file.data);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarUrl(reader.result);
+      };
+      reader.readAsDataURL(file.data);
     }
   };
 
@@ -103,14 +134,17 @@ export default function ProfileCard(props) {
     try {
       const response = await axios.put(
         `http://localhost:8080/user/update/avatar/${props.id}`,
-        formData
+        formData, 
+        {
+          withCredentials: true
+        }
       );
       handleClose();
     } catch (error) {
       console.error('Error uploading file:', error);
     }
   }, [props.id, props.email, selectedFile]);
-
+  
   return (
     <Card variant="outlined">
       <Grid
@@ -140,7 +174,7 @@ export default function ProfileCard(props) {
           >
             <Avatar
               sx={{ width: 100, height: 100, mb: 1.5 }}
-              src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"
+              src={avatrUrl || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"}
             ></Avatar>
           </Badge>
 

@@ -24,12 +24,10 @@ export default function Index() {
   useEffect(() => {
     const fetchData = async () => {       
       const token = getCookie('token');
-      console.log("Cookie: ", token);
       
       if (token) {
         try {
           const decoded = jwtDecode(token);
-          console.log("DECODED: ", decoded);
           
           await fetchUserDetails(decoded.id);           
         } catch (error) {
@@ -75,11 +73,11 @@ export default function Index() {
     }
   };
 
-  useEffect(() => {
-    console.log("second useeffect");
+  // useEffect(() => {
+  //   console.log("second useeffect");
     
-    console.log("USER: ", user);
-  }, [user]);
+  //   console.log("USER: ", user);
+  // }, [user]);
   
   const fullName = `${user.firstname} ${user.lastname}`;
 

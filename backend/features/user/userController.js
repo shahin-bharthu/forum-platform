@@ -56,16 +56,18 @@ const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
 const getAvatar = asyncErrorHandler(async (req, res, next) => {
   const filepath = req.user.avatar.split('/');
   const fileName = filepath[filepath.length - 1];
-
+  
   if (!fileName) {
     return res.status(404).json({
       status: 'failed',
       message: 'Avatar not found',
     });
   } else {
-    const filePath = path.join(import.meta.url.replace('file://', ''), '../../avatars', fileName);
+    const filePath = path.join(import.meta.url.replace('file://', ''), '../../../avatars', fileName);
+    
     try {
-      await fs.access(filePath); // Check if the file exists
+      await fs.access(filePath); 
+
       res.sendFile(fileName, {
         root: path.join(new URL('../../avatars', import.meta.url).pathname),
       });
