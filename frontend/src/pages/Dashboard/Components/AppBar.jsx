@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import LogoutIcon from '@mui/icons-material/Logout';
 import deleteCookie from '../../../../utils/deleteCookie.js';
+import axios from 'axios';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -81,6 +82,10 @@ function CombinedAppBar({ handleDrawerToggle }) {
     handleMenuClose();
     try {
       deleteCookie();
+      const response = await axios.post("http://localhost:8080/auth/logout", {
+        "Content-Type": "application/json",
+        withCredentials: true
+      })
       window.location.reload();
     } catch (error) {
       console.error("couldn't log user out", error)

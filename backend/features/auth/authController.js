@@ -66,16 +66,7 @@ const resetPassword = asyncErrorHandler(async (req, res, next) => {
 const userLogout = (req, res, next) => {
     try {
         console.log("in logout controller");
-        
-        // res.clearCookie('token', { path: '/' });
-        // res.cookie('token', '', {
-        //     expires: new Date(0), // Set to a date in the past
-        //     path: '/' // Ensure this matches the path used when setting the cookie
-        // });
-        // res.clearCookie("token", {maxAge: 0});
-        // res.setHeader('Set-Cookie', 'token=; Max-Age=0;');
-        console.log("after clear cookie");
-
+        res.clearCookie("token", {maxAge: 0});
         return res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {
         console.log(error);
