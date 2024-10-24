@@ -174,6 +174,7 @@ export default function ProfileCard(props) {
           >
             <Avatar
               sx={{ width: 100, height: 100, mb: 1.5 }}
+              // "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"
               src={avatrUrl || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"}
             ></Avatar>
           </Badge>

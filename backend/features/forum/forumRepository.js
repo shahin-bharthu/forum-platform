@@ -19,4 +19,8 @@ const getForumById = async (id) => {
     return await db.Forum.findByPk(id);
 };
 
-export {getForums, createForum, getForumById}
+const getForumsByCreator = async (id) => {
+    return await db.Forum.findAll({ where: { createdBy: id } });
+}
+
+export {getForums, createForum, getForumById, getForumsByCreator}

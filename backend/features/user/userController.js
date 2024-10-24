@@ -31,7 +31,7 @@ const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
     const avatar = req.file?.path ?? "";
     
     const user = await userService.updateUserAvatar(id, {avatar});
-
+    
     return res.status(200).json({message: 'Your avatar has been updated!', user: user})
 
 })

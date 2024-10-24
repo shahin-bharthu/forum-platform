@@ -1,7 +1,6 @@
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 import * as forumServices from "./forumServices.js"
 
-
 const createForum = asyncErrorHandler(async (req,res,next) => {
     const createdBy = req.user.id
     const {name, purpose} = req.body;
@@ -20,4 +19,10 @@ const getForumById = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: "Forum fetched successfully", data: forum});
 })
 
-export {getForums, createForum, getForumById}
+const getForumsByCreator = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.user;
+    const forums = await forumServices.getForumsByCreator(id);
+    return res.status(200).json({message: "Forums fetched successfully", data: forums});
+})
+
+export { getForums, createForum, getForumById, getForumsByCreator }

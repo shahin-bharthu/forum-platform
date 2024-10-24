@@ -12,4 +12,8 @@ const getForumById = async (id) => {
     return await forumRepository.getForumById(id);
 }
 
-export {getForums, createForum, getForumById}
+const getForumsByCreator = async (id) => {
+    return await forumRepository.getForumsByCreator(id);
+}
+
+export { getForums, createForum, getForumById, getForumsByCreator }

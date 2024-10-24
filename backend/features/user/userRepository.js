@@ -1,4 +1,5 @@
 import {db} from '../../config/connection.js'
+import deleteFile from '../../util/deleteFile.js';
 
 const getUserById = async (id) => {
     return await db.User.findByPk(id);
@@ -31,11 +32,15 @@ const updateUserAvatar = async (id, { avatar }) => {
     if (!user) {
         throw new Error('User not found');
     }
+    const oldAvatarPath = user.avatar;
     await user.update({
         avatar,
     });
 
     await user.save();
+    if (oldAvatarPath && oldAvatarPath !== 'avatars/defaultAvatar.png') {        
+        deleteFile(`../${oldAvatarPath}`);
+    }
 
     return user;
 };
