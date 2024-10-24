@@ -1,12 +1,11 @@
-import { Navigate } from "react-router-dom";
-import LoginForm from "../components/LoginForm.jsx";
+import { Navigate, useRouteLoaderData } from "react-router-dom";
 
 const ErrorPage = () => {
     const token = useRouteLoaderData('root');
     return (
         <>
-            {token && <Navigate to="/dashboard" />}
-            {!token && <LoginForm/>}
+            {token && <Navigate to="/user/dashboard" />}
+            {!token && <Navigate to="/login/201" />}
         </>
     )
 }

@@ -1,8 +1,7 @@
-import ClippedDrawer from "./Components/Drawer";
 
 const Index = () => {
     return (
-        <ClippedDrawer />
+        <h1>hello</h1>
     )
 }
 
