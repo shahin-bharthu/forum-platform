@@ -99,7 +99,7 @@ const LoginForm = () => {
       );
 
       if (response.status === 200) {
-        navigate("/dashboard", { replace: true });
+        navigate("/user/dashboard", { replace: true });
       }
 
       setIsSubmitting(false);

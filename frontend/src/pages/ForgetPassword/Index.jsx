@@ -9,7 +9,7 @@ import Button from "@mui/material/Button";
 import LockPersonOutlinedIcon from '@mui/icons-material/LockPersonOutlined';
 import Avatar from "@mui/material/Avatar";
 import {blue } from "@mui/material/colors";
-import { useRouteLoaderData } from "react-router-dom";
+import { Navigate, useRouteLoaderData } from "react-router-dom";
 
 const Index = () => {
   const token = useRouteLoaderData('root');
@@ -101,7 +101,7 @@ const Index = () => {
   return ( 
 
     <div className={classes["auth-page"]}>
-      {token && <Dashboard></Dashboard>}
+      {token && <Navigate to="/user/dashboard" />}
       {!token && 
       <>
       <Avatar sx={{ bgcolor: blue[600] }}>
