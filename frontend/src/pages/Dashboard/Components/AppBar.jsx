@@ -66,6 +66,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const handleCreateForum=()=>{
     console.log('Create forum');
+    navigate("add-forum")
   }
   const handleMenuClose = useCallback(() => {
     setAnchorEl(null);
@@ -149,7 +150,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" color="inherit">
+        <IconButton size="large" color="inherit" onClick={handleCreateForum}>
             <LibraryAddIcon  />
         </IconButton>
         <p>Add Forum</p>

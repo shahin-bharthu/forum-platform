@@ -13,6 +13,7 @@ import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import UserRootPage from "./pages/UserRootPage.jsx";
 import MyForum from "./pages/MyForums/Index.jsx";
+import AddForum from "./pages/AddForum/Index.jsx"
 
 const router = createBrowserRouter([
   {
@@ -43,7 +44,8 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="/user/dashboard"  />},
       { path: "profile", element: <UserProfilePage />},
       { path: "dashboard", element: <Index /> },
-      { path:"my-forums", element:<MyForum />}
+      { path:"my-forums", element:<MyForum />},
+      { path:"add-forum", element: <AddForum /> }
     ],
   },
 ]);
