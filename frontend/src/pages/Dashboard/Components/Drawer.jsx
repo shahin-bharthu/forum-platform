@@ -4,6 +4,8 @@ import { MoveToInbox as InboxIcon, Mail as MailIcon } from '@mui/icons-material'
 import CombinedAppBar from './AppBar';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import menuList from '../../../../utils/sidebarlist';
+import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -15,19 +17,20 @@ export default function ClippedDrawer() {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+  const navigate = useNavigate()
 
   const drawer = (
     <div>
       <Toolbar />
       <Box sx={{ overflow: 'auto' }}>
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
+          {menuList.map((item) => (
+            <ListItem key={item.text} disablePadding>
+              <ListItemButton onClick={() => navigate(item.path)}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary={item.text} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -82,16 +85,6 @@ export default function ClippedDrawer() {
             {drawer}
           </Drawer>
         )}
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Toolbar />
-          <Typography paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-            tempor incididunt ut labore et dolore magna aliqua.
-          </Typography>
-          <Typography paragraph>
-            Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla facilisi etiam dignissim diam.
-          </Typography>
-        </Box>
       </Box>
     </>
   );

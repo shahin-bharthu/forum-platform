@@ -7,7 +7,7 @@ const SignupPage = () => {
 
     return (
         <>
-        {token && <Navigate to="/dashboard" />}
+        {token && <Navigate to="/user/dashboard" />}
         {!token && <SignupForm/>}
         </>
     )

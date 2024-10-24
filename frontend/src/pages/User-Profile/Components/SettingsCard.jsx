@@ -87,7 +87,7 @@ export default function SettingsCard(props) {
 
       setUpdateMessage(response.data.message);
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/user/dashboard");
       }, 1500);
 
       setDialogOpen(false);

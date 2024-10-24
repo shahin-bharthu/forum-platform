@@ -8,13 +8,15 @@ import {
   Box, 
   Modal, 
   IconButton,
-  Stack
+  Stack,
+  Divider
 } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const styles = {
   details: {
@@ -73,6 +75,8 @@ export default function ProfileCard(props) {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [avatar, setAvatar]=useState(null)
   const [avatrUrl,setAvatarUrl]=useState(null)
+  const [updateMessage, setUpdateMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleOpen = () => setOpen(true);
   
@@ -120,6 +124,8 @@ export default function ProfileCard(props) {
       };
       reader.readAsDataURL(file.data);
     }
+    
+
   };
 
   //Handles the submit of the aavtar image to send to the backend
@@ -140,6 +146,10 @@ export default function ProfileCard(props) {
         }
       );
       handleClose();
+      setUpdateMessage(response.data.message);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error('Error uploading file:', error);
     }
@@ -153,8 +163,15 @@ export default function ProfileCard(props) {
         justifyContent="center"
         alignItems="center"
       >
+      
         {/* CARD HEADER START */}
         <Grid sx={{ p: "1.5rem 0rem", textAlign: "center" }}>
+        {updateMessage && (
+        <>
+          <p style={{ color: "#1e88e5" }}>{updateMessage}</p>
+          <Divider />
+        </>
+      )}
           {/* PROFILE PHOTO */}
           <Badge
             overlap="circular"

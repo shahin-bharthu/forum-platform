@@ -1,7 +1,7 @@
 import { useState, useCallback, memo } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import { AppBar, Box, Toolbar, IconButton, Typography, InputBase, Badge, MenuItem, Menu } from '@mui/material';
-import { Menu as MenuIcon, Search as SearchIcon, AccountCircle, Mail as MailIcon, Notifications as NotificationsIcon, MoreVert as MoreIcon, Adb as AdbIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, Search as SearchIcon, AccountCircle, LibraryAdd as LibraryAddIcon, Mail as MailIcon, Notifications as NotificationsIcon, Add as AddIcon, MoreVert as MoreIcon, Adb as AdbIcon } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -64,6 +64,9 @@ function CombinedAppBar({ handleDrawerToggle }) {
     setMobileMoreAnchorEl(null);
   }, []);
 
+  const handleCreateForum=()=>{
+    console.log('Create forum');
+  }
   const handleMenuClose = useCallback(() => {
     setAnchorEl(null);
     handleMobileMenuClose();
@@ -75,7 +78,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const handleEditProfile=useCallback(()=>{
     handleMenuClose();
-    navigate('/user-profile');
+    navigate('/user/profile');
   },[navigate,handleMenuClose])
 
   const handleLogout=useCallback(async()=>{
@@ -86,6 +89,8 @@ function CombinedAppBar({ handleDrawerToggle }) {
         "Content-Type": "application/json",
         withCredentials: true
       })
+      console.log(response);
+      
       window.location.reload();
     } catch (error) {
       console.error("couldn't log user out", error)
@@ -94,7 +99,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const menuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
-
+  
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -144,12 +149,10 @@ function CombinedAppBar({ handleDrawerToggle }) {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
+        <IconButton size="large" color="inherit">
+            <LibraryAddIcon  />
         </IconButton>
-        <p>Messages</p>
+        <p>Add Forum</p>
       </MenuItem>
       <MenuItem>
         <IconButton
@@ -197,7 +200,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
             variant="h6"
             noWrap
             component={Link}
-            to="/dashboard"
+            to="/user/dashboard"
             sx={{ display: { xs: 'none', md: 'flex' }, mr: 2, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', textDecoration: 'none', color: 'inherit' }}
           >
             LOGO
@@ -214,10 +217,8 @@ function CombinedAppBar({ handleDrawerToggle }) {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
+            <IconButton size="large" onClick={handleCreateForum} color="inherit">
+                <LibraryAddIcon />
             </IconButton>
             <IconButton
               size="large"

@@ -5,7 +5,7 @@ const LoginPage = () => {
     const token = useRouteLoaderData('root');
     return (
         <>
-            {token && <Navigate to="/dashboard" />}
+            {token && <Navigate to="/user/dashboard" />}
             {!token && <LoginForm/>}
         </>
     )
