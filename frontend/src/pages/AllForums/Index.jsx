@@ -1,26 +1,17 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid2';
-import MediaCard from './Components/Card';
 import axios from 'axios';
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { Button, CircularProgress } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import MediaCard from '../MyForums/Components/Card';
 
-export default function MyForum() {
+export default function AllForums() {
 
-  const { forums, empty } = useLoaderData();
-  const navigate=useNavigate()
-  const handleCreate=()=>{
-    navigate('/user/add-forum')
-  }
+  const {forums, empty} = useLoaderData();
 
+  
   if (empty) {
     return (
-      <Box>
-        <h3>No forums found</h3>
-        <p>Create your first forum to get started</p>
-        <Button  endIcon={<AddIcon/>} onClick={handleCreate} >Create</Button>
-      </Box>
+     <p>No forums</p>
     );
   }
   return (
@@ -33,22 +24,22 @@ export default function MyForum() {
         ))}
       </Grid>
     </Box>
-  )
+  );
 }
 
-export async function forumLoader() {
+export async function allForumLoader() {
   try {
-    const response = await axios.get('http://localhost:8080/forum/my-forums', {
+    const response = await axios.get('http://localhost:8080/forum', {
       withCredentials: true
     });
     const forumData = response.data.data
-
-    return {
-      forums: forumData,
-      empty: !response.data.data || response.data.data.length === 0
+    
+    return { 
+      forums:forumData, 
+      empty: !response.data.data || response.data.data.length === 0 
     };
 
-  } catch (error) {
+  } catch (error) {    
     console.log(error.message);
   }
 }
