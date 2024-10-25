@@ -2,9 +2,13 @@ import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 import * as forumServices from "./forumServices.js"
 
 const createForum = asyncErrorHandler(async (req,res,next) => {
+    console.log("in create form controller");
+    
     const createdBy = req.user.id
     const {name, purpose} = req.body;
     const forum = await forumServices.createForum({name, purpose, createdBy});
+    console.log("forum in controller:",forum);
+    
     return res.status(201).json({message: "Forum created successfully", data: forum});
 })
 

@@ -5,7 +5,10 @@ const createForum = async (forumData) => {
         name: forumData.name,
         purpose: forumData.purpose,
         createdBy: forumData.createdBy,
+        forum_id: forumData.forum_id
     });
+    console.log("forum repo:", forum);
+    
     return forum;
 };
 
@@ -19,8 +22,12 @@ const getForumById = async (id) => {
     return await db.Forum.findByPk(id);
 };
 
+const getForumByForumId = async (forum_id) => {
+    return await db.Forum.findOne({where: {forum_id}})
+}
+
 const getForumsByCreator = async (id) => {
     return await db.Forum.findAll({ where: { createdBy: id } });
 }
 
-export {getForums, createForum, getForumById, getForumsByCreator}
+export {getForums, createForum, getForumById, getForumsByCreator, getForumByForumId}

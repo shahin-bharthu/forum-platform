@@ -207,7 +207,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <Search>
+          {/* <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -215,7 +215,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
             />
-          </Search>
+          </Search> */}
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton size="large" onClick={handleCreateForum} color="inherit">
