@@ -6,20 +6,20 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-export default function MediaCard() {
+export default function MediaCard({name,purpose,logo}) {
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardMedia
         sx={{ height: 140 }}
-        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwyzMjEEPhriCcH_tb-13Htr4eECjVlG2Exw&s"
+        image={logo}
         title="green iguana"
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          Pond
+          {name}
         </Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique sapiente officiis eveniet rerum? Nisi, ducimus consequatur repellat hic atque esse.
+          {purpose}
         </Typography>
       </CardContent>
       <CardActions>
