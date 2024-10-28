@@ -2,6 +2,7 @@ import userModel from "../features/user/userModel.js";
 import tokenModel from "../features/auth/tokenModel.js";
 import auditTrailModel from "../features/auditLogs/auditTrailModel.js";
 import forumModel from "../features/forum/forumModel.js";
+import topicModel from "../features/topics/topicModel.js";
 
 import Sequelize from "sequelize";
 
@@ -25,12 +26,13 @@ db.User = userModel(sequelize, Sequelize);
 db.Token = tokenModel(sequelize, Sequelize);
 db.AuditTrail = auditTrailModel(sequelize, Sequelize);
 db.Forum = forumModel(sequelize, Sequelize);
+db.Topic = topicModel(sequelize, Sequelize);
 
 const check = async () => {
     try {
       await sequelize.authenticate();
       console.log("Connection has been established successfully.");
-      await db.sequelize.sync({ alter: false, force: false });   // alter: true, force: false
+      await db.sequelize.sync({ alter: true, force: false });   // alter: true, force: false
       console.log("All models were synchronized successfully.");
     } catch (error) {
       console.error("Unable to connect to the database:", error);
