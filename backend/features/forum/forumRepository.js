@@ -7,7 +7,6 @@ const createForum = async (forumData) => {
         createdBy: forumData.createdBy,
         forum_id: forumData.forum_id
     });
-    console.log("forum repo:", forum);
     
     return forum;
 };
