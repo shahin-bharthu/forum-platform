@@ -10,12 +10,12 @@ const getTopics = async () => {
     return await topicRepository.getTopics();
 }
 
-// const getForumById = async (id) => {
-//     return await forumRepository.getForumById(id);
-// }
+const getTopicById = async (id) => {
+    return await topicRepository.getTopicById(id);
+}
 
-// const getForumsByCreator = async (id) => {
-//     return await forumRepository.getForumsByCreator(id);
-// }
+const getMyTopics = async (id) => {
+    return await topicRepository.getMyTopics(id);
+}
 
-export { createTopic, getTopics }
+export { createTopic, getTopics, getTopicById, getMyTopics }

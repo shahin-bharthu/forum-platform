@@ -14,16 +14,16 @@ const getTopics = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: "Topics fetched successfully", data: topics});
 })
 
-// const getForumById = asyncErrorHandler(async (req,res,next) => {
-//     const {id} = req.params;
-//     const forum = await forumServices.getForumById(id);
-//     return res.status(200).json({message: "Forum fetched successfully", data: forum});
-// })
+const getTopicById = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.params;
+    const topic = await topicServices.getTopicById(id);
+    return res.status(200).json({message: "Topic fetched successfully", data: topic});
+})
 
-// const getForumsByCreator = asyncErrorHandler(async (req,res,next) => {
-//     const {id} = req.user;
-//     const forums = await forumServices.getForumsByCreator(id);
-//     return res.status(200).json({message: "Forums fetched successfully", data: forums});
-// })
+const getMyTopics = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.user;
+    const topics = await topicServices.getMyTopics(id);
+    return res.status(200).json({message: "Topics fetched successfully", data: topics});
+})
 
-export { createTopic, getTopics }
+export { createTopic, getTopics, getTopicById, getMyTopics }

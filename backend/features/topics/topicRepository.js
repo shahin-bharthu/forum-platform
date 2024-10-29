@@ -17,16 +17,16 @@ const getTopics = async () => {
     return topics;
 }
 
-// const getForumById = async (id) => {
-//     return await db.Forum.findByPk(id);
-// };
+const getTopicById = async (id) => {
+    return await db.Topic.findByPk(id);
+};
 
 // const getForumByForumId = async (forum_id) => {
 //     return await db.Forum.findOne({where: {forum_id}})
 // }
 
-// const getForumsByCreator = async (id) => {
-//     return await db.Forum.findAll({ where: { createdBy: id } });
-// }
+const getMyTopics = async (id) => {
+    return await db.Topic.findAll({ where: { createdBy: id } });
+}
 
-export {createTopic, getTopics}
+export {createTopic, getTopics, getTopicById, getMyTopics}
