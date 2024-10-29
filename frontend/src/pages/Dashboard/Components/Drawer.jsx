@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Box, Drawer, CssBaseline, Toolbar, List, Typography, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { MoveToInbox as InboxIcon, Mail as MailIcon } from '@mui/icons-material';
 import CombinedAppBar from './AppBar';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import menuList from '../../../../utils/sidebarlist';
 import { useNavigate } from 'react-router-dom';
+import deleteCookie from '../../../../utils/deleteCookie';
+import axios from 'axios';
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 export default function ClippedDrawer() {
   const [mobileOpen, setMobileOpen] = useState(false); // useState imported directly from React
@@ -19,6 +20,31 @@ export default function ClippedDrawer() {
   };
   const navigate = useNavigate()
 
+  const handleLogout = useCallback(async () => {
+    try {
+      deleteCookie();
+      const response = await axios.post("http://localhost:8080/auth/logout", {
+        "Content-Type": "application/json",
+        withCredentials: true
+      })
+      console.log(response);
+
+      window.location.reload();
+    } catch (error) {
+      console.error("couldn't log user out", error)
+    }
+  }, [])
+
+  const handleMenuItemClick = (path) => {
+    if (path === 'logout') {
+      handleLogout();
+    } else {
+      navigate(path);
+    }
+    setMobileOpen(false); // Close drawer after any action
+  };
+
+
   const drawer = (
     <div>
       <Toolbar />
@@ -26,24 +52,11 @@ export default function ClippedDrawer() {
         <List>
           {menuList.map((item) => (
             <ListItem key={item.text} disablePadding>
-              <ListItemButton onClick={() => navigate(item.path)}>
+              <ListItemButton onClick={() => handleMenuItemClick(item.path)}>
                 <ListItemIcon>
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>
           ))}

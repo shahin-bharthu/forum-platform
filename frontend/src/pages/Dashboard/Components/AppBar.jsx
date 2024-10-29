@@ -1,10 +1,8 @@
 import { useState, useCallback, memo } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import { AppBar, Box, Toolbar, IconButton, Typography, InputBase, Badge, MenuItem, Menu } from '@mui/material';
-import { Menu as MenuIcon, Search as SearchIcon, AccountCircle, LibraryAdd as LibraryAddIcon, Mail as MailIcon, Notifications as NotificationsIcon, Add as AddIcon, MoreVert as MoreIcon, Adb as AdbIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, Search as SearchIcon, AccountCircle, Notifications as NotificationsIcon, Add as AddIcon, MoreVert as MoreIcon, Adb as AdbIcon } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
-import EditIcon from '@mui/icons-material/Edit';
-import LogoutIcon from '@mui/icons-material/Logout';
 import deleteCookie from '../../../../utils/deleteCookie.js';
 import axios from 'axios';
 
@@ -48,29 +46,20 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 function CombinedAppBar({ handleDrawerToggle }) {
-  const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
 
   const navigate = useNavigate();
 
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const handleProfileMenuOpen = useCallback((event) => {
-    setAnchorEl(event.currentTarget);
-  }, []);
 
   const handleMobileMenuClose = useCallback(() => {
     setMobileMoreAnchorEl(null);
   }, []);
 
-  const handleCreateForum=()=>{
-    console.log('Create forum');
-    navigate("add-forum")
-  }
-  const handleMenuClose = useCallback(() => {
-    setAnchorEl(null);
+  const handleCreatePost = useCallback(() => {
     handleMobileMenuClose();
+    console.log('create post');
+    navigate('/user/create-post')
   }, [handleMobileMenuClose]);
 
   const handleMobileMenuOpen = useCallback((event) => {
@@ -78,60 +67,13 @@ function CombinedAppBar({ handleDrawerToggle }) {
   }, []);
 
   const handleEditProfile=useCallback(()=>{
-    handleMenuClose();
+    handleMobileMenuClose();
     navigate('/user/profile');
-  },[navigate,handleMenuClose])
+  },[navigate,handleMobileMenuClose])
 
-  const handleLogout=useCallback(async()=>{
-    handleMenuClose();
-    try {
-      deleteCookie();
-      const response = await axios.post("http://localhost:8080/auth/logout", {
-        "Content-Type": "application/json",
-        withCredentials: true
-      })
-      console.log(response);
-      
-      window.location.reload();
-    } catch (error) {
-      console.error("couldn't log user out", error)
-    }
-  },[handleMenuClose])
 
   const menuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
-  
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleEditProfile}>
-        <IconButton size="medium" color="inherit" sx={{ mr: 1 }}>
-          <EditIcon />
-        </IconButton>
-        Edit Profile
-      </MenuItem>
-
-      <MenuItem onClick={handleLogout}>
-        <IconButton size="medium" color="inherit" sx={{ mr: 1 }}>
-          <LogoutIcon />
-        </IconButton>
-        Logout
-      </MenuItem>
-    </Menu>
-  );
 
   const renderMobileMenu = (
     <Menu
@@ -150,10 +92,10 @@ function CombinedAppBar({ handleDrawerToggle }) {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" color="inherit" onClick={handleCreateForum}>
-            <LibraryAddIcon  />
+        <IconButton size="large" color="inherit" onClick={handleCreatePost}>
+            <AddIcon  />
         </IconButton>
-        <p>Add Forum</p>
+        <p>Create Post</p>
       </MenuItem>
       <MenuItem>
         <IconButton
@@ -167,12 +109,10 @@ function CombinedAppBar({ handleDrawerToggle }) {
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
+      <MenuItem onClick={handleEditProfile}>
         <IconButton
           size="large"
-          aria-label="account of current user"
           aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
           color="inherit"
         >
           <AccountCircle />
@@ -201,7 +141,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
             variant="h6"
             noWrap
             component={Link}
-            to="/user/dashboard"
+            to="dashboard"
             sx={{ display: { xs: 'none', md: 'flex' }, mr: 2, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', textDecoration: 'none', color: 'inherit' }}
           >
             LOGO
@@ -218,8 +158,8 @@ function CombinedAppBar({ handleDrawerToggle }) {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" onClick={handleCreateForum} color="inherit">
-                <LibraryAddIcon />
+            <IconButton size="large" onClick={handleCreatePost} color="inherit">
+                <AddIcon />
             </IconButton>
             <IconButton
               size="large"
@@ -235,8 +175,8 @@ function CombinedAppBar({ handleDrawerToggle }) {
               edge="end"
               aria-label="account of current user"
               aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
+              // aria-haspopup="true"
+              onClick={handleEditProfile}
               color="inherit"
             >
               <AccountCircle />
@@ -257,7 +197,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
+      {/* {renderMenu} */}
     </>
   );
 }

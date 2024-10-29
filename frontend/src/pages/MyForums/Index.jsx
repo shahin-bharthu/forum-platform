@@ -6,6 +6,23 @@ import { useLoaderData, useNavigate } from "react-router-dom";
 import { Button, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
+import Fab from '@mui/material/Fab';
+// import AddIcon from '@mui/icons-material/Add';
+
+export function FloatingActionButtons({onClick}) {
+  return (
+    <Box sx={{ 
+      position: 'fixed',
+      bottom: 20,
+      right: 20,
+      '& > :not(style)': { m: 0.5 } 
+    }}>
+      <Fab color="primary" aria-label="add" onClick={onClick} >
+        <AddIcon />
+      </Fab>
+    </Box>
+  );
+}
 export default function MyForum() {
 
   const { forums, empty } = useLoaderData();
@@ -16,14 +33,17 @@ export default function MyForum() {
 
   if (empty) {
     return (
+      <>
       <Box>
         <h3>No forums found</h3>
         <p>Create your first forum to get started</p>
-        <Button  endIcon={<AddIcon/>} onClick={handleCreate} >Create</Button>
       </Box>
+      <FloatingActionButtons onClick={handleCreate}/>
+      </>
     );
   }
   return (
+    <>
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 3, sm: 8, md: 12 }} sx={{ mx: 3, py: 11, justifyContent: 'center', alignContent: 'center' }}>
         {forums.map((forum) => (
@@ -33,6 +53,8 @@ export default function MyForum() {
         ))}
       </Grid>
     </Box>
+    <FloatingActionButtons onClick={handleCreate}/>
+    </>
   )
 }
 

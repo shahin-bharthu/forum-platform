@@ -15,6 +15,7 @@ import UserRootPage from "./pages/UserRootPage.jsx";
 import MyForum, { forumLoader } from "./pages/MyForums/Index.jsx";
 import AddForum from "./pages/AddForum/Index.jsx"
 import AllForums, { allForumLoader } from "./pages/AllForums/Index.jsx";
+import CreatePost from "./pages/CreatePost/Index.jsx";
 
 const router = createBrowserRouter([
   {
@@ -43,7 +44,8 @@ const router = createBrowserRouter([
       { path: "dashboard", element: <Index /> },
       { path: "my-forums", loader: forumLoader, element: <MyForum /> },
       { path: "add-forum", element: <AddForum /> },
-      { path: "forums", loader: allForumLoader , element: <AllForums/> }
+      { path: "forums", loader: allForumLoader , element: <AllForums/> },
+      { path: "create-post", element: <CreatePost/> }
     ],
   },
 ]);
