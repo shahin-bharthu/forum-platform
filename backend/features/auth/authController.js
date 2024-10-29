@@ -65,7 +65,6 @@ const resetPassword = asyncErrorHandler(async (req, res, next) => {
 
 const userLogout = (req, res, next) => {
     try {
-        console.log("in logout controller");
         res.clearCookie("token", {maxAge: 0});
         return res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {

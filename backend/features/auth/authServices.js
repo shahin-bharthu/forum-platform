@@ -109,7 +109,8 @@ const forgotPassword = async (email) => {
 
 const resetPassword = async (token, password, confirmPassword) => {
     const userToken = await authRepository.findResetToken(token);
-    if (!userToken) {
+    const currentTime = new Date();
+    if (!userToken || (new Date(userToken.expiresAt) < currentTime)) {
         throw new CustomError("This reset password link is now invalid. Please request a new one!", 404);
     }
 

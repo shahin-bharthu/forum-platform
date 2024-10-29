@@ -5,6 +5,7 @@ const createForum = asyncErrorHandler(async (req,res,next) => {
     const createdBy = req.user.id
     const {name, purpose} = req.body;
     const forum = await forumServices.createForum({name, purpose, createdBy});
+    
     return res.status(201).json({message: "Forum created successfully", data: forum});
 })
 

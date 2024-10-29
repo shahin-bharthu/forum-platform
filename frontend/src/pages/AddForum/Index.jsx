@@ -1,20 +1,21 @@
 import classes from "../../components/AuthForm.module.css";
 import { useRef, useState } from "react";
-import InputField from "../../components/TextInputField";
+import TextInputField from "./Components/TextInput.jsx";
+import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import CustomButton from "../../components/Button";
 import axios from "axios";
 import { z } from "zod";
 import Button from "@mui/material/Button";
-import LockPersonOutlinedIcon from '@mui/icons-material/LockPersonOutlined';
-import Avatar from "@mui/material/Avatar";
-import {blue } from "@mui/material/colors";
 import { Navigate, useRouteLoaderData } from "react-router-dom";
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 
 const Index = () => {
   const token = useRouteLoaderData('root');
   const nameInput = useRef();
   const purposeInput = useRef();
 
+  const [isPublic, setIsPublic] = useState(true); // Default to true
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -68,15 +69,21 @@ const Index = () => {
     setErrorMessage("");
   };
 
+  const handleSwitchToggle = (event) => {
+    setIsPublic(event.target.checked);
+  };
+
   async function submitHandler(event) {
     event.preventDefault();
 
-    const enteredname = nameInput.current.value.trim();
+    const enteredName = nameInput.current.value.trim();
     const enteredPurpose = purposeInput.current.value.trim();
+    const forumIsPublic = isPublic; // Use state value
 
-    const formData={name: enteredname, purpose: enteredPurpose}
+    const formData = { name: enteredName, purpose: enteredPurpose, isPublic: forumIsPublic };
+    console.log(formData);
     
-    if (!validateForm( formData )) {      
+    if (!validateForm(formData)) {      
       return;
     }
     setErrorMessage("");
@@ -87,10 +94,9 @@ const Index = () => {
       const response = await axios.post("http://localhost:8080/forum", formData, {
         "Content-Type": "application/json",
         withCredentials: true
-      })
+      });
       setSuccessMessage(response.data.message);
-      
-    //   setIsSubmitting(false);
+      setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error:", error);
@@ -100,17 +106,16 @@ const Index = () => {
     }
   }
 
-  return ( 
+  const handleFormReset = (e) => {
+    e.preventDefault()
+    purposeInput.current.value = null,
+    nameInput.current.value = null
+  }
 
-    <div className={classes["auth-page"]}>
-      {token && <Navigate to="/user/dashboard" />}
-      {!token && 
-      <>
-      <Avatar sx={{ bgcolor: blue[600] }}>
-        <LockPersonOutlinedIcon  sx={{ fontSize: 25 }}/>
-      </Avatar>
+  return ( 
+    <div>
       <h3 className={classes["heading"]}>Create Forum</h3>
-      <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
+      <form onSubmit={submitHandler} noValidate> 
         {successMessage && (
           <div className={classes["success-message"]}>{successMessage}</div>
         )}
@@ -118,7 +123,7 @@ const Index = () => {
           <div className={classes["error-message"]}>{errorMessage}</div>
         )}
         {errors.name && <p className={classes["error-message"]}>{errors.name}</p>}
-        <InputField
+        <TextInputField
           label="Name"
           type="text"
           name="name"
@@ -127,7 +132,7 @@ const Index = () => {
           onChange={handleInputChange}
           onFocus={handleInputFocus}
         />
-        <InputField
+        <TextAreaInputField
           label="Purpose"
           type="text"
           name="purpose"
@@ -136,17 +141,21 @@ const Index = () => {
           onChange={handleInputChange}
           onFocus={handleInputFocus}
         />
-        {/* <p>We’ll send a link to reset password to the name if it matches an existing account.</p> */}
+        <FormControlLabel 
+          control={<Switch checked={isPublic} onChange={handleSwitchToggle} />} 
+          label="Keep forum private" 
+        />
+        <br />
         <CustomButton
           type="submit"
           label={isSubmitting ? "Creating Forum" : "Create Forum"}
           disabled={isSubmitting}
         />
-        <Button href="dashboard" disableElevation>
-          Back
+        <br /> <br />
+        <Button href="dashboard" disableElevation onClick={handleFormReset}>
+          Reset
         </Button>
       </form>
-      </> }
     </div>
   );
 };

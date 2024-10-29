@@ -1,0 +1,29 @@
+import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
+import * as topicServices from "./topicServices.js"
+
+const createTopic = asyncErrorHandler(async (req,res,next) => {
+    const createdBy = req.user.id
+    const {title, content, forum_id} = req.body;
+    const topic = await topicServices.createTopic({title, content, forum_id, createdBy});
+    
+    return res.status(201).json({message: "Topic created successfully", data: topic});
+})
+
+const getTopics = asyncErrorHandler(async (req,res,next) => {
+    const topics = await topicServices.getTopics();
+    return res.status(200).json({message: "Topics fetched successfully", data: topics});
+})
+
+const getTopicById = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.params;
+    const topic = await topicServices.getTopicById(id);
+    return res.status(200).json({message: "Topic fetched successfully", data: topic});
+})
+
+const getMyTopics = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.user;
+    const topics = await topicServices.getMyTopics(id);
+    return res.status(200).json({message: "Topics fetched successfully", data: topics});
+})
+
+export { createTopic, getTopics, getTopicById, getMyTopics }
