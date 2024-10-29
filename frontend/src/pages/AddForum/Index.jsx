@@ -106,11 +106,14 @@ const Index = () => {
     }
   }
 
+  const handleFormReset = (e) => {
+    e.preventDefault()
+    purposeInput.current.value = null,
+    nameInput.current.value = null
+  }
+
   return ( 
     <div>
-      {token && <Navigate to="/user/dashboard" />}
-      {!token && 
-      <>
       <h3 className={classes["heading"]}>Create Forum</h3>
       <form onSubmit={submitHandler} noValidate> 
         {successMessage && (
@@ -149,11 +152,10 @@ const Index = () => {
           disabled={isSubmitting}
         />
         <br /> <br />
-        <Button href="dashboard" disableElevation>
+        <Button href="dashboard" disableElevation onClick={handleFormReset}>
           Reset
         </Button>
       </form>
-      </> }
     </div>
   );
 };
