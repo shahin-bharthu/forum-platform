@@ -31,6 +31,10 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             defaultValue: "https://img.favpng.com/19/25/2/chat-box-png-favpng-amR9Fi2VdFWUis7NCi48h8Lub.jpg"
         },
+        subscriber_count: {
+            type: Sequelize.BIGINT,
+            defaultValue: 0
+          },        
         createdBy: {
             type: Sequelize.UUID,
             allowNull: false,

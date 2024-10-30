@@ -13,7 +13,6 @@ const createForum = async (forumData) => {
 
 const getForums = async () => {
     const forums = await db.Forum.findAll();
-    console.log(forums);
     return forums;
 }
 

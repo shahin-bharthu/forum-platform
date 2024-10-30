@@ -5,6 +5,7 @@ import forumModel from "../features/forum/forumModel.js";
 import topicModel from "../features/topics/topicModel.js";
 
 import Sequelize from "sequelize";
+import userMembershipModel from "../features/forum/userMembershipModel.js";
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -27,6 +28,7 @@ db.Token = tokenModel(sequelize, Sequelize);
 db.AuditTrail = auditTrailModel(sequelize, Sequelize);
 db.Forum = forumModel(sequelize, Sequelize);
 db.Topic = topicModel(sequelize, Sequelize);
+db.UserMembership = userMembershipModel(sequelize, Sequelize);
 
 const check = async () => {
     try {
@@ -44,7 +46,6 @@ db.User.hasOne(db.Token, {
   as: 'token',
   foreignKey:"userId"
 })
-
 db.Token.belongsTo(db.User, {
   as: 'user',
   foreignKey:"userId"
@@ -55,10 +56,22 @@ db.User.hasMany(db.Forum, {
   as: 'forum',
   foreignKey:"createdBy"
 })
-
 db.Forum.belongsTo(db.User, {
   as: 'user',
   foreignKey: "createdBy"
 })
+
+
+db.User.belongsToMany(db.Forum, { 
+  through: db.UserMembership, 
+  foreignKey: 'user_id', 
+  as: 'forums' 
+});
+db.Forum.belongsToMany(db.User, { 
+  through: db.UserMembership, 
+  foreignKey: 'forum_id', 
+  as: 'users'
+});
+
 
 export { db, check };
