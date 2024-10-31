@@ -19,7 +19,7 @@ export default function AllForums() {
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 3, sm: 8, md: 12 }} sx={{ mx: 3, py: 11, justifyContent: 'center', alignContent: 'center' }}>
         {forums.map((forum) => (
           <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
-            <MediaCard name={forum.name} purpose={forum.purpose} logo={forum.logo} />
+            <MediaCard name={forum.name} purpose={forum.purpose} logo={forum.logo} createdBy={forum.createdBy} forumId={forum.forum_id}/>
           </Grid>
         ))}
       </Grid>
