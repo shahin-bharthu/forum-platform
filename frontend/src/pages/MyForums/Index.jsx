@@ -48,7 +48,7 @@ export default function MyForum() {
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 3, sm: 8, md: 12 }} sx={{ mx: 3, py: 11, justifyContent: 'center', alignContent: 'center' }}>
         {forums.map((forum) => (
           <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
-            <MediaCard name={forum.name} purpose={forum.purpose} logo={forum.logo} />
+            <MediaCard name={forum.name} purpose={forum.purpose} logo={forum.logo} createdBy={forum.createdBy}/>
           </Grid>
         ))}
       </Grid>
@@ -64,7 +64,8 @@ export async function forumLoader() {
       withCredentials: true
     });
     const forumData = response.data.data
-
+    console.log(forumData);
+    
     return {
       forums: forumData,
       empty: !response.data.data || response.data.data.length === 0

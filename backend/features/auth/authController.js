@@ -26,10 +26,19 @@ const userLogin = asyncErrorHandler(async (req, res, next) => {
     const user = await authServices.userLogin(userData);
 
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const expirationDate = new Date(Date.now() + 3600000); // Set expiration date to 1 hour from now
+    console.log(expirationDate);
+    
     res.cookie('token', token, {
         maxAge: 3600000,
         secure: true
     });
+
+    res.cookie('expiration', expirationDate.toUTCString(), {
+        maxAge: 3600000, 
+        secure: true, 
+    });
+
     user.password = null
     return res.status(200).json({ data: user, message: 'User logged in successfully' });
 });
@@ -66,6 +75,8 @@ const resetPassword = asyncErrorHandler(async (req, res, next) => {
 const userLogout = (req, res, next) => {
     try {
         res.clearCookie("token", {maxAge: 0});
+        res.clearCookie("expiration", {maxAge: 0});
+
         return res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {
         console.log(error);

@@ -12,26 +12,28 @@ function getCookie(name) {
 
 export function getTokenDuration() {
     const storedExpirationDate = getCookie('expiration');
-    const expirationDate = new Date(storedExpirationDate);
+    const decodedExpirationDate = decodeURIComponent(storedExpirationDate);
+    const expirationDate = new Date(decodedExpirationDate);
     const now = new Date();
-    const duration = expirationDate.getTime() - now.getTime();
-
+    const duration = expirationDate.getTime() - now.getTime();    
     return duration;
 }
 
 export function getAuthToken() {
     const token = getCookie('token');
-
+    
     if (!token) {
+        console.log("token not found in getAuthToken");
         return null;
     }
     
     const tokenDuration = getTokenDuration();
-
+    
     if (tokenDuration < 0) {
-        return 'EXPIRED';
+        console.log("Expired");
+        // return 'EXPIRED';
+        return null;
     }
-
     return token;
 }
 
