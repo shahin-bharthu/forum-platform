@@ -7,10 +7,18 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useRouteLoaderData } from 'react-router-dom';
 import { decodeToken } from "react-jwt";
-import axios from 'axios';
 
-export default function MediaCard({name, purpose, logo, createdBy, forumId}) {
-  const token = useRouteLoaderData('user');
+export default function MediaCard({
+  name,
+  purpose,
+  logo,
+  createdBy,
+  forumId,
+  canSubscribe,
+  onSubscribe,
+  onViewDetails
+}) {
+  const token = useRouteLoaderData("user");
 
   let decodedToken = null;
   let currentUserId = null;
@@ -23,44 +31,25 @@ export default function MediaCard({name, purpose, logo, createdBy, forumId}) {
     }
   }
 
-  // Check if the current user is not the creator of the forum
-  const canSubscribe = currentUserId && currentUserId !== createdBy;
-
-  const handleSubscribe = async (event) => {
-    event.preventDefault();
-    console.log("in handle subscribe");
-
-    try {
-      const response = await axios.post(`http://localhost:8080/forum/subscribe/${forumId}`, {
-        "Content-Type": "application/json",
-        withCredentials: true
-      })
-      console.log(response);
-    } catch (error) {
-      console.error("Error: ", error);
-      // setErrorMessage(error.response.data.message || "An error occurred. Please try again later.");
-    }
-  }
-
   return (
     <Card sx={{ maxWidth: 345 }}>
-      <CardMedia
-        sx={{ height: 140 }}
-        image={logo}
-        title="green iguana"
-      />
+      <CardMedia sx={{ height: 140 }} image={logo} title="green iguana" />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {name}
         </Typography>
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {purpose} {decodedToken.email}
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          {purpose}
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Share</Button>
-        <Button size="small">Learn More</Button>
-        {canSubscribe && <Button size="small" onClick={handleSubscribe}>Subscribe</Button>}
+        {/* <Button size="small">Share</Button> */}
+        <Button size="small" onClick={onViewDetails}>Learn More</Button>
+        {canSubscribe && (
+          <Button size="small" onClick={onSubscribe}>
+            Subscribe
+          </Button>
+        )}
       </CardActions>
     </Card>
   );

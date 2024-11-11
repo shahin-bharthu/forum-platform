@@ -15,6 +15,15 @@ const getForums = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: "Forums fetched successfully", data: forums});
 })
 
+const updateForum = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.params;
+    const userId = req.user.id;
+    const body = req.body;
+    const data = forumServices.updateForum(id, userId, body);
+
+    return res.status(200).json({message: "Forum details have been updated successfully", data: data});
+})
+
 const getForumById = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.params;
     const forum = await forumServices.getForumById(id);
@@ -32,7 +41,7 @@ const subscribeToForum = asyncErrorHandler(async(req,res,next) => {
     const { id } = req.user; 
 
     try {
-        const forum = await db.Forum.findOne({ where: { id: forum_id } });
+        const forum = await db.Forum.findOne({ where: { forum_id: forum_id } });
         
         if (!forum) {
             return res.status(404).json({ message: 'Forum not found' });
@@ -60,7 +69,7 @@ const subscribeToForum = asyncErrorHandler(async(req,res,next) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        await user.addForum(forum); // using sequelize's magic association method to add the forum
+        // await user.addForum(forum); // using sequelize's magic association method to add the forum
 
         await db.UserMembership.create({
             user_id: id,
@@ -74,4 +83,23 @@ const subscribeToForum = asyncErrorHandler(async(req,res,next) => {
     }
 });
 
-export { getForums, createForum, getForumById, getForumsByCreator, subscribeToForum }
+const getForumsToSubscribe = asyncErrorHandler(async (req, res, next) => {
+    const {id} = req.user;
+    const allForums = await db.Forum.findAll();
+    const userForums = await db.Forum.findAll({where: {createdBy: id}});
+
+    const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
+
+    // Convert `userForums` and `subscribedForums` into sets of forum IDs
+    const userForumIds = userForums.map(forum => forum.id);
+    const subscribedForumIds = subscribedForums.map(membership => membership.forum_id);
+
+    // Filter out forums that are either created by the user or already subscribed to
+    const forumsToSubscribe = allForums.filter(forum => 
+        !userForumIds.includes(forum.id) && !subscribedForumIds.includes(forum.id)
+    );
+
+    return res.json({message: "subscribe forums list", data: forumsToSubscribe});
+})
+
+export { getForums, createForum, getForumById, getForumsByCreator, subscribeToForum, getForumsToSubscribe, updateForum }

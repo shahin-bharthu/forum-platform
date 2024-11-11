@@ -16,6 +16,7 @@ import MyForum, { forumLoader } from "./pages/MyForums/Index.jsx";
 import AddForum from "./pages/AddForum/Index.jsx"
 import AllForums, { allForumLoader } from "./pages/AllForums/Index.jsx";
 import CreatePost from "./pages/CreatePost/Index.jsx";
+import IntroDivider, {forumDetailsLoader} from "./pages/ForumDetails/Components/Details.jsx";
 
 const router = createBrowserRouter([
   {
@@ -25,7 +26,14 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     id: "root",
     children: [
-      { index: true, element: (<ProtectedRoute><Navigate to="/user/dashboard" /></ProtectedRoute>) },
+      {
+        index: true,
+        element: (
+          <ProtectedRoute>
+            <Navigate to="/user/dashboard" />
+          </ProtectedRoute>
+        ),
+      },
       { path: "signup", element: <SignupPage /> },
       { path: "login/:status", loader: loginLoader, element: <LoginPage /> },
       { path: "forgot-password", element: <ForgotPassword /> },
@@ -34,7 +42,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/user",
-    element: (<ProtectedRoute><UserRootPage /></ProtectedRoute>),
+    element: (
+      <ProtectedRoute>
+        <UserRootPage />
+      </ProtectedRoute>
+    ),
     loader: tokenLoader,
     errorElement: <ErrorPage />,
     id: "user",
@@ -44,8 +56,28 @@ const router = createBrowserRouter([
       { path: "dashboard", element: <Index /> },
       { path: "my-forums", loader: forumLoader, element: <MyForum /> },
       { path: "add-forum", element: <AddForum /> },
-      { path: "forums", loader: allForumLoader , element: <AllForums/> },
-      { path: "create-post", element: <CreatePost/> }
+      { path: "forums", loader: allForumLoader, element: <AllForums /> },
+      { path: "create-post", element: <CreatePost /> },
+    ],
+  },
+  {
+    path: "/forum",
+    element: (
+      <ProtectedRoute>
+        <UserRootPage />
+      </ProtectedRoute>
+    ),
+    loader: tokenLoader,
+    errorElement: <ErrorPage />,
+    id: "forum",
+    children: [
+      { index: true, element: <Navigate to="/user/my-forums" /> },
+      { path: ":forum_id", loader:forumDetailsLoader, element: <IntroDivider /> },
+      // { path: "dashboard", element: <Index /> },
+      // { path: "my-forums", loader: forumLoader, element: <MyForum /> },
+      // { path: "add-forum", element: <AddForum /> },
+      // { path: "forums", loader: allForumLoader, element: <AllForums /> },
+      // { path: "create-post", element: <CreatePost /> },
     ],
   },
 ]);

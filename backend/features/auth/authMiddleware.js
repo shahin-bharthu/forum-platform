@@ -6,7 +6,6 @@ import jwt from 'jsonwebtoken'
 export const authMiddleware = asyncErrorHandler(async (req, res, next) => {
     // 1. Read the jwtToken and check if it exists
     const {token} = req.cookies;
-    console.log(token);
     
     let jwtToken = token;    
   

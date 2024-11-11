@@ -38,7 +38,7 @@ export default (sequelize, Sequelize) => {
         createdBy: {
             type: Sequelize.UUID,
             allowNull: false,
-            onUpdate: "cascade",
+            // onUpdate: "cascade",
             onDelete: "cascade",
             references: { model: "users", key: "id" },
         }

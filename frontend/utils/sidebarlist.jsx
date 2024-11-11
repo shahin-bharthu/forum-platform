@@ -4,11 +4,11 @@ import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SignpostIcon from '@mui/icons-material/Signpost';
 const menuList=[
-    { text: 'Home', icon: <HomeIcon />, path: 'dashboard' },
+    { text: 'Home', icon: <HomeIcon />, path: '/user/dashboard' },
     { text: 'My Posts', icon: <ForumIcon />, path: 'myPosts' },
-    { text: 'My Forums', icon: <SignpostIcon />, path: 'my-forums' },
+    { text: 'My Forums', icon: <SignpostIcon />, path: '/user/my-forums' },
     { text: 'Messages', icon: <MarkAsUnreadIcon />, path: 'messages' },
-    { text: 'All Forums', icon: <ForumIcon />, path: 'forums' },
+    { text: 'All Forums', icon: <ForumIcon />, path: '/user/forums' },
     { text: 'Logout', icon: <LogoutIcon />, path: 'logout' },
 ]
 

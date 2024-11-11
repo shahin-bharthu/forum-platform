@@ -72,7 +72,9 @@ const theme = createTheme({
     },
 });
 
-export default function PositionedSnackbar({ message }) {
+export default function 
+
+PositionedSnackbar({ message, vertical, horizontal }) {
     const [open, setOpen] = useState(true);
 
     const handleClose = (event, reason) => {
@@ -99,7 +101,7 @@ export default function PositionedSnackbar({ message }) {
     return (
         <ThemeProvider theme={theme}>
             <Snackbar
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 open={open}
                 autoHideDuration={5000}
                 onClose={handleClose}

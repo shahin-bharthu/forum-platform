@@ -6,6 +6,7 @@ import { useLoaderData, useNavigate } from "react-router-dom";
 import { Button, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
+
 import Fab from '@mui/material/Fab';
 // import AddIcon from '@mui/icons-material/Add';
 
@@ -42,13 +43,19 @@ export default function MyForum() {
       </>
     );
   }
+
+  const handleViewDetails = (event, forum_id) => {
+    event.preventDefault();
+    navigate(`/forum/${forum_id}`);
+  }
+
   return (
     <>
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 3, sm: 8, md: 12 }} sx={{ mx: 3, py: 11, justifyContent: 'center', alignContent: 'center' }}>
         {forums.map((forum) => (
           <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
-            <MediaCard name={forum.name} purpose={forum.purpose} logo={forum.logo} createdBy={forum.createdBy} forumId={forum.forum_id}/>
+            <MediaCard name={forum.name} purpose={forum.purpose} logo={forum.logo} createdBy={forum.createdBy} forumId={forum.forum_id} canSubscribe={false} onViewDetails={(event) => handleViewDetails(event, forum.forum_id)}/>
           </Grid>
         ))}
       </Grid>
@@ -64,7 +71,7 @@ export async function forumLoader() {
       withCredentials: true
     });
     const forumData = response.data.data
-    console.log(forumData);
+    // console.log(forumData);
     
     return {
       forums: forumData,

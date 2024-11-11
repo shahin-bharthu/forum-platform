@@ -18,12 +18,25 @@ const getForums = async () => {
     return await forumRepository.getForums();
 }
 
+const updateForum = async (id, userId, forum) => {
+    const forumExists = await forumRepository.getForumById(id);
+    
+    if (!forumExists) {
+        throw new CustomError("Forum not found!", 404);
+    }
+
+    if (forumExists.createdBy !== userId) {
+        throw new CustomError("You are not authorized to edit this forum", 403);
+    }
+    return await forumRepository.updateForum(id, forum);
+}
+
 const getForumById = async (id) => {
-    return await forumRepository.getForumById(id);
+    return await forumRepository.getForumByForumId(id);
 }
 
 const getForumsByCreator = async (id) => {
     return await forumRepository.getForumsByCreator(id);
 }
 
-export { getForums, createForum, getForumById, getForumsByCreator }
+export { getForums, createForum, getForumById, getForumsByCreator, updateForum }

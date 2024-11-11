@@ -129,7 +129,7 @@ const LoginForm = () => {
         {errors.email && (
           <p className={classes["error-message"]}>{errors.email}</p>
         )}
-        {message && <PositionedSnackbar message={message} />}
+        {message && <PositionedSnackbar message={message}/>}
         <InputField
           label="Email"
           type="email"
