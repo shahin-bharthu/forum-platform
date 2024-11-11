@@ -19,8 +19,8 @@ export default (sequelize, Sequelize) => {
             key: 'id',
         },
       },
-      membership_status: {
-        type: Sequelize.ENUM('MEMBER', 'APPROVED', 'MUTED'),
+      membership_role: {
+        type: Sequelize.ENUM('MEMBER', 'ADMIN'),
         defaultValue: 'MEMBER'
       }
   }, 

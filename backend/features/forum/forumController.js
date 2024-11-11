@@ -83,13 +83,12 @@ const subscribeToForum = asyncErrorHandler(async(req,res,next) => {
     }
 });
 
-const getForumsToSubscribe = asyncErrorHandler(async (req, res, next) => {
-    const {id} = req.user;
-    const allForums = await db.Forum.findAll();
+const getForumsToSubscribe = asyncErrorHandler(async (req, res, next) => {    
+    const {id} = req.user;    
+    const allForums = await db.Forum.findAll();    
     const userForums = await db.Forum.findAll({where: {createdBy: id}});
-
     const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
-
+    
     // Convert `userForums` and `subscribedForums` into sets of forum IDs
     const userForumIds = userForums.map(forum => forum.id);
     const subscribedForumIds = subscribedForums.map(membership => membership.forum_id);
@@ -99,7 +98,20 @@ const getForumsToSubscribe = asyncErrorHandler(async (req, res, next) => {
         !userForumIds.includes(forum.id) && !subscribedForumIds.includes(forum.id)
     );
 
-    return res.json({message: "subscribe forums list", data: forumsToSubscribe});
+    return res.json({message: "subscribable forums list", data: forumsToSubscribe});
 })
 
-export { getForums, createForum, getForumById, getForumsByCreator, subscribeToForum, getForumsToSubscribe, updateForum }
+
+const getSubscribedForums = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.user;
+    const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
+    const subscribedForumIds = subscribedForums.map(membership => membership.forum_id);
+
+    const subscribedForumsData = await Promise.all(subscribedForumIds.map(async (subscribedForum) => {
+        return await db.Forum.findByPk(subscribedForum)
+    }));
+    
+    return res.json({message: "subscribed forums list", data: subscribedForumsData});
+})
+
+export { getForums, createForum, getForumById, getForumsByCreator, subscribeToForum, getForumsToSubscribe, updateForum, getSubscribedForums }

@@ -8,15 +8,13 @@ import PositionedSnackbar from '../../components/SnackBar.jsx';
 
 export default function AllForums() {
 
-  const {allForums, subscribableForums, empty} = useLoaderData();
+  const {subscribedForums, subscribableForums, empty} = useLoaderData();
   const navigate = useNavigate();
   const [subscribableForumsState, setSubscribableForumsState] = useState(subscribableForums);
   const [message, setMessage] = useState();
 
   const handleSubscribe = async (event, forumId) => {
     event.preventDefault();
-    // console.log("in handle subscribe for", forumId);
-
     try {
       const response = await axios.post(
         `http://localhost:8080/forum/subscribe/${forumId}`,
@@ -26,7 +24,6 @@ export default function AllForums() {
           withCredentials: true,
         }
       );
-      console.log(response.data);
 
       setMessage(`Subscribed to ${forumId}`);
       setSubscribableForumsState((prevState) =>
@@ -65,32 +62,47 @@ export default function AllForums() {
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 3, sm: 8, md: 12 }}
         sx={{ mx: 3, py: 11, justifyContent: "center", alignContent: "center" }}
-      >
+        >
         {message && (
           <PositionedSnackbar message={message}/>
         )}
-        {allForums.map((forum) => {
-          // Check if the forum can be subscribed to
-          const canSubscribe = subscribableForumsState.includes(forum.forum_id);
+        <h5>Subscribed Forums</h5>
+        {subscribedForums.map((forum) => {
+          // const canSubscribe = subscribableForumsState.includes(forum.forum_id);
+            return (
+              <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
+                <MediaCard
+                  name={forum.name}
+                  purpose={forum.purpose}
+                  logo={forum.logo}
+                  createdBy={forum.createdBy}
+                  forumId={forum.forum_id}
+                  canSubscribe={false} 
+                  onSubscribe={null}
+                  onViewDetails={(event) => handleViewDetails(event, forum.forum_id)}
+                />
+              </Grid>
+            );
+        })}
 
-          return (
-            <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
-              <MediaCard
-                name={forum.name}
-                purpose={forum.purpose}
-                logo={forum.logo}
-                createdBy={forum.createdBy}
-                forumId={forum.forum_id}
-                canSubscribe={canSubscribe} // Set canSubscribe based on the condition
-                onSubscribe={
-                  canSubscribe
-                    ? (event) => handleSubscribe(event, forum.forum_id)
-                    : null
-                } // Pass handleSubscribe only if canSubscribe is true
-                onViewDetails={(event) => handleViewDetails(event, forum.forum_id)}
-              />
-            </Grid>
-          );
+
+        <h5>More Forums</h5>
+        {subscribableForums.map((forum) => {
+          // const canSubscribe = subscribableForumsState.includes(forum.forum_id);
+            return (
+              <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
+                <MediaCard
+                  name={forum.name}
+                  purpose={forum.purpose}
+                  logo={forum.logo}
+                  createdBy={forum.createdBy}
+                  forumId={forum.forum_id}
+                  canSubscribe={true} 
+                  onSubscribe={(event) => handleSubscribe(event, forum.forum_id)}
+                  onViewDetails={(event) => handleViewDetails(event, forum.forum_id)}
+                />
+              </Grid>
+            );
         })}
       </Grid>
     </Box>
@@ -99,25 +111,31 @@ export default function AllForums() {
 
 export async function allForumLoader() {
   try {
-    const allForums = await axios.get('http://localhost:8080/forum', {
+    const subscribedForums = await axios.get('http://localhost:8080/forum/subscribed-forums', {
       withCredentials: true
     });
-    const forumData = allForums.data.data
+    const subscribedForumsData = subscribedForums.data.data
+    console.log(subscribedForumsData);
     
     const subscribableForums = await axios.get("http://localhost:8080/forum/can-subscribe-to", {
       withCredentials: true,
     });
     const subscribableForumsData = subscribableForums.data.data
-    const subscribableForumIds = subscribableForumsData.map(forum => forum.forum_id)
+    // const subscribableForumIds = subscribableForumsData.map(forum => forum.forum_id)
     
     return {
-      allForums: forumData,
-      subscribableForums: subscribableForumIds,
-      empty: !allForums.data.data || allForums.data.data.length === 0,
+      subscribedForums: subscribedForumsData,
+      subscribableForums: subscribableForumsData,
+      empty: !subscribableForums.data.data || subscribableForums.data.data.length === 0,
     };
 
   } catch (error) {    
     console.log("error in loader");
     console.log(error.message);
+    return {
+      subscribedForums: [],
+      subscribableForums: [],
+      empty: true,
+    };
   }
 }
