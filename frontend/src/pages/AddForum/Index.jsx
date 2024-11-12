@@ -6,7 +6,7 @@ import CustomButton from "../../components/Button";
 import axios from "axios";
 import { z } from "zod";
 import Button from "@mui/material/Button";
-import { Navigate, useRouteLoaderData } from "react-router-dom";
+import { Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 
@@ -15,6 +15,7 @@ const Index = () => {
   const nameInput = useRef();
   const purposeInput = useRef();
 
+  const navigate=useNavigate()
   const [isPublic, setIsPublic] = useState(true); // Default to true
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -97,6 +98,9 @@ const Index = () => {
       });
       setSuccessMessage(response.data.message);
       setIsSubmitting(false);
+      setTimeout(() => {
+        navigate('/user/my-forums')
+      }, 1000);
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error:", error);
