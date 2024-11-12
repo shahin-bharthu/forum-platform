@@ -6,12 +6,13 @@ import CustomButton from "../../components/Button";
 import axios from "axios";
 import { z } from "zod";
 import Button from "@mui/material/Button";
-import { Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { Navigate, useLoaderData, useNavigate, useRouteLoaderData } from "react-router-dom";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 
-const Index = () => {
+const Index = ({isEdit}) => {
   const token = useRouteLoaderData('root');
+  const forumData = useLoaderData();
   const nameInput = useRef();
   const purposeInput = useRef();
 
@@ -74,12 +75,14 @@ const Index = () => {
     setIsPublic(event.target.checked);
   };
 
-  async function submitHandler(event) {
+  async function createForumHandler(event) {
     event.preventDefault();
+    console.log("in create");
+    
 
     const enteredName = nameInput.current.value.trim();
     const enteredPurpose = purposeInput.current.value.trim();
-    const forumIsPublic = isPublic; // Use state value
+    const forumIsPublic = isPublic; 
 
     const formData = { name: enteredName, purpose: enteredPurpose, isPublic: forumIsPublic };
     console.log(formData);
@@ -110,6 +113,42 @@ const Index = () => {
     }
   }
 
+  async function editForumHandler(event, id, forum_id) {
+    event.preventDefault();
+    console.log("in edit");
+    
+    const enteredPurpose = purposeInput.current.value.trim();
+    const forumIsPublic = isPublic; 
+
+    const formData = { purpose: enteredPurpose, isPublic: forumIsPublic };
+    console.log(formData);
+    
+    // if (!validateForm(formData)) {      
+    //   return;
+    // }
+    setErrorMessage("");
+    setErrors({});
+
+    try {
+      setIsSubmitting(true);
+      const response = await axios.patch(`http://localhost:8080/forum/${id}`, formData, {
+        "Content-Type": "application/json",
+        withCredentials: true
+      });
+      setSuccessMessage(response.data.message);
+      setIsSubmitting(false);
+      setTimeout(() => {
+        navigate(`/forum/${forum_id}`)
+      }, 1000);
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error("Error:", error);
+      setErrorMessage(
+        error.response?.data?.message || "An error occurred. Please try again later."
+      );
+    }
+  }
+
   const handleFormReset = (e) => {
     e.preventDefault()
     purposeInput.current.value = null,
@@ -118,8 +157,8 @@ const Index = () => {
 
   return ( 
     <div>
-      <h3 className={classes["heading"]}>Create Forum</h3>
-      <form onSubmit={submitHandler} noValidate> 
+      <h3 className={classes["heading"]}>{isEdit? 'Edit': 'Create'} Forum</h3>
+      <form onSubmit={ isEdit? (event) => editForumHandler(event, forumData.id, forumData.forum_id) : createForumHandler } noValidate> 
         {successMessage && (
           <div className={classes["success-message"]}>{successMessage}</div>
         )}
@@ -135,6 +174,8 @@ const Index = () => {
           reference={nameInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          isDisabled={isEdit}
+          value={isEdit? forumData.name:null}
         />
         <TextAreaInputField
           label="Purpose"
@@ -144,6 +185,8 @@ const Index = () => {
           reference={purposeInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          // isDisabled={isEdit}
+          value={isEdit ? forumData.purpose:null}
         />
         <FormControlLabel 
           control={<Switch checked={isPublic} onChange={handleSwitchToggle} />} 
@@ -152,7 +195,7 @@ const Index = () => {
         <br />
         <CustomButton
           type="submit"
-          label={isSubmitting ? "Creating Forum" : "Create Forum"}
+          label={isEdit ? "Edit Forum" : "Create Forum"}
           disabled={isSubmitting}
         />
         <br /> <br />
@@ -165,3 +208,16 @@ const Index = () => {
 };
 
 export default Index;
+
+export async function forumDetailsLoader({params}) {
+  const forum_id = params.forum_id
+  if (forum_id) {
+    const response = await axios.get(`http://localhost:8080/forum/${forum_id}`, {withCredentials: true});
+    console.log(response.data.data);
+    // const forumData = response.data.data
+    return response.data.data
+  }
+  else {
+    return null;
+  }
+}

@@ -18,7 +18,8 @@ export default function MediaCard({
   canSubscribe,
   onSubscribe,
   onViewDetails,
-  myForum
+  myForum, 
+  onEditForum
 }) {
   const token = useRouteLoaderData("user");
 
@@ -48,7 +49,7 @@ export default function MediaCard({
         {/* <Button size="small">Share</Button> */}
         <Button size="small" onClick={onViewDetails}>Learn More</Button>
         {myForum && (
-          <EditNoteIcon fontSize="small" color='primary' onClick={onSubscribe}>
+          <EditNoteIcon fontSize="small" color='primary' onClick={onEditForum}>
             Take Action
           </EditNoteIcon>
         )}

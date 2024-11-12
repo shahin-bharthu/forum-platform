@@ -85,6 +85,8 @@ export default function AllForums() {
                   canSubscribe={false}
                   onSubscribe={null}
                   onViewDetails={(event) => handleViewDetails(event, forum.forum_id)}
+                  myForum={false}
+                  onEditForum={null}
                 />
               </Grid>
             );

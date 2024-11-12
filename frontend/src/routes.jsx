@@ -13,7 +13,7 @@ import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import UserRootPage from "./pages/UserRootPage.jsx";
 import MyForum, { forumLoader } from "./pages/MyForums/Index.jsx";
-import AddForum from "./pages/AddForum/Index.jsx"
+import AddForum, {forumDetailsLoader as forumDetails} from "./pages/AddForum/Index.jsx"
 import AllForums, { allForumLoader } from "./pages/AllForums/Index.jsx";
 import CreatePost from "./pages/CreatePost/Index.jsx";
 import IntroDivider, {forumDetailsLoader} from "./pages/ForumDetails/Components/Details.jsx";
@@ -55,7 +55,8 @@ const router = createBrowserRouter([
       { path: "profile", element: <UserProfilePage /> },
       { path: "dashboard", element: <Index /> },
       { path: "my-forums", loader: forumLoader, element: <MyForum /> },
-      { path: "add-forum", element: <AddForum /> },
+      { path: "add-forum", element: <AddForum isEdit={false}/> },
+      { path: "edit-forum/:forum_id", loader: forumDetails, element: <AddForum isEdit={true}/> },
       { path: "forums", loader: allForumLoader, element: <AllForums /> },
       { path: "create-post", element: <CreatePost /> },
     ],

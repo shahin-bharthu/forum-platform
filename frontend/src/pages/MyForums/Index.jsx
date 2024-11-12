@@ -28,10 +28,11 @@ export default function MyForum() {
 
   const { forums, empty } = useLoaderData();
   const navigate=useNavigate()
+
   const handleCreate=()=>{
     navigate('/user/add-forum')
   }
-
+  
   if (empty) {
     return (
       <>
@@ -42,6 +43,11 @@ export default function MyForum() {
       <FloatingActionButtons onClick={handleCreate}/>
       </>
     );
+  }
+  
+  const handleEditForum = (event, forum_id) => {
+      event.preventDefault();
+      navigate(`/user/edit-forum/${forum_id}`)
   }
 
   const handleViewDetails = (event, forum_id) => {
@@ -55,7 +61,7 @@ export default function MyForum() {
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 3, sm: 8, md: 12 }} sx={{ mx: 3, py: 11, justifyContent: 'center', alignContent: 'center' }}>
         {forums.map((forum) => (
           <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
-            <MediaCard name={forum.name} purpose={forum.purpose} logo={forum.logo} createdBy={forum.createdBy} forumId={forum.forum_id} canSubscribe={false} onViewDetails={(event) => handleViewDetails(event, forum.forum_id)} myForum={true}/>
+            <MediaCard name={forum.name} purpose={forum.purpose} logo={forum.logo} createdBy={forum.createdBy} forumId={forum.forum_id} canSubscribe={false} onViewDetails={(event) => handleViewDetails(event, forum.forum_id)} myForum={true} onEditForum={(event) => handleEditForum(event, forum.forum_id)}/>
           </Grid>
         ))}
       </Grid>
