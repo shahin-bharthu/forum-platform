@@ -156,7 +156,7 @@ const Index = () => {
           disabled={isSubmitting}
         />
         <br /> <br />
-        <Button href="dashboard" disableElevation onClick={handleFormReset}>
+        <Button disableElevation onClick={handleFormReset}>
           Reset
         </Button>
       </form>
