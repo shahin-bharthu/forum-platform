@@ -1,12 +1,13 @@
 import * as React from 'react';
+import { useRouteLoaderData } from 'react-router-dom';
+import { decodeToken } from "react-jwt";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { useRouteLoaderData } from 'react-router-dom';
-import { decodeToken } from "react-jwt";
+import EditNoteIcon from '@mui/icons-material/EditNote';
 
 export default function MediaCard({
   name,
@@ -16,7 +17,8 @@ export default function MediaCard({
   forumId,
   canSubscribe,
   onSubscribe,
-  onViewDetails
+  onViewDetails,
+  myForum
 }) {
   const token = useRouteLoaderData("user");
 
@@ -45,6 +47,11 @@ export default function MediaCard({
       <CardActions>
         {/* <Button size="small">Share</Button> */}
         <Button size="small" onClick={onViewDetails}>Learn More</Button>
+        {myForum && (
+          <EditNoteIcon fontSize="small" color='primary' onClick={onSubscribe}>
+            Take Action
+          </EditNoteIcon>
+        )}
         {canSubscribe && (
           <Button size="small" onClick={onSubscribe}>
             Subscribe

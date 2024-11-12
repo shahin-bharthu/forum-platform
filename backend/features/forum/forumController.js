@@ -69,8 +69,6 @@ const subscribeToForum = asyncErrorHandler(async(req,res,next) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // await user.addForum(forum); // using sequelize's magic association method to add the forum
-
         await db.UserMembership.create({
             user_id: id,
             forum_id: forum.id,
