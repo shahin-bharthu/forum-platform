@@ -15,7 +15,7 @@ export default function TextInput({
   return (
     <Box
       component="form"
-      sx={{ '& .MuiTextField-root': { m: 1, width: { xs: '100%', sm: '50ch', md: '50ch', lg: '70ch' } } }}
+      sx={{ '& .MuiTextField-root': { mt: 3, width: { xs: '100%', sm: '50ch', md: '50ch', lg: '70ch' } } }}
       noValidate
       autoComplete="off"
     >

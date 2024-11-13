@@ -8,6 +8,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import EditNoteIcon from '@mui/icons-material/EditNote';
+import { IconButton } from '@mui/material';
 
 export default function MediaCard({
   name,
@@ -49,9 +50,11 @@ export default function MediaCard({
         {/* <Button size="small">Share</Button> */}
         <Button size="small" onClick={onViewDetails}>Learn More</Button>
         {myForum && (
-          <EditNoteIcon fontSize="small" color='primary' onClick={onEditForum}>
+          <IconButton onClick={onEditForum}>
+          <EditNoteIcon fontSize="small" color='primary' >
             Take Action
           </EditNoteIcon>
+          </IconButton>
         )}
         {canSubscribe && (
           <Button size="small" onClick={onSubscribe}>

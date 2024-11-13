@@ -9,17 +9,22 @@ const useForumNames = () => {
         const fetchForumNames = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get('http://localhost:8080/forum/my-forums', {
+                const userForumResponse = await axios.get('http://localhost:8080/forum/my-forums', {
                     withCredentials: true
                 });
-                const forumData = response.data.data
+                const userForumData = userForumResponse.data.data
 
-                setForums(forumData)
+                const subbedForumResponse = await axios.get('http://localhost:8080/forum/subscribed-forums', {
+                    withCredentials: true
+                });
+
+                const subbedForumData=subbedForumResponse.data.data
+                setForums([...userForumData, ...subbedForumData])
 
                 setError(null);
             } catch (error) {
-                console.error('Error fetching countrie:', error);
-                setError('Failed to fetch countries. Please try again later.')
+                console.error('Error fetching forums:', error);
+                setError('Failed to fetch forums. Please try again later.')
             } finally {
                 setIsLoading(false)
             }

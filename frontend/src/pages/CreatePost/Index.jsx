@@ -1,63 +1,26 @@
-import classes from "../../components/AuthForm.module.css";
 import { useRef, useState } from "react";
-import InputField from "../../components/TextInputField";
 import CustomButton from "../../components/Button";
+import TextAreaInputField from "./Components/TextAreaInput.jsx";
+import TextInputField from "./Components/TextInput.jsx";
 import axios from "axios";
 import { z } from "zod";
 import Button from "@mui/material/Button";
-import LockPersonOutlinedIcon from '@mui/icons-material/LockPersonOutlined';
-import Avatar from "@mui/material/Avatar";
-import {blue } from "@mui/material/colors";
-import { Navigate, useRouteLoaderData } from "react-router-dom";
-import MultipleSelectPlaceholder from "./Components/SelectList";
-import TextInputField from "../../components/TextInputField";
-import { Box } from "@mui/material";
+import { useNavigate, useRouteLoaderData } from "react-router-dom";
+import Asynchronous from "./Components/SelectList";
+import Stack from '@mui/material/Stack';
+import { Box, Card } from "@mui/material";
 
 const CreatePost = () => {
   const token = useRouteLoaderData('root');
-  const nameInput = useRef();
-  const purposeInput = useRef();
+  const titleInput = useRef();
+  const bodyInput = useRef();
+
+  const navigate = useNavigate()
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState({});
-
-  const userSchema = z.object({
-    name: z.string()
-      .superRefine((val, ctx) => {
-        if (val.length === 0) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "name is required",
-          });
-        } else if (!z.string().safeParse(val).success) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Invalid name",
-          });
-        }
-      }),
-  });
-
-  const validateForm = (formData) => {
-    try {
-      userSchema.parse(formData);
-      setErrors({});
-      return true;
-    } catch (error) {
-      console.log("ERROR IN VALIDATEFORM: ", error);
-      
-      if (error instanceof z.ZodError) {
-        const newErrors = {};
-        error.errors.forEach((err) => {
-          newErrors[err.path[0]] = err.message;
-        });
-        setErrors(newErrors);
-      }
-      return false;
-    }
-  };
 
   const handleInputChange = (event) => {
     const { name } = event.target;
@@ -74,26 +37,26 @@ const CreatePost = () => {
   async function submitHandler(event) {
     event.preventDefault();
 
-    const enteredname = nameInput.current.value.trim();
-    const enteredPurpose = purposeInput.current.value.trim();
+    const enteredTitle = titleInput.current.value.trim();
+    const enteredBody = bodyInput.current.value.trim();
 
-    const formData={name: enteredname, purpose: enteredPurpose}
-    
-    if (!validateForm( formData )) {      
-      return;
-    }
+    const formData = { title: enteredTitle, body: enteredBody }
+
+    // if (!validateForm(formData)) {
+    //   return;
+    // }
     setErrorMessage("");
     setErrors({});
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post("http://localhost:8080/forum", formData, {
+      const response = await axios.post("http://localhost:8080/forumgfd", formData, {
         "Content-Type": "application/json",
         withCredentials: true
       })
       setSuccessMessage(response.data.message);
-      
-    //   setIsSubmitting(false);
+
+      //   setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error:", error);
@@ -103,41 +66,44 @@ const CreatePost = () => {
     }
   }
 
-  return ( 
-    <Box sx={{justifyContent:'left'}}>
-      <h1>Create Post</h1>
-      <MultipleSelectPlaceholder/>
-      <InputField
-          label="Name"
-          type="text"
-          name="name"
-          placeholder="Enter forum name"
-          reference={nameInput}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
-        />
-        <br />
-        <InputField
-          label="Purpose"
-          type="text"
-          name="purpose"
-          placeholder="Enter forum purpose"
-          reference={purposeInput}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
-        />
-        <br />
+  return (
+    <Card variant="outlined" sx={{ m:2,p:3,justifyContent: 'left' }}>
+      <h3>Create Post</h3>
+      <Asynchronous />
+      <TextInputField
+        label="Title "
+        type="text"
+        name="title"
+        placeholder="Title"
+        reference={titleInput}
+        onChange={handleInputChange}
+        onFocus={handleInputFocus}
+      />
+      <TextAreaInputField
+        label="Body"
+        type="text"
+        name="Body"
+        placeholder="Body"
+        reference={bodyInput}
+        onChange={handleInputChange}
+        onFocus={handleInputFocus}
+      />
+      {/* <br /> */}
+
+      <Stack spacing={2} direction="row" sx={{m:1,pt:2, justifyContent:'right'}}>
         <CustomButton
           type="submit"
-          label={isSubmitting ? "Creating Forum" : "Create Forum"}
+          label={isSubmitting ? "Creating Post" : "Create Post"}
           disabled={isSubmitting}
         />
-        <br />
-        <Button href="dashboard" disableElevation>
+        <Button disableElevation onClick={() => { navigate('/user/dashboard') }}>
           Back
         </Button>
-    </Box>
+      </Stack>
+    </Card>
   );
 };
 
 export default CreatePost;
+
+

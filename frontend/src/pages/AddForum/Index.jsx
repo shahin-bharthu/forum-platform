@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import { Navigate, useLoaderData, useNavigate, useRouteLoaderData } from "react-router-dom";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { Card, Stack } from "@mui/material";
 
 const Index = ({isEdit}) => {
   const token = useRouteLoaderData('root');
@@ -156,7 +157,7 @@ const Index = ({isEdit}) => {
   }
 
   return ( 
-    <div>
+    <Card variant="outlined" sx={{ m:2,p:3,justifyContent: 'left' }}>
       <h3 className={classes["heading"]}>{isEdit? 'Edit': 'Create'} Forum</h3>
       <form onSubmit={ isEdit? (event) => editForumHandler(event, forumData.id, forumData.forum_id) : createForumHandler } noValidate> 
         {successMessage && (
@@ -188,22 +189,26 @@ const Index = ({isEdit}) => {
           // isDisabled={isEdit}
           value={isEdit ? forumData.purpose:null}
         />
+        
         <FormControlLabel 
           control={<Switch checked={isPublic} onChange={handleSwitchToggle} />} 
           label="Keep forum private" 
+          sx={{m:0,pt:2}}
         />
-        <br />
+        
+        <Stack spacing={2} direction="row" sx={{m:1,pt:2, justifyContent:'center'}}>
         <CustomButton
           type="submit"
           label={isEdit ? "Edit Forum" : "Create Forum"}
           disabled={isSubmitting}
         />
-        <br /> <br />
+        {/* <br /> <br /> */}
         <Button disableElevation onClick={handleFormReset}>
           Reset
         </Button>
+        </Stack>
       </form>
-    </div>
+    </Card>
   );
 };
 
@@ -221,3 +226,4 @@ export async function forumDetailsLoader({params}) {
     return null;
   }
 }
+

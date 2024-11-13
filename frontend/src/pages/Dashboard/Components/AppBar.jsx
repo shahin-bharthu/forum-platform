@@ -3,8 +3,11 @@ import { styled, alpha } from '@mui/material/styles';
 import { AppBar, Box, Toolbar, IconButton, Typography, InputBase, Badge, MenuItem, Menu } from '@mui/material';
 import { Menu as MenuIcon, Search as SearchIcon, AccountCircle, Notifications as NotificationsIcon, Add as AddIcon, MoreVert as MoreIcon, Adb as AdbIcon } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
-import deleteCookie from '../../../../utils/deleteCookie.js';
-import axios from 'axios';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+
+// import deleteCookie from '../../../../utils/deleteCookie.js';
+// import axios from 'axios';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -58,7 +61,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const handleCreatePost = useCallback(() => {
     handleMobileMenuClose();
-    console.log('create post');
     navigate('/user/create-post')
   }, [handleMobileMenuClose]);
 
@@ -66,10 +68,10 @@ function CombinedAppBar({ handleDrawerToggle }) {
     setMobileMoreAnchorEl(event.currentTarget);
   }, []);
 
-  const handleEditProfile=useCallback(()=>{
+  const handleEditProfile = useCallback(() => {
     handleMobileMenuClose();
     navigate('/user/profile');
-  },[navigate,handleMobileMenuClose])
+  }, [navigate, handleMobileMenuClose])
 
 
   const menuId = 'primary-search-account-menu';
@@ -93,7 +95,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
     >
       <MenuItem>
         <IconButton size="large" color="inherit" onClick={handleCreatePost}>
-            <AddIcon  />
+          <AddIcon />
         </IconButton>
         <p>Create Post</p>
       </MenuItem>
@@ -137,6 +139,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
             <MenuIcon />
           </IconButton>
           <AdbIcon sx={{ display: 'flex', mr: 2 }} />
+          <Tooltip title="Go to Home Page" placement="right" arrow>
           <Typography
             variant="h6"
             noWrap
@@ -146,6 +149,8 @@ function CombinedAppBar({ handleDrawerToggle }) {
           >
             LOGO
           </Typography>
+            </Tooltip>
+          
           <Box sx={{ flexGrow: 1 }} />
           {/* <Search>
             <SearchIconWrapper>
@@ -158,9 +163,13 @@ function CombinedAppBar({ handleDrawerToggle }) {
           </Search> */}
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" onClick={handleCreatePost} color="inherit">
-                <AddIcon />
-            </IconButton>
+            <Tooltip title="Create Post" arrow>
+              <Button onClick={handleCreatePost}  variant="contained" startIcon={<AddIcon />} sx={{borderRadius: 28}} disableElevation>
+                Create
+              </Button>
+            </Tooltip>
+            
+            <Tooltip title="Notifications" arrow>
             <IconButton
               size="large"
               aria-label="show 17 new notifications"
@@ -170,6 +179,8 @@ function CombinedAppBar({ handleDrawerToggle }) {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
+            </Tooltip>
+            <Tooltip title="Profile" arrow>
             <IconButton
               size="large"
               edge="end"
@@ -181,6 +192,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
             >
               <AccountCircle />
             </IconButton>
+            </Tooltip>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
