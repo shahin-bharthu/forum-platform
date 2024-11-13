@@ -46,4 +46,18 @@ const getForumsByCreator = async (id) => {
     return await db.Forum.findAll({ where: { createdBy: id } });
 }
 
-export {getForums, createForum, getForumById, getForumsByCreator, getForumByForumId, updateForum}
+const archiveForum = async (id) => {
+    const forumToBeArchived = await db.Forum.findByPk(id);
+     if (!forumToBeArchived) {
+            throw new CustomError('Forum not found', 404);
+        }
+        await forumToBeArchived.update({
+            isActive: false
+        });
+
+        await forumToBeArchived.save();
+
+        return forumToBeArchived;
+}
+
+export {getForums, createForum, getForumById, getForumsByCreator, getForumByForumId, updateForum, archiveForum}

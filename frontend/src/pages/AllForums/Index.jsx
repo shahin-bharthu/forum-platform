@@ -12,6 +12,7 @@ export default function AllForums() {
   const navigate = useNavigate();
   const [subscribableForumsState, setSubscribableForumsState] = useState(subscribableForums);
   const [message, setMessage] = useState();
+  const [counter, setCounter] = useState(0);
   
 
   const handleSubscribe = async (event, forumId) => {
@@ -33,7 +34,9 @@ export default function AllForums() {
 
       setTimeout(() => {
         setMessage(null);
-        window.location.reload();
+        // window.location.reload();
+        setCounter((val) => val + 1);
+        navigate('/user/forums')
       }, 1000);
 
 
@@ -73,7 +76,6 @@ export default function AllForums() {
           <h2>Subscribed Forums</h2>
           <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 3, sm: 8, md: 12 }} sx={{ mx: 1, py: 1, justifyContent: 'center', alignContent: 'center' }}>
           {subscribedForums.map((forum) => {
-            // const canSubscribe = subscribableForumsState.includes(forum.forum_id);
             return (
               <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
                 <MediaCard
@@ -97,7 +99,6 @@ export default function AllForums() {
           <h2>More Forums</h2>
           <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 3, sm: 8, md: 12 }} sx={{ mx: 1, py: 1, justifyContent: 'center', alignContent: 'center' }}>
           {subscribableForums.map((forum) => {
-            // const canSubscribe = subscribableForumsState.includes(forum.forum_id);
             return (
               <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
                 <MediaCard
@@ -131,12 +132,10 @@ export async function allForumLoader() {
       withCredentials: true,
     });
     const subscribableForumsData = subscribableForums.data.data
-    // const subscribableForumIds = subscribableForumsData.map(forum => forum.forum_id)
     
     return {
       subscribedForums: subscribedForumsData,
       subscribableForums: subscribableForumsData,
-      // empty: !subscribedForumsData || !subscribableForumsData
       subscribableEmpty: subscribableForumsData.length === 0,
       subscribedEmpty:subscribedForumsData.length === 0
     };

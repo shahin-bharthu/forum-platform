@@ -46,4 +46,15 @@ const getForumsByCreator = async (id) => {
     return {publicUserForums, privateUserForums, archivedUserForums};
 }
 
-export { getForums, createForum, getForumById, getForumsByCreator, updateForum }
+
+const archiveForum = async (id) => {
+    // const forumToBeArchived = await forumRepository.getForumById(id);
+
+    // if (!forumToBeArchived) {
+    //     throw new CustomError("Forum to be archived not found", 404);
+    // }
+
+    return await forumRepository.archiveForum(id);
+}
+
+export { getForums, createForum, getForumById, getForumsByCreator, updateForum, archiveForum }

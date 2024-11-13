@@ -113,4 +113,12 @@ const getSubscribedForums = asyncErrorHandler(async (req,res,next) => {
     return res.json({message: "subscribed forums list", data: subscribedForumsData});
 })
 
-export { getForums, createForum, getForumById, getForumsByCreator, subscribeToForum, getForumsToSubscribe, updateForum, getSubscribedForums }
+
+const archiveForum = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.params;
+    const archivedForum = await forumServices.archiveForum(id);
+
+    return res.json({message: 'Forum archived', data: archivedForum})
+})
+
+export { getForums, createForum, getForumById, getForumsByCreator, subscribeToForum, getForumsToSubscribe, updateForum, getSubscribedForums, archiveForum }

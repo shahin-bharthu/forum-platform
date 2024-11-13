@@ -21,7 +21,8 @@ export default function MediaCard({
   onViewDetails,
   myForum, 
   onEditForum,
-  isArchived
+  isArchived,
+  onArchive
 }) {
   const token = useRouteLoaderData("user");
 
@@ -63,7 +64,7 @@ export default function MediaCard({
           </Tooltip>
           {!isArchived && 
           <Tooltip title="Archive Forum">
-            <IconButton color="primary" aria-label="archive">
+            <IconButton color="primary" aria-label="archive" onClick={onArchive}>
               <ArchiveIcon />
             </IconButton>
           </Tooltip>

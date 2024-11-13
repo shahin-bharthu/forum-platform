@@ -3,12 +3,8 @@ import Grid from '@mui/material/Grid2';
 import MediaCard from './Components/Card';
 import axios from 'axios';
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { Button, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-
-
 import Fab from '@mui/material/Fab';
-// import AddIcon from '@mui/icons-material/Add';
 
 export function FloatingActionButtons({onClick}) {
   return (
@@ -28,7 +24,6 @@ export default function MyForum() {
 
   const { privateForums, publicForums, archivedForums, empty } = useLoaderData();
   const navigate=useNavigate()
-  // console.log(privateForums,publicForums,archivedForums);
   
   const handleCreate=()=>{
     navigate('/user/add-forum')
@@ -56,6 +51,15 @@ export default function MyForum() {
   const handleViewDetails = (event, forum_id) => {
     event.preventDefault();
     navigate(`/forum/${forum_id}`);
+  }
+
+  const handleArchiveForum = async (event, id) => {
+    event.preventDefault();
+    console.log("in archive forum");
+    const response = await axios.patch(`http://localhost:8080/forum/archive/${id}`, null, {
+      withCredentials: true
+    })
+    console.log(response);
   }
 
   return (
@@ -92,6 +96,9 @@ export default function MyForum() {
                       handleEditForum(event, forum.forum_id)
                     }
                     isArchived={false}
+                    onArchive={(event) => 
+                      handleArchiveForum(event, forum.id)
+                    }
                   />
                 </Grid>
               ))}
@@ -131,6 +138,9 @@ export default function MyForum() {
                     handleEditForum(event, forum.forum_id)
                   }
                   isArchived={false}
+                  onArchive={(event) => 
+                    handleArchiveForum(event, forum.id)
+                  }
                 />
               </Grid>
             ))}
@@ -169,6 +179,7 @@ export default function MyForum() {
                     handleEditForum(event, forum.forum_id)
                   }
                   isArchived={true}
+                  onArchive={null}
                 />
               </Grid>
             ))}
@@ -189,9 +200,6 @@ export async function forumLoader() {
     const publicForums = response.data.publicUserForums;
     const privateForums = response.data.privateUserForums;
     const archivedForums = response.data.archivedUserForums;
-    console.log("Public forums",publicForums);
-    console.log("Private forums",privateForums);
-    console.log("Archived forums",archivedForums);
     
     return {
       publicForums,
