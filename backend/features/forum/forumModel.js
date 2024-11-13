@@ -21,7 +21,7 @@ export default (sequelize, Sequelize) => {
         },
         isPublic: {
             type: Sequelize.BOOLEAN,
-            defaultValue: false
+            defaultValue: true
         },
         isActive: {
             type: Sequelize.BOOLEAN,
@@ -33,7 +33,7 @@ export default (sequelize, Sequelize) => {
         },
         subscriber_count: {
             type: Sequelize.BIGINT,
-            defaultValue: 0
+            defaultValue: 1
           },        
         createdBy: {
             type: Sequelize.UUID,

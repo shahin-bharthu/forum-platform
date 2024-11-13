@@ -4,61 +4,23 @@ import TextInputField from "./Components/TextInput.jsx";
 import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import CustomButton from "../../components/Button";
 import axios from "axios";
-import { z } from "zod";
 import Button from "@mui/material/Button";
-import { Navigate, useLoaderData, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { Card, Stack } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 
 const Index = ({isEdit}) => {
-  const token = useRouteLoaderData('root');
   const forumData = useLoaderData();
   const nameInput = useRef();
   const purposeInput = useRef();
 
   const navigate=useNavigate()
-  const [isPublic, setIsPublic] = useState(true); // Default to true
+  const [isPublic, setIsPublic] = useState(true); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState({});
-
-  const userSchema = z.object({
-    name: z.string()
-      .superRefine((val, ctx) => {
-        if (val.length === 0) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "name is required",
-          });
-        } else if (!z.string().safeParse(val).success) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Invalid name",
-          });
-        }
-      }),
-  });
-
-  const validateForm = (formData) => {
-    try {
-      userSchema.parse(formData);
-      setErrors({});
-      return true;
-    } catch (error) {
-      console.log("ERROR IN VALIDATEFORM: ", error);
-      
-      if (error instanceof z.ZodError) {
-        const newErrors = {};
-        error.errors.forEach((err) => {
-          newErrors[err.path[0]] = err.message;
-        });
-        setErrors(newErrors);
-      }
-      return false;
-    }
-  };
 
   const handleInputChange = (event) => {
     const { name } = event.target;
@@ -72,25 +34,19 @@ const Index = ({isEdit}) => {
     setErrorMessage("");
   };
 
-  const handleSwitchToggle = (event) => {
-    setIsPublic(event.target.checked);
+  const handleSwitchToggle = (event) => {    
+    setIsPublic(prevState => event.target.checked);
   };
 
   async function createForumHandler(event) {
-    event.preventDefault();
-    console.log("in create");
-    
+    event.preventDefault();    
 
     const enteredName = nameInput.current.value.trim();
     const enteredPurpose = purposeInput.current.value.trim();
     const forumIsPublic = isPublic; 
 
     const formData = { name: enteredName, purpose: enteredPurpose, isPublic: forumIsPublic };
-    console.log(formData);
     
-    if (!validateForm(formData)) {      
-      return;
-    }
     setErrorMessage("");
     setErrors({});
 
@@ -116,17 +72,12 @@ const Index = ({isEdit}) => {
 
   async function editForumHandler(event, id, forum_id) {
     event.preventDefault();
-    console.log("in edit");
     
     const enteredPurpose = purposeInput.current.value.trim();
     const forumIsPublic = isPublic; 
 
     const formData = { purpose: enteredPurpose, isPublic: forumIsPublic };
-    console.log(formData);
-    
-    // if (!validateForm(formData)) {      
-    //   return;
-    // }
+
     setErrorMessage("");
     setErrors({});
 
@@ -136,6 +87,7 @@ const Index = ({isEdit}) => {
         "Content-Type": "application/json",
         withCredentials: true
       });
+      
       setSuccessMessage(response.data.message);
       setIsSubmitting(false);
       setTimeout(() => {
@@ -186,14 +138,12 @@ const Index = ({isEdit}) => {
           reference={purposeInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
-          // isDisabled={isEdit}
           value={isEdit ? forumData.purpose:null}
         />
         
         <FormControlLabel 
           control={<Switch checked={isPublic} onChange={handleSwitchToggle} />} 
-          label="Keep forum private" 
-          sx={{m:0,pt:2}}
+          label="Keep forum public" 
         />
         
         <Stack spacing={2} direction="row" sx={{m:1,pt:2, justifyContent:'center'}}>
@@ -218,8 +168,6 @@ export async function forumDetailsLoader({params}) {
   const forum_id = params.forum_id
   if (forum_id) {
     const response = await axios.get(`http://localhost:8080/forum/${forum_id}`, {withCredentials: true});
-    console.log(response.data.data);
-    // const forumData = response.data.data
     return response.data.data
   }
   else {
