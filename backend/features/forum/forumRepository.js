@@ -5,6 +5,7 @@ const createForum = async (forumData) => {
     const forum = await db.Forum.create({
         name: forumData.name,
         purpose: forumData.purpose,
+        isPublic: forumData.isPublic,
         createdBy: forumData.createdBy,
         forum_id: forumData.forum_id
     });

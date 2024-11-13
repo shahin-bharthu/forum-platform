@@ -27,7 +27,6 @@ const userLogin = asyncErrorHandler(async (req, res, next) => {
 
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
     const expirationDate = new Date(Date.now() + 3600000); // Set expiration date to 1 hour from now
-    console.log(expirationDate);
     
     res.cookie('token', token, {
         maxAge: 3600000,

@@ -36,7 +36,14 @@ const getForumById = async (id) => {
 }
 
 const getForumsByCreator = async (id) => {
-    return await forumRepository.getForumsByCreator(id);
+    const userForums = await forumRepository.getForumsByCreator(id);
+    const publicUserForums = userForums.filter(userForum => userForum.isPublic === true && userForum.isActive === true)
+    
+    const privateUserForums = userForums.filter(userForum => userForum.isPublic === false && userForum.isActive === true)
+    
+    const archivedUserForums = userForums.filter(userForum => userForum.isActive === false)
+    
+    return {publicUserForums, privateUserForums, archivedUserForums};
 }
 
 export { getForums, createForum, getForumById, getForumsByCreator, updateForum }

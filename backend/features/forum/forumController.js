@@ -4,8 +4,8 @@ import { db } from "../../config/connection.js";
 
 const createForum = asyncErrorHandler(async (req,res,next) => {
     const createdBy = req.user.id
-    const {name, purpose} = req.body;
-    const forum = await forumServices.createForum({name, purpose, createdBy});
+    const {name, purpose, isPublic} = req.body;
+    const forum = await forumServices.createForum({name, purpose, isPublic, createdBy});
     
     return res.status(201).json({message: "Forum created successfully", data: forum});
 })
@@ -19,6 +19,7 @@ const updateForum = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.params;
     const userId = req.user.id;
     const body = req.body;
+    
     const data = forumServices.updateForum(id, userId, body);
 
     return res.status(200).json({message: "Forum details have been updated successfully", data: data});
@@ -32,8 +33,8 @@ const getForumById = asyncErrorHandler(async (req,res,next) => {
 
 const getForumsByCreator = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.user;
-    const forums = await forumServices.getForumsByCreator(id);
-    return res.status(200).json({message: "Forums fetched successfully", data: forums});
+    const {publicUserForums, privateUserForums, archivedUserForums} = await forumServices.getForumsByCreator(id);
+    return res.status(200).json({message: "Forums fetched successfully",  publicUserForums, privateUserForums, archivedUserForums});
 })
 
 const subscribeToForum = asyncErrorHandler(async(req,res,next) => {
