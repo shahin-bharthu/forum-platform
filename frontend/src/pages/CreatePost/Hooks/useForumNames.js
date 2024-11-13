@@ -12,14 +12,15 @@ const useForumNames = () => {
                 const userForumResponse = await axios.get('http://localhost:8080/forum/my-forums', {
                     withCredentials: true
                 });
-                const userForumData = userForumResponse.data.data
+                const userPublicForumData = userForumResponse.data.publicUserForums
+                const userPrivateForumData = userForumResponse.data.privateUserForums
 
                 const subbedForumResponse = await axios.get('http://localhost:8080/forum/subscribed-forums', {
                     withCredentials: true
                 });
 
                 const subbedForumData=subbedForumResponse.data.data
-                setForums([...userForumData, ...subbedForumData])
+                setForums([...userPublicForumData,...userPrivateForumData, ...subbedForumData])
 
                 setError(null);
             } catch (error) {

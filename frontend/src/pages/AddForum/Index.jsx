@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { IconButton, Tooltip } from "@mui/material";
+import { Card, Stack } from "@mui/material";
 
 const Index = ({isEdit}) => {
   const forumData = useLoaderData();

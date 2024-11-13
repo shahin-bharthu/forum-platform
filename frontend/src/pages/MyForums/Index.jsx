@@ -28,12 +28,15 @@ export default function MyForum() {
 
   const { privateForums, publicForums, archivedForums, empty } = useLoaderData();
   const navigate=useNavigate()
-
+  // console.log(privateForums,publicForums,archivedForums);
+  
   const handleCreate=()=>{
     navigate('/user/add-forum')
   }
   
   if (empty) {
+    console.log('in empty');
+    
     return (
       <>
       <Box>
@@ -58,8 +61,7 @@ export default function MyForum() {
   return (
     <>
       <Box sx={{ flexGrow: 1 , mt:10}}>
-        {publicForums && (
-          
+        {publicForums.length > 0 && (
           <Grid size={12}>
             <h2>Public Forums</h2><br/>
             <Grid
@@ -98,7 +100,7 @@ export default function MyForum() {
           
         )}
 
-        {privateForums && (
+        {privateForums.length >0 && (
           <Grid size={12}>
             <h2>Private Forums</h2> <br />
           <Grid
@@ -136,7 +138,7 @@ export default function MyForum() {
           </Grid>
         )}
 
-        {archivedForums && (
+        {archivedForums.length >0  && (
           <Grid size={12}>
           <h2>Archived Forums</h2> <br />
           <Grid
@@ -187,12 +189,15 @@ export async function forumLoader() {
     const publicForums = response.data.publicUserForums;
     const privateForums = response.data.privateUserForums;
     const archivedForums = response.data.archivedUserForums;
+    console.log("Public forums",publicForums);
+    console.log("Private forums",privateForums);
+    console.log("Archived forums",archivedForums);
     
     return {
       publicForums,
       privateForums,
       archivedForums,
-      empty: !publicForums || publicForums.length === 0 || !privateForums || privateForums.length === 0 || !archivedForums || archivedForums.length === 0
+      empty: !publicForums && publicForums.length === 0 && !privateForums && privateForums.length === 0 && !archivedForums && archivedForums.length === 0
     };
 
   } catch (error) {

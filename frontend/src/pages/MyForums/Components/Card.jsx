@@ -40,10 +40,10 @@ export default function MediaCard({
     <Card sx={{ maxWidth: 345, height: 300 }}>
       <CardMedia sx={{ height: 140 }} image={logo} title="green iguana" />
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
+        <Typography gutterBottom variant="h5" component="div" sx={{width:'90%',textOverflow:'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', px: 2}}>
           {name}
         </Typography>
-        <Typography variant="body2" sx={{ color: "text.secondary" , width:250,textOverflow:'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', display:'inline-block', px: 2}}>
+        <Typography variant="body2" sx={{ color: "text.secondary" , width:'90%',textOverflow:'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', display:'inline-block', px: 2}}>
           {purpose}
         </Typography>
       </CardContent>
