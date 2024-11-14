@@ -67,7 +67,7 @@ export default function Index() {
         dt2: 20,
         dt3: 30,
       });
-      
+
     } catch (error) {
       console.error("Failed to fetch user details:", error);
     }

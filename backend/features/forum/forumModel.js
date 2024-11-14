@@ -29,7 +29,7 @@ export default (sequelize, Sequelize) => {
         },
         logo: {
             type: Sequelize.STRING,
-            defaultValue: "https://blog.cengage.com/wp-content/uploads/2023/11/tl-discussion-boards-1551827-1024x351.png"
+            defaultValue: "forumLogos/defaultAvatar.png"
         },
         subscriber_count: {
             type: Sequelize.BIGINT,

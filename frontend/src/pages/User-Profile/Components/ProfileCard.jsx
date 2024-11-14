@@ -124,8 +124,6 @@ export default function ProfileCard(props) {
       };
       reader.readAsDataURL(file.data);
     }
-    
-
   };
 
   //Handles the submit of the aavtar image to send to the backend

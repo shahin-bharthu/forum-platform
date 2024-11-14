@@ -33,7 +33,6 @@ const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
     const user = await userService.updateUserAvatar(id, {avatar});
     
     return res.status(200).json({message: 'Your avatar has been updated!', user: user})
-
 })
 
 // const getAvatar = asyncErrorHandler(async (req, res, next)=> {
@@ -107,7 +106,6 @@ const getAvatar = asyncErrorHandler(async (req, res, next) => {
 //     }
 //   }
 // });
-
 
 
 export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatar}

@@ -1,5 +1,19 @@
 import { Router } from 'express';
-import { getForums, createForum, getForumById, getForumsByCreator, subscribeToForum, unSubscribeForum, getForumsToSubscribe, updateForum, getSubscribedForums, archiveForum } from './forumController.js';
+import {
+  getForums,
+  createForum,
+  getForumById,
+  getForumsByCreator,
+  subscribeToForum,
+  unSubscribeForum,
+  getForumsToSubscribe,
+  updateForum,
+  getSubscribedForums,
+  archiveForum,
+  updateForumBanner,
+  getForumBanner
+} from "./forumController.js";
+import upload from '../../util/uploadForumBanner.js';
 
 const router = Router();
 
@@ -13,5 +27,8 @@ router.post('/subscribe/:forum_id', subscribeToForum);
 router.post('/unsubscribe/:forum_id', unSubscribeForum);
 router.get('/:id', getForumById)
 router.patch('/:id', updateForum)
+router.put('/banner/:id', upload.single('banner'), updateForumBanner);
+router.get('/banner/:id', getForumBanner);
+
 
 export default router;

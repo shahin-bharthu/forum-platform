@@ -1,7 +1,9 @@
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 import * as forumServices from "./forumServices.js";
 import { db } from "../../config/connection.js";
+import { promises as fs } from 'fs';
 import { CustomError } from "../../util/customError.js";
+import path from 'path';
 
 const createForum = asyncErrorHandler(async (req,res,next) => {
     const createdBy = req.user.id
@@ -148,7 +150,6 @@ const getSubscribedForums = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.user;
     const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
     const subscribedForumIds = subscribedForums.map(membership => membership.forum_id);
-
     const subscribedForumsData = await Promise.all(subscribedForumIds.map(async (subscribedForum) => {
         return await db.Forum.findByPk(subscribedForum)
     }));
@@ -164,6 +165,48 @@ const archiveForum = asyncErrorHandler(async (req,res,next) => {
     return res.json({message: 'Forum archived', data: archivedForum})
 })
 
+
+const updateForumBanner = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.params;
+    const banner = req.file?.path ?? "";
+    
+    const forum = await forumServices.updateForumBanner(id, {logo: banner});
+    
+    return res.status(200).json({message: 'Your banner has been updated!', forum})
+});
+
+
+//for linux
+const getForumBanner = asyncErrorHandler(async (req, res, next) => {
+    const forumId = req.params.id;
+    const forum = await db.Forum.findByPk(forumId);
+    
+    const filepath = forum.logo.split('/');
+    const fileName = filepath[filepath.length - 1];
+    
+    if (!fileName) {
+      return res.status(404).json({
+        status: 'failed',
+        message: 'Banner not found',
+      });
+    } else {
+      const filePath = path.join(import.meta.url.replace('file://', ''), '../../../forumLogos', fileName);
+      
+      try {
+        await fs.access(filePath); 
+        
+        res.sendFile(fileName, {
+          root: path.join(new URL('../../forumLogos', import.meta.url).pathname),
+        });
+      } catch (err) {
+        return res.status(404).json({
+          status: 'failed',
+          message: 'Banner not found',
+        });
+      }
+    }
+});
+
 export {
   getForums,
   createForum,
@@ -174,5 +217,7 @@ export {
   updateForum,
   getSubscribedForums,
   archiveForum,
-  unSubscribeForum
+  unSubscribeForum,
+  updateForumBanner,
+  getForumBanner
 };

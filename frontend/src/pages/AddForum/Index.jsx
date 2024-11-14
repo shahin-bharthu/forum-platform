@@ -9,6 +9,7 @@ import { useLoaderData, useNavigate } from "react-router-dom";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { Card, Stack } from "@mui/material";
+import ForumBannerUpload from "./Components/BannerUpload.jsx";
 
 const Index = ({isEdit}) => {
   const forumData = useLoaderData();
@@ -140,7 +141,9 @@ const Index = ({isEdit}) => {
           onFocus={handleInputFocus}
           value={isEdit ? forumData.purpose:null}
         />
-        
+
+        <ForumBannerUpload forumId={forumData.id}></ForumBannerUpload>
+
         <FormControlLabel 
           control={<Switch checked={isPublic} onChange={handleSwitchToggle} />} 
           label="Keep forum public" 
@@ -167,7 +170,7 @@ export default Index;
 export async function forumDetailsLoader({params}) {
   const forum_id = params.forum_id
   if (forum_id) {
-    const response = await axios.get(`http://localhost:8080/forum/${forum_id}`, {withCredentials: true});
+    const response = await axios.get(`http://localhost:8080/forum/${forum_id}`, {withCredentials: true});    
     return response.data.data
   }
   else {

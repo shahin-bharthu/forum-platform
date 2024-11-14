@@ -1,5 +1,6 @@
 import { db } from "../../config/connection.js";
 import { CustomError } from "../../util/customError.js";
+import deleteFile from "../../util/deleteFile.js";
 
 const createForum = async (forumData) => {
     const forum = await db.Forum.create({
@@ -60,4 +61,23 @@ const archiveForum = async (id) => {
         return forumToBeArchived;
 }
 
-export {getForums, createForum, getForumById, getForumsByCreator, getForumByForumId, updateForum, archiveForum}
+
+const updateForumBanner = async (id, { logo }) => {
+    const forum = await db.Forum.findByPk(id);
+    if (!forum) {
+        throw new Error('Forum not found');
+    }
+    const oldAvatarPath = forum.logo;
+    await forum.update({
+        logo,
+    });
+
+    await forum.save();
+    if (oldAvatarPath && oldAvatarPath !== 'forumLogos/defaultAvatar.png') {        
+        deleteFile(`../${oldAvatarPath}`);
+    }
+
+    return forum;
+};
+
+export {getForums, createForum, getForumById, getForumsByCreator, getForumByForumId, updateForum, archiveForum, updateForumBanner}
