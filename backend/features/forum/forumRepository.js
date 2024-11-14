@@ -52,7 +52,7 @@ const archiveForum = async (id) => {
             throw new CustomError('Forum not found', 404);
         }
         await forumToBeArchived.update({
-            isActive: false
+            isActive: !forumToBeArchived.isActive
         });
 
         await forumToBeArchived.save();

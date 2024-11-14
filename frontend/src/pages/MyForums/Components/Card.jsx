@@ -11,6 +11,7 @@ import { IconButton, Stack, Tooltip } from '@mui/material';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import InfoIcon from '@mui/icons-material/Info';
+import UnarchiveIcon from '@mui/icons-material/Unarchive';
 
 export default function MediaCard({
   name,
@@ -61,11 +62,18 @@ export default function MediaCard({
             <IconButton color="primary" aria-label="edit-note" sx={{'& .MuiCardActions-root': {ml: 0}}} onClick={onEditForum}>
               <EditNoteIcon />
             </IconButton>
-          </Tooltip>
+          </Tooltip> 
           {!isArchived && 
           <Tooltip title="Archive Forum">
             <IconButton color="primary" aria-label="archive" onClick={onArchive}>
               <ArchiveIcon />
+            </IconButton>
+          </Tooltip>
+          }
+          {isArchived && 
+          <Tooltip title="Unarchive Forum">
+            <IconButton color="primary" aria-label="un-archive" onClick={onArchive}>
+              <UnarchiveIcon />
             </IconButton>
           </Tooltip>
           }

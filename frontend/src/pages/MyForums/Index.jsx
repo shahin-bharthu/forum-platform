@@ -5,6 +5,8 @@ import axios from 'axios';
 import { useLoaderData, useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
+import { useState } from 'react';
+import PositionedSnackbar from '../../components/SnackBar';
 
 export function FloatingActionButtons({onClick}) {
   return (
@@ -20,9 +22,10 @@ export function FloatingActionButtons({onClick}) {
     </Box>
   );
 }
-export default function MyForum() {
 
+export default function MyForum() {
   const { privateForums, publicForums, archivedForums, empty } = useLoaderData();
+  const [message, setMessage] = useState();
   const navigate=useNavigate()
   
   const handleCreate=()=>{
@@ -53,18 +56,31 @@ export default function MyForum() {
     navigate(`/forum/${forum_id}`);
   }
 
-  const handleArchiveForum = async (event, id) => {
+  const handleArchiveForum = async (event, id, archiving) => {
     event.preventDefault();
-    console.log("in archive forum");
     const response = await axios.patch(`http://localhost:8080/forum/archive/${id}`, null, {
       withCredentials: true
     })
-    console.log(response);
+    
+    if (archiving) {
+      setMessage(`Archived forum ${response.data.data.name}`);
+    }
+    else {
+      setMessage(`Unarchived forum ${response.data.data.name}`);
+    }
+    setTimeout(() => {
+      setMessage(null);
+      navigate('/user/my-forums')
+    }, 1000);
   }
+
 
   return (
     <>
       <Box sx={{ flexGrow: 1 , mt:10}}>
+        {message && (
+          <PositionedSnackbar message={message} />
+        )}
         {publicForums.length > 0 && (
           <Grid size={12}>
             <h2>Public Forums</h2><br/>
@@ -97,7 +113,7 @@ export default function MyForum() {
                     }
                     isArchived={false}
                     onArchive={(event) => 
-                      handleArchiveForum(event, forum.id)
+                      handleArchiveForum(event, forum.id, true)
                     }
                   />
                 </Grid>
@@ -139,7 +155,7 @@ export default function MyForum() {
                   }
                   isArchived={false}
                   onArchive={(event) => 
-                    handleArchiveForum(event, forum.id)
+                    handleArchiveForum(event, forum.id, true)
                   }
                 />
               </Grid>
@@ -179,7 +195,9 @@ export default function MyForum() {
                     handleEditForum(event, forum.forum_id)
                   }
                   isArchived={true}
-                  onArchive={null}
+                  onArchive={(event) => 
+                    handleArchiveForum(event, forum.id, false)
+                  }
                 />
               </Grid>
             ))}

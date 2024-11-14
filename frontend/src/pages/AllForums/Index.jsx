@@ -26,8 +26,8 @@ export default function AllForums() {
           withCredentials: true,
         }
       );
-
-      setMessage(`Subscribed to ${forumId}`);
+      
+      setMessage(`Subscribed to ${response.data.data.name}`);
       setSubscribableForumsState((prevState) =>
         prevState.filter((id) => id !== forumId)
       );

@@ -1,6 +1,7 @@
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 import * as forumServices from "./forumServices.js";
 import { db } from "../../config/connection.js";
+import { CustomError } from "../../util/customError.js";
 
 const createForum = asyncErrorHandler(async (req,res,next) => {
     const createdBy = req.user.id
@@ -41,11 +42,64 @@ const subscribeToForum = asyncErrorHandler(async(req,res,next) => {
     const { forum_id } = req.params;
     const { id } = req.user; 
 
+    const forum = await db.Forum.findOne({ where: { forum_id: forum_id } });
+        
+    if (!forum) {
+        throw new CustomError('Forum not found', 404)
+    }
+
+    if (forum.createdBy === id) {
+        throw new CustomError('Cannot subscribe', 500)
+    }
+
+    const existingMembership = await db.UserMembership.findOne({
+        where: {
+            user_id: id,
+            forum_id: forum.id,
+        },
+    });
+
+    if (existingMembership) {
+        return res.status(409).json({ message: 'User is already subscribed to this forum' });
+    }
+
+    // increment subscriber count and save updated forum
+    forum.subscriber_count += 1;
+    await forum.save(); 
+
+    // add forum to user's memberships
+    const user = await db.User.findByPk(id); 
+
+    if (!user) {
+        throw new CustomError('User not found', 404)
+    }
+
+    await db.UserMembership.create({
+        user_id: id,
+        forum_id: forum.id,
+    });
+
+    return res.status(201).json({ message: 'Subscribed successfully', data: forum });
+});
+
+
+const unSubscribeForum = asyncErrorHandler(async(req,res,next) => {
+    const { forum_id } = req.params;
+    const { id } = req.user; 
+
     try {
         const forum = await db.Forum.findOne({ where: { forum_id: forum_id } });
         
         if (!forum) {
             return res.status(404).json({ message: 'Forum not found' });
+        }
+        console.log(forum.createdBy);
+        console.log(id);
+        
+
+        const user = await db.User.findByPk(id); 
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
 
         const existingMembership = await db.UserMembership.findOne({
@@ -55,27 +109,16 @@ const subscribeToForum = asyncErrorHandler(async(req,res,next) => {
             },
         });
 
-        if (existingMembership) {
-            return res.status(409).json({ message: 'User is already subscribed to this forum' });
+        if (!existingMembership) {
+            return res.status(404).json({ message: 'Subscription record does not exist', data: forum });
         }
 
-        // increment subscriber count and save updated forum
-        forum.subscriber_count += 1;
+        await existingMembership.destroy();
+
+        forum.subscriber_count -= 1;
         await forum.save(); 
 
-        // add forum to user's memberships
-        const user = await db.User.findByPk(id); 
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        await db.UserMembership.create({
-            user_id: id,
-            forum_id: forum.id,
-        });
-
-        return res.status(201).json({ message: 'Subscribed successfully', data: forum });
+        return res.status(201).json({ message: 'Unsubscribed from forum', data: forum });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'An error occurred', error: error.message });
@@ -121,4 +164,15 @@ const archiveForum = asyncErrorHandler(async (req,res,next) => {
     return res.json({message: 'Forum archived', data: archivedForum})
 })
 
-export { getForums, createForum, getForumById, getForumsByCreator, subscribeToForum, getForumsToSubscribe, updateForum, getSubscribedForums, archiveForum }
+export {
+  getForums,
+  createForum,
+  getForumById,
+  getForumsByCreator,
+  subscribeToForum,
+  getForumsToSubscribe,
+  updateForum,
+  getSubscribedForums,
+  archiveForum,
+  unSubscribeForum
+};
