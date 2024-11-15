@@ -8,8 +8,8 @@ export default (sequelize, Sequelize) => {
         forum_id: {
             type: Sequelize.UUID,
             allowNull: false,
-            onUpdate: "cascade",
-            onDelete: "cascade",
+            // onUpdate: "cascade",
+            // onDelete: "cascade",
             references: { model: "forums", key: "id" },
         },
         title: {
@@ -27,8 +27,8 @@ export default (sequelize, Sequelize) => {
         createdBy: {
             type: Sequelize.UUID,
             allowNull: false,
-            onUpdate: "cascade",
-            onDelete: "cascade",
+            // onUpdate: "cascade",
+            // onDelete: "cascade",
             references: { model: "users", key: "id" },
         }
     }, 

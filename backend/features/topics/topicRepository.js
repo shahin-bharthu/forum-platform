@@ -1,6 +1,16 @@
 import { db } from "../../config/connection.js";
+import { CustomError } from "../../util/customError.js";
 
 const createTopic = async (topicData) => {
+    const forumExists = await db.Forum.findByPk(topicData.forum_id);
+    if (!forumExists) {
+        throw new CustomError('Forum not found', 404);
+    }
+
+    const subscribedForum = await db.UserMembership.findOne()
+    // if (forumExists.createdBy !== topicData.createdBy || ) {
+        
+    // }
     const topic = await db.Topic.create({
         title: topicData.title,
         content: topicData.content,

@@ -142,7 +142,7 @@ const Index = ({isEdit}) => {
           value={isEdit ? forumData.purpose:null}
         />
 
-        <ForumBannerUpload forumId={forumData.id}></ForumBannerUpload>
+        {isEdit && <ForumBannerUpload forumId={forumData.id}></ForumBannerUpload>}
 
         <FormControlLabel 
           control={<Switch checked={isPublic} onChange={handleSwitchToggle} />} 

@@ -47,18 +47,21 @@ const getForumsByCreator = async (id) => {
     return await db.Forum.findAll({ where: { createdBy: id } });
 }
 
-const archiveForum = async (id) => {
+const archiveForum = async (userId, id) => {
     const forumToBeArchived = await db.Forum.findByPk(id);
-     if (!forumToBeArchived) {
-            throw new CustomError('Forum not found', 404);
-        }
-        await forumToBeArchived.update({
-            isActive: !forumToBeArchived.isActive
-        });
+    if (!forumToBeArchived) {
+        throw new CustomError('Forum not found', 404);
+    }
+    // if (forumToBeArchived.createdBy !== id) {
+    //     throw new CustomError('Unauthorized to archive forum', 401);
+    // }
+    await forumToBeArchived.update({
+        isActive: !forumToBeArchived.isActive
+    });
 
-        await forumToBeArchived.save();
+    await forumToBeArchived.save();
 
-        return forumToBeArchived;
+    return forumToBeArchived;
 }
 
 

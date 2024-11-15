@@ -47,8 +47,8 @@ const getForumsByCreator = async (id) => {
 }
 
 
-const archiveForum = async (id) => {
-    return await forumRepository.archiveForum(id);
+const archiveForum = async (userId, id) => {
+    return await forumRepository.archiveForum(userId, id);
 }
 
 const updateForumBanner = async (id, {logo}) => {
