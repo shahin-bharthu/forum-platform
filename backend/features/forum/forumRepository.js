@@ -83,4 +83,12 @@ const updateForumBanner = async (id, { logo }) => {
     return forum;
 };
 
-export {getForums, createForum, getForumById, getForumsByCreator, getForumByForumId, updateForum, archiveForum, updateForumBanner}
+const getTopicByForumId = async (forumId) => {
+    const topic = await db.Topic.findAll({where: {forum_id: forumId}});
+    if (!topic) {
+        throw new CustomError('Topic not found for given forum', 404)
+    }
+    return topic
+}
+
+export {getForums, createForum, getForumById, getForumsByCreator, getForumByForumId, updateForum, archiveForum, updateForumBanner, getTopicByForumId}

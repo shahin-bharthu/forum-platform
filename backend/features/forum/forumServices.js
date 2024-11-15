@@ -55,4 +55,8 @@ const updateForumBanner = async (id, {logo}) => {
     return await forumRepository.updateForumBanner(id, {logo});
 }
 
-export { getForums, createForum, getForumById, getForumsByCreator, updateForum, archiveForum, updateForumBanner }
+const getTopicByForumId = async (forumId) => {
+    return await forumRepository.getTopicByForumId(forumId);
+}
+
+export { getForums, createForum, getForumById, getForumsByCreator, updateForum, archiveForum, updateForumBanner, getTopicByForumId }

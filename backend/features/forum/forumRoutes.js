@@ -11,22 +11,24 @@ import {
   getSubscribedForums,
   archiveForum,
   updateForumBanner,
-  getForumBanner
+  getForumBanner,
+  getTopicByForumId
 } from "./forumController.js";
 import upload from '../../util/uploadForumBanner.js';
 
 const router = Router();
 
-router.get('/', getForums)
-router.post('/', createForum)
-router.get('/my-forums', getForumsByCreator)
+router.get('/', getForums);
+router.post('/', createForum);
+router.get('/my-forums', getForumsByCreator);
 router.get('/subscribed-forums', getSubscribedForums);
 router.get('/can-subscribe-to', getForumsToSubscribe);
-router.patch('/archive/:id', archiveForum)
+router.patch('/archive/:id', archiveForum);
 router.post('/subscribe/:forum_id', subscribeToForum);
 router.post('/unsubscribe/:forum_id', unSubscribeForum);
-router.get('/:id', getForumById)
-router.patch('/:id', updateForum)
+router.get('/topics/:forumId', getTopicByForumId);
+router.get('/:id', getForumById);
+router.patch('/:id', updateForum);
 router.put('/banner/:id', upload.single('banner'), updateForumBanner);
 router.get('/banner/:id', getForumBanner);
 

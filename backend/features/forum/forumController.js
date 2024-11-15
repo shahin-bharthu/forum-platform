@@ -208,6 +208,13 @@ const getForumBanner = asyncErrorHandler(async (req, res, next) => {
     }
 });
 
+
+const getTopicByForumId = asyncErrorHandler(async (req, res, next) => {
+    const {forumId} = req.params;
+    const topics = await forumServices.getTopicByForumId(forumId);
+    return res.status(200).json({message: 'Fetched forum topics', data: topics})
+})
+
 export {
   getForums,
   createForum,
@@ -220,5 +227,6 @@ export {
   archiveForum,
   unSubscribeForum,
   updateForumBanner,
-  getForumBanner
+  getForumBanner,
+  getTopicByForumId
 };
