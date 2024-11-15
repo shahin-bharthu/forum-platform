@@ -1,24 +1,34 @@
-import { useCallback, useState } from 'react';
-import { Box, Drawer, CssBaseline, Toolbar, List, Typography, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { useCallback, useState, useEffect } from 'react';
+import { Box, Drawer, CssBaseline, Toolbar, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import CombinedAppBar from './AppBar';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import menuList from '../../../../utils/sidebarlist';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import deleteCookie from '../../../../utils/deleteCookie';
 import axios from 'axios';
 
 const drawerWidth = 200;
 
 export default function ClippedDrawer() {
-  const [mobileOpen, setMobileOpen] = useState(false); // useState imported directly from React
+  const [mobileOpen, setMobileOpen] = useState(false); 
+  const [activeItem, setActiveItem] = useState(null); 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
+  const location = useLocation(); 
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const activeMenu = menuList.find(item => item.path === currentPath);
+    if (activeMenu) {
+      setActiveItem(activeMenu.path);
+    }
+  }, [location.pathname]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  const navigate = useNavigate()
 
   const handleLogout = useCallback(async () => {
     try {
@@ -26,24 +36,23 @@ export default function ClippedDrawer() {
       const response = await axios.post("http://localhost:8080/auth/logout", {
         "Content-Type": "application/json",
         withCredentials: true
-      })
+      });
       console.log(response);
-
       window.location.reload();
     } catch (error) {
-      console.error("couldn't log user out", error)
+      console.error("couldn't log user out", error);
     }
-  }, [])
+  }, []);
 
   const handleMenuItemClick = (path) => {
     if (path === 'logout') {
       handleLogout();
     } else {
       navigate(path);
+      setActiveItem(path); 
     }
-    setMobileOpen(false); // Close drawer after any action
+    setMobileOpen(false); 
   };
-
 
   const drawer = (
     <div>
@@ -52,7 +61,15 @@ export default function ClippedDrawer() {
         <List>
           {menuList.map((item) => (
             <ListItem key={item.text} disablePadding>
-              <ListItemButton onClick={() => handleMenuItemClick(item.path)}>
+              <ListItemButton
+                onClick={() => handleMenuItemClick(item.path)}
+                sx={{
+                  backgroundColor: item.path === activeItem ? theme.palette.action.selected : 'transparent', 
+                  '&:hover': {
+                    backgroundColor: item.path === activeItem ? theme.palette.action.selected : theme.palette.action.hover, 
+                  }
+                }}
+              >
                 <ListItemIcon>
                   {item.icon}
                 </ListItemIcon>
@@ -77,7 +94,7 @@ export default function ClippedDrawer() {
             open={mobileOpen}
             onClose={handleDrawerToggle}
             ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
+              keepMounted: true, 
             }}
             sx={{
               '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
