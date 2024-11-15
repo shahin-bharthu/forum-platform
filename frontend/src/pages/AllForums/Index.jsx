@@ -79,6 +79,7 @@ export default function AllForums() {
             return (
               <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
                 <MediaCard
+                  id={forum.id}
                   name={forum.name}
                   purpose={forum.purpose}
                   logo={forum.logo}
@@ -102,6 +103,7 @@ export default function AllForums() {
             return (
               <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
                 <MediaCard
+                  id={forum.id}
                   name={forum.name}
                   purpose={forum.purpose}
                   logo={forum.logo}

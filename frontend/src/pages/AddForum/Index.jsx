@@ -112,6 +112,7 @@ const Index = ({isEdit}) => {
   return ( 
     <Card variant="outlined" sx={{ m:2,p:3,justifyContent: 'left' }}>
       <h3 className={classes["heading"]}>{isEdit? 'Edit': 'Create'} Forum</h3>
+      {isEdit && <ForumBannerUpload forumId={forumData.id}></ForumBannerUpload>}
       <form onSubmit={ isEdit? (event) => editForumHandler(event, forumData.id, forumData.forum_id) : createForumHandler } noValidate> 
         {successMessage && (
           <div className={classes["success-message"]}>{successMessage}</div>
@@ -142,7 +143,6 @@ const Index = ({isEdit}) => {
           value={isEdit ? forumData.purpose:null}
         />
 
-        {isEdit && <ForumBannerUpload forumId={forumData.id}></ForumBannerUpload>}
 
         <FormControlLabel 
           control={<Switch checked={isPublic} onChange={handleSwitchToggle} />} 

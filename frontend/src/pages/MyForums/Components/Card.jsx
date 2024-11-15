@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {useEffect, useState} from 'react';
 import { useRouteLoaderData } from 'react-router-dom';
 import { decodeToken } from "react-jwt";
 import Card from '@mui/material/Card';
@@ -12,8 +12,10 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import InfoIcon from '@mui/icons-material/Info';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
+import axios from 'axios';
 
 export default function MediaCard({
+  id,
   name,
   purpose,
   logo,
@@ -24,8 +26,34 @@ export default function MediaCard({
   onEditForum,
   isArchived,
   onArchive
-}) {
+  }) {
   const token = useRouteLoaderData("user");
+  const [banner, setBanner] = useState();
+  const [bannerUrl, setBannerUrl] = useState();
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      const data = await handleFileRead();
+    };
+
+    fetchAvatar().catch(console.error);
+  }, []);
+
+  const handleFileRead = async () => {
+    const file = await axios.get(`http://localhost:8080/forum/banner/${id}`, {
+      withCredentials: true,
+      responseType: "blob",
+    });
+
+    if (file.data) {
+      setBanner(file.data);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBannerUrl(reader.result);
+      };
+      reader.readAsDataURL(file.data);
+    }
+  };
 
   let decodedToken = null;
   let currentUserId = null;
@@ -40,7 +68,7 @@ export default function MediaCard({
 
   return (
     <Card sx={{ maxWidth: 345, height: 300 }}>
-      <CardMedia sx={{ height: 140 }} image={logo} title="green iguana" />
+      <CardMedia sx={{ height: 140 }} image={bannerUrl || "https://blog.cengage.com/wp-content/uploads/2023/11/tl-discussion-boards-1551827-1024x351.png"} title={name} />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div" sx={{width:'90%',textOverflow:'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', px: 2}}>
           {name}

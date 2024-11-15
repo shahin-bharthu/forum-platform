@@ -141,13 +141,13 @@ const ForumBannerUpload = ({ forumId }) => {
         ></Avatar>
       </Badge>
 
-      <Button
+      {/* <Button
         variant="outlined"
         onClick={handleOpen}
         startIcon={<CloudUploadIcon />}
       >
         Upload Banner
-      </Button>
+      </Button> */}
 
       <Modal
         open={open}
