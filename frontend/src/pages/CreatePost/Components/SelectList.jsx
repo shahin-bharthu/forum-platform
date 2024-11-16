@@ -82,7 +82,7 @@
 
 
 
-import {useState} from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -90,10 +90,10 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import useForumNames from "../Hooks/useForumNames";
 
-export default function SelectList({getForum}) {
+export default function SelectList({ getForum }) {
   const { forums, error } = useForumNames();
   const [forum, setForum] = useState('');
-  
+
   const handleChange = (event) => {
     console.log(event.target.value);
     setForum(event.target.value);
@@ -102,8 +102,18 @@ export default function SelectList({getForum}) {
 
   return (
     <Box sx={{ minWidth: 120 }}>
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Forum</InputLabel>
+      <FormControl
+        sx={{
+          mt: 2,
+          width: "40%",
+          "& .MuiOutlinedInput-root": {
+            borderRadius: "28px",
+          },
+          "& .MuiAutocomplete-paper": {
+            borderRadius: "15px",
+          },
+        }}>
+        <InputLabel id="demo-simple-select-label" required>Forum</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
@@ -111,9 +121,9 @@ export default function SelectList({getForum}) {
           label="Select Forum"
           onChange={handleChange}
         >
-        {forums.map((val) => 
-          <MenuItem value={val.id}>{val.name}</MenuItem>
-        )}
+          {forums.map((val) =>
+            <MenuItem value={val.id}>{val.name}</MenuItem>
+          )}
         </Select>
       </FormControl>
     </Box>

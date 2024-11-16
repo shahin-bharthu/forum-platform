@@ -115,7 +115,7 @@ const CreatePost = () => {
             label={isSubmitting ? "Creating Post..." : "Create Post"}
             disabled={isSubmitting}
           />
-          <Button disableElevation onClick={() => { navigate('/user/dashboard') }}>
+          <Button disableElevation onClick={() => { navigate(-1) }}>
             Back
           </Button>
         </Stack>
