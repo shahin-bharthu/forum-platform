@@ -1,3 +1,4 @@
+import { where } from "sequelize";
 import { db } from "../../config/connection.js";
 import { CustomError } from "../../util/customError.js";
 import deleteFile from "../../util/deleteFile.js";
@@ -84,7 +85,8 @@ const updateForumBanner = async (id, { logo }) => {
 };
 
 const getTopicByForumId = async (forumId) => {
-    const topic = await db.Topic.findAll({where: {forum_id: forumId}});
+    const forum = await db.Forum.findOne({where: {forum_id: forumId}})
+    const topic = await db.Topic.findAll({where: {forum_id: forum.id}});
     if (!topic) {
         throw new CustomError('Topic not found for given forum', 404)
     }

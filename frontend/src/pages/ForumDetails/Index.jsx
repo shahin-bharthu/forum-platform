@@ -15,7 +15,7 @@ export default function IntroDivider() {
                 </Grid>
                 <Grid size={12} container spacing={2}>
                     <Grid size={{ xs: 12, md: 9 }}>
-                        <ForumMainCard/>
+                        <ForumMainCard forum={forumDetails}/>
                     </Grid>
                     <Grid size={{ xs: 0, md: 3 }}>
                         {/* xs=6 md=4 */}

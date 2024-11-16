@@ -29,7 +29,7 @@ export default (sequelize, Sequelize) => {
             allowNull: false,
             // onUpdate: "cascade",
             // onDelete: "cascade",
-            references: { model: "users", key: "id" },
+            references: { model: "users", key: "username" },
         }
     }, 
     {

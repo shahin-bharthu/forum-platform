@@ -12,7 +12,7 @@ export default function ForumHeaderCard({ forum }) {
     <Card sx={{ width: '100%' }}>
       <CardMedia
         component="img"
-        alt="green iguana"
+        alt="Forum Header"
         height="100"
         image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJmEl5gk6MOADiLcjX04ablq3EGntiGWrI3A&s"
         sx={{ borderRadius: 1 }}
@@ -21,7 +21,7 @@ export default function ForumHeaderCard({ forum }) {
         <CardContent>
           <Stack spacing={2} direction="row" sx={{ alignItems: 'center' }}>
             <Avatar
-              alt="Remy Sharp"
+              alt="Forum Logo"
               src={forum.logo}
               sx={{ width: 60, height: 60, border: 3, borderColor: 'primary.main' }}
             />

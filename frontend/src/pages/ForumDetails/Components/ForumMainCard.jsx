@@ -1,19 +1,18 @@
-import * as React from 'react';
+import {useState, useEffect} from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
-import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import axios from 'axios';
+import { Box } from '@mui/material';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -39,87 +38,84 @@ const ExpandMore = styled((props) => {
   ],
 }));
 
-export default function ForumMainCard() {
-  const [expanded, setExpanded] = React.useState(false);
+export default function ForumMainCard({forum}) {
+  const [forumTopics, setForumTopics] = useState([{title: 'topic title', content: 'topic content', username: 'username'}]);
+  const [expanded, setExpanded] = useState([{isExpanded: false}]);
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
+  useEffect(() => {    
+    async function getForumTopics() {
+      const forumTopics = await axios.get(`http://localhost:8080/forum/topics/${forum.forum_id}`, {
+        withCredentials: true,
+    });
+    const forumTopicsData = forumTopics.data.data;
+    const topicCreatorsList = await Promise.all(forumTopicsData.map(forumTopic => axios.get(`http://localhost:8080/user/${forumTopic.createdBy}`, {withCredentials: true})))
+    const topicCreatorsUsername = topicCreatorsList.map(creator => creator.data.user.username)
+
+    const updatedForumTopics = forumTopicsData.map((forumTopic, index) => ({
+      ...forumTopic,              
+      username: topicCreatorsUsername[index]  
+    }));
+    
+    setForumTopics(updatedForumTopics);
+
+    let array = [];
+
+    for (let i = 0; i < updatedForumTopics.length; i++) array.push({isExpanded: false});
+
+    setExpanded(array);
+    }
+
+    getForumTopics();
+  }, []);
+
+  const handleExpandClick = (i) => {
+    const array = [...expanded];
+    array[i].isExpanded = !array[i].isExpanded;
+    setExpanded(array);
   };
 
   return (
-    <Card >
+    <>
+    {forumTopics.map((topic, index) => 
+    <Box key={index} mb={2}>
+      <Card >
       <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
-          </Avatar>
-        }
         action={
           <IconButton aria-label="settings">
             <MoreVertIcon />
           </IconButton>
         }
-        title="Shrimp and Chorizo Paella"
-        subheader="September 14, 2016"
+        title = {topic.title}
+        subheader = {new Date(topic.createdAt).toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        })}
       />
-      <CardMedia
-        component="img"
-        height="194"
-        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFU7U2h0umyF0P6E_yhTX45sGgPEQAbGaJ4g&s"
-        alt="Paella dish"
-      />
+
       <CardContent>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the mussels,
-          if you like.
+          {topic.username}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
         <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
+          expand={expanded[index].isExpanded}
+          onClick={() => handleExpandClick(index)}
+          aria-expanded={expanded[index].isExpanded}
           aria-label="show more"
         >
           <ExpandMoreIcon />
         </ExpandMore>
       </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
+      <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography sx={{ marginBottom: 2 }}>Method:</Typography>
-          <Typography sx={{ marginBottom: 2 }}>
-            Heat 1/2 cup of the broth in a pot until simmering, add saffron and set
-            aside for 10 minutes.
-          </Typography>
-          <Typography sx={{ marginBottom: 2 }}>
-            Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over
-            medium-high heat. Add chicken, shrimp and chorizo, and cook, stirring
-            occasionally until lightly browned, 6 to 8 minutes. Transfer shrimp to a
-            large plate and set aside, leaving chicken and chorizo in the pan. Add
-            pimentón, bay leaves, garlic, tomatoes, onion, salt and pepper, and cook,
-            stirring often until thickened and fragrant, about 10 minutes. Add
-            saffron broth and remaining 4 1/2 cups chicken broth; bring to a boil.
-          </Typography>
-          <Typography sx={{ marginBottom: 2 }}>
-            Add rice and stir very gently to distribute. Top with artichokes and
-            peppers, and cook without stirring, until most of the liquid is absorbed,
-            15 to 18 minutes. Reduce heat to medium-low, add reserved shrimp and
-            mussels, tucking them down into the rice, and cook again without
-            stirring, until mussels have opened and rice is just tender, 5 to 7
-            minutes more. (Discard any mussels that don&apos;t open.)
-          </Typography>
-          <Typography>
-            Set aside off of the heat to let rest for 10 minutes, and then serve.
-          </Typography>
+          <Typography sx={{ marginBottom: 2 }}>{topic.content}</Typography>
         </CardContent>
       </Collapse>
-    </Card>
+      </Card>
+    </Box>
+    )}
+    </>
   );
 }
