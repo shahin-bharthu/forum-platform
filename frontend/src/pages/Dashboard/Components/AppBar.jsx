@@ -93,8 +93,8 @@ function CombinedAppBar({ handleDrawerToggle }) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" color="inherit" onClick={handleCreatePost}>
+      <MenuItem onClick={handleCreatePost}>
+        <IconButton size="large" color="inherit" >
           <AddIcon />
         </IconButton>
         <p>Create Post</p>

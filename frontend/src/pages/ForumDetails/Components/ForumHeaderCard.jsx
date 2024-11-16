@@ -6,8 +6,10 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Avatar, Stack, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { useNavigate } from 'react-router-dom';
 
 export default function ForumHeaderCard({ forum }) {
+  const navigate=useNavigate()
   return (
     <Card sx={{ width: '100%' }}>
       <CardMedia
@@ -33,11 +35,12 @@ export default function ForumHeaderCard({ forum }) {
         <CardActions sx={{ pr: 4 }}>
           <Tooltip title="Create Post" arrow>
             <Button
-              // onClick={handleCreatePost}
+              onClick={()=>navigate('/user/create-post')}
               variant="outlined"
               startIcon={<AddIcon />}
               sx={{ borderRadius: 28, border: 2 }}
               disableElevation
+              size="small"
             >
               Create
             </Button>
@@ -46,6 +49,7 @@ export default function ForumHeaderCard({ forum }) {
           <Tooltip title="Unsubscribe" arrow>
             <Button
               // onClick={handleCreatePost}
+              size="small"
               variant="outlined"
               sx={{ borderRadius: 28, border: 2 }}
               disableElevation

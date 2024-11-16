@@ -9,24 +9,17 @@ import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined'; import { Divide
 import LanguageIcon from '@mui/icons-material/Language';
 import FaceOutlinedIcon from '@mui/icons-material/FaceOutlined';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
+import EmailIcon from '@mui/icons-material/Email';
 
 export default function ForumInfoCard({ forum, creator }) {
     return (
         <Card>
             <CardContent>
-                <Typography variant="h5" bold component="div" sx={{ justifyContent: 'left' }}>
+                <Typography variant="h5"fontWeight='fontWeightMedium' component="div" sx={{ textAlign: "left" }}>
                     {forum.name}
                 </Typography>
-                <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>{forum.purpose}</Typography>
-                <br/>
-                <Typography variant="body2">
-                    <Stack spacing={2} direction="row">
-                        <FaceOutlinedIcon />
-                        <Box fontWeight='fontWeightMedium' sx={{ alignContent: 'end' }}>
-                            {creator}
-                        </Box>
-                    </Stack>
-                    <br/>
+                <Typography fontWeight='fontWeightMedium' sx={{ color: 'text.secondary', mb: 1.5,textAlign: "left" }}>{forum.purpose}</Typography>
+                <Typography variant="body2" sx={{ my: 2 }}>
                     <Stack spacing={2} direction="row">
                         <CakeOutlinedIcon />
                         <Box fontWeight='fontWeightMedium' sx={{ alignContent: 'end' }}>
@@ -41,7 +34,6 @@ export default function ForumInfoCard({ forum, creator }) {
                         </Box>
                     </Stack>
                 </Typography>
-                <br/>
                 <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Typography variant="body2">
                         <Stack spacing={2} direction="row">
@@ -61,10 +53,22 @@ export default function ForumInfoCard({ forum, creator }) {
                     </Typography>
                 </Stack>
             </CardContent>
-            <Divider/>
-            <CardActions>
-        <Button size="small">Learn More</Button>
-      </CardActions>
+            <Divider />
+            <CardActions sx={{ alignContent: 'center' }}>
+                <Stack sx={{ mx: 1, width: '100%' }} >
+                    <Typography fontWeight='fontWeightMedium' variant="body1" sx={{ textAlign: "left" }}>
+                        Admins
+                    </Typography>
+                    <Stack spacing={2} direction="row" sx={{ py: 2 }}>
+                        <FaceOutlinedIcon />
+                        <Box fontWeight='fontWeightMedium' sx={{ alignContent: 'end' }}>
+                            {creator}
+                        </Box>
+                        <p>(creator)</p>
+                    </Stack>
+                    <Box sx={{ textAlign: "center" }}><Button variant='contained' startIcon={<EmailIcon />} sx={{ mx: "auto" }} size="small">Message Admin</Button></Box>
+                </Stack>
+            </CardActions>
         </Card >
     );
 }
