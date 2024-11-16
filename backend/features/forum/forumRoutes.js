@@ -12,7 +12,8 @@ import {
   archiveForum,
   updateForumBanner,
   getForumBanner,
-  getTopicByForumId
+  getTopicByForumId,
+  getForumByForumId
 } from "./forumController.js";
 import upload from '../../util/uploadForumBanner.js';
 
@@ -28,6 +29,7 @@ router.post('/subscribe/:forum_id', subscribeToForum);
 router.post('/unsubscribe/:forum_id', unSubscribeForum);
 router.get('/topics/:forumId', getTopicByForumId);
 router.get('/:id', getForumById);
+router.get('/forum-id/:id', getForumByForumId)
 router.patch('/:id', updateForum);
 router.put('/banner/:id', upload.single('banner'), updateForumBanner);
 router.get('/banner/:id', getForumBanner);

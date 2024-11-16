@@ -17,6 +17,7 @@ import AddForum, {forumDetailsLoader as forumDetails} from "./pages/AddForum/Ind
 import AllForums, { allForumLoader } from "./pages/AllForums/Index.jsx";
 import CreatePost from "./pages/CreatePost/Index.jsx";
 import IntroDivider, { forumDetailsLoader } from "./pages/ForumDetails/Index.jsx";
+import MyPosts from "./pages/MyPosts/Index.jsx";
 
 const router = createBrowserRouter([
   {
@@ -74,11 +75,21 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/user/my-forums" /> },
       { path: ":forum_id", loader:forumDetailsLoader, element: <IntroDivider/>  },
-      // { path: "dashboard", element: <Index /> },
-      // { path: "my-forums", loader: forumLoader, element: <MyForum /> },
-      // { path: "add-forum", element: <AddForum /> },
-      // { path: "forums", loader: allForumLoader, element: <AllForums /> },
-      // { path: "create-post", element: <CreatePost /> },
+    ],
+  },
+  {
+    path: "/post",
+    element: (
+      <ProtectedRoute>
+        <UserRootPage />
+      </ProtectedRoute>
+    ),
+    loader: tokenLoader,
+    errorElement: <ErrorPage />,
+    id: "post",
+    children: [
+      { index: true, element: <Navigate to="/post/my-posts" /> },
+      { path: "my-posts", element: <MyPosts/>  },
     ],
   },
 ]);

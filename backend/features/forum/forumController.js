@@ -28,6 +28,12 @@ const updateForum = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: "Forum details have been updated successfully", data: data});
 })
 
+const getForumByForumId = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.params;
+    const forum = await forumServices.getForumByForumId(id);
+    return res.status(200).json({message: "Forum fetched successfully", data: forum});
+})
+
 const getForumById = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.params;
     const forum = await forumServices.getForumById(id);
@@ -228,5 +234,6 @@ export {
   unSubscribeForum,
   updateForumBanner,
   getForumBanner,
-  getTopicByForumId
+  getTopicByForumId,
+  getForumByForumId
 };

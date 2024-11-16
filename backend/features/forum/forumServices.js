@@ -32,6 +32,10 @@ const updateForum = async (id, userId, forum) => {
 }
 
 const getForumById = async (id) => {
+    return await forumRepository.getForumById(id);
+}
+
+const getForumByForumId = async (id) => {
     return await forumRepository.getForumByForumId(id);
 }
 
@@ -59,4 +63,4 @@ const getTopicByForumId = async (forumId) => {
     return await forumRepository.getTopicByForumId(forumId);
 }
 
-export { getForums, createForum, getForumById, getForumsByCreator, updateForum, archiveForum, updateForumBanner, getTopicByForumId }
+export { getForums, createForum, getForumsByCreator, updateForum, archiveForum, updateForumBanner, getForumByForumId, getForumById, getTopicByForumId }

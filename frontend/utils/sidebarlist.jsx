@@ -5,7 +5,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import SignpostIcon from '@mui/icons-material/Signpost';
 const menuList=[
     { text: 'Home', icon: <HomeIcon />, path: '/user/dashboard' },
-    { text: 'My Posts', icon: <ForumIcon />, path: 'myPosts' },
+    { text: 'My Posts', icon: <ForumIcon />, path: '/post/my-posts' },
     { text: 'My Forums', icon: <SignpostIcon />, path: '/user/my-forums' },
     { text: 'Messages', icon: <MarkAsUnreadIcon />, path: 'messages' },
     { text: 'All Forums', icon: <ForumIcon />, path: '/user/forums' },
