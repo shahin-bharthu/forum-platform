@@ -39,7 +39,7 @@ export default function ForumInfoCard({ forum, creator }) {
                         <Stack spacing={2} direction="row">
                             <LanguageIcon />
                             <Box fontWeight='fontWeightMedium' sx={{ alignContent: 'end' }}>
-                                {forum.isPublic === 0 ? 'Private' : 'Public'}
+                                {forum.isPublic === false ? 'Private' : 'Public'}
                             </Box>
                         </Stack>
                     </Typography>
