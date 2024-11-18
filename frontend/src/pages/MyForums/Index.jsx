@@ -7,14 +7,48 @@ import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
 import { useState } from 'react';
 import PositionedSnackbar from '../../components/SnackBar';
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import PublicIcon from '@mui/icons-material/Public';
+import VpnLockIcon from '@mui/icons-material/VpnLock';
+import ArchiveIcon from '@mui/icons-material/Archive';
 
-export function FloatingActionButtons({onClick}) {
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props;
+
   return (
-    <Box sx={{ 
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+CustomTabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+export function FloatingActionButtons({ onClick }) {
+  return (
+    <Box sx={{
       position: 'fixed',
       bottom: 20,
       right: 20,
-      '& > :not(style)': { m: 0.5 } 
+      '& > :not(style)': { m: 0.5 }
     }}>
       <Fab color="primary" aria-label="add" onClick={onClick} >
         <AddIcon />
@@ -25,30 +59,38 @@ export function FloatingActionButtons({onClick}) {
 
 export default function MyForum() {
   const { privateForums, publicForums, archivedForums, empty } = useLoaderData();
+
   const [message, setMessage] = useState();
-  const navigate=useNavigate()
-  
-  const handleCreate=()=>{
+  const [value, setValue] = useState(0);
+
+  const navigate = useNavigate()
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+
+  const handleCreate = () => {
     navigate('/user/add-forum')
   }
-  
+
   if (empty) {
     console.log('in empty');
-    
+
     return (
       <>
-      <Box>
-        <h3>No forums found</h3>
-        <p>Create your first forum to get started</p>
-      </Box>
-      <FloatingActionButtons onClick={handleCreate}/>
+        <Box>
+          <h3>No forums found</h3>
+          <p>Create your first forum to get started</p>
+        </Box>
+        <FloatingActionButtons onClick={handleCreate} />
       </>
     );
   }
-  
+
   const handleEditForum = (event, forum_id) => {
-      event.preventDefault();
-      navigate(`/user/edit-forum/${forum_id}`)
+    event.preventDefault();
+    navigate(`/user/edit-forum/${forum_id}`)
   }
 
   const handleViewDetails = (event, forum_id) => {
@@ -61,7 +103,7 @@ export default function MyForum() {
     const response = await axios.patch(`http://localhost:8080/forum/archive/${id}`, null, {
       withCredentials: true
     })
-    
+
     if (archiving) {
       setMessage(`Archived forum ${response.data.data.name}`);
     }
@@ -77,136 +119,157 @@ export default function MyForum() {
 
   return (
     <>
-      <Box sx={{ flexGrow: 1 , mt:10}}>
+      <Box sx={{ flexGrow: 1, mt: 8, width: '100%', mx: 2, alignSelf: 'start' }}>
         {message && (
           <PositionedSnackbar message={message} />
         )}
-        {publicForums.length > 0 && (
-          <Grid size={12}>
-            <h2>Public Forums</h2><br/>
-            <Grid
-              container
-              spacing={{ xs: 2, md: 3 }}
-              columns={{ xs: 3, sm: 8, md: 12 }}
-              sx={{
-                mx: 1,
-                py: 1,
-                justifyContent: "center",
-                alignContent: "center",
-              }}
-            >
-              {publicForums.map((forum) => (
-                <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
-                  <MediaCard
-                    id={forum.id}
-                    name={forum.name}
-                    purpose={forum.purpose}
-                    logo={forum.logo}
-                    createdBy={forum.createdBy}
-                    forumId={forum.forum_id}
-                    canSubscribe={false}
-                    onViewDetails={(event) =>
-                      handleViewDetails(event, forum.forum_id)
-                    }
-                    myForum={true}
-                    onEditForum={(event) =>
-                      handleEditForum(event, forum.forum_id)
-                    }
-                    isArchived={false}
-                    onArchive={(event) => 
-                      handleArchiveForum(event, forum.id, true)
-                    }
-                  />
-                </Grid>
-              ))}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', position: 'sticky', }}>
+          <Tabs value={value} onChange={handleChange} centered>
+            <Tab icon={<PublicIcon />} iconPosition="start" label="Public Forums" {...a11yProps(0)} />
+            <Tab icon={<VpnLockIcon />} iconPosition="start" label="Private Forums" {...a11yProps(1)} />
+            <Tab icon={<ArchiveIcon />} iconPosition="start" label="Archived Forums" {...a11yProps(2)} />
+          </Tabs>
+        </Box>
+        <CustomTabPanel value={value} index={0}>
+          {publicForums.length === 0 &&
+            <p>No Public Forums found</p>
+          }
+          {publicForums.length > 0 && (
+            <Grid size={12}>
+              <Grid
+                container
+                spacing={{ xs: 2, md: 3 }}
+                columns={{ xs: 3, sm: 8, md: 12 }}
+                sx={{
+                  mx: 1,
+                  py: 1,
+                  justifyContent: "center",
+                  alignContent: "center",
+                }}
+              >
+                {publicForums.map((forum) => (
+                  <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
+                    <MediaCard
+                      id={forum.id}
+                      name={forum.name}
+                      purpose={forum.purpose}
+                      logo={forum.logo}
+                      createdBy={forum.createdBy}
+                      forumId={forum.forum_id}
+                      canSubscribe={false}
+                      onViewDetails={(event) =>
+                        handleViewDetails(event, forum.forum_id)
+                      }
+                      myForum={true}
+                      onEditForum={(event) =>
+                        handleEditForum(event, forum.forum_id)
+                      }
+                      isArchived={false}
+                      onArchive={(event) =>
+                        handleArchiveForum(event, forum.id, true)
+                      }
+                    />
+                  </Grid>
+                ))}
+              </Grid>
             </Grid>
-          </Grid>
-          
-        )}
 
-        {privateForums.length >0 && (
-          <Grid size={12}>
-            <h2>Private Forums</h2> <br />
-          <Grid
-            container
-            spacing={{ xs: 2, md: 3 }}
-            columns={{ xs: 3, sm: 8, md: 12 }}
-            sx={{
-              mx: 1,
-              py: 1,
-              justifyContent: "center",
-              alignContent: "center",
-            }}
-          >
-            {privateForums.map((forum) => (
-              <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
-                <MediaCard
-                  id={forum.id}
-                  name={forum.name}
-                  purpose={forum.purpose}
-                  logo={forum.logo}
-                  createdBy={forum.createdBy}
-                  forumId={forum.forum_id}
-                  canSubscribe={false}
-                  onViewDetails={(event) =>
-                    handleViewDetails(event, forum.forum_id)
-                  }
-                  myForum={true}
-                  onEditForum={(event) =>
-                    handleEditForum(event, forum.forum_id)
-                  }
-                  isArchived={false}
-                  onArchive={(event) => 
-                    handleArchiveForum(event, forum.id, true)
-                  }
-                />
-              </Grid>
-            ))}
-          </Grid>
-          </Grid>
-        )}
+          )}
+        </CustomTabPanel>
 
-        {archivedForums.length >0  && (
-          <Grid size={12}>
-          <h2>Archived Forums</h2> <br />
-          <Grid
-            container
-            spacing={{ xs: 2, md: 3 }}
-            columns={{ xs: 3, sm: 8, md: 12 }}
-            sx={{
-              mx: 1,
-              py: 1,
-              justifyContent: "center",
-              alignContent: "center",
-            }}
-          >
-            {archivedForums.map((forum) => (
-              <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
-                <MediaCard
-                  id={forum.id}
-                  name={forum.name}
-                  purpose={forum.purpose}
-                  logo={forum.logo}
-                  createdBy={forum.createdBy}
-                  forumId={forum.forum_id}
-                  canSubscribe={false}
-                  onViewDetails={(event) =>
-                    handleViewDetails(event, forum.forum_id)
-                  }
-                  myForum={true}
-                  onEditForum={(event) =>
-                    handleEditForum(event, forum.forum_id)
-                  }
-                  isArchived={true}
-                  onArchive={(event) => 
-                    handleArchiveForum(event, forum.id, false)
-                  }
-                />
+        <CustomTabPanel value={value} index={1}>
+          {privateForums.length === 0 &&
+            <p>No Private Forums found</p>
+          }
+          {privateForums.length > 0 && (
+            <Grid size={12}>
+              <Grid
+                container
+                spacing={{ xs: 2, md: 3 }}
+                columns={{ xs: 3, sm: 8, md: 12 }}
+                sx={{
+                  mx: 1,
+                  py: 1,
+                  justifyContent: "center",
+                  alignContent: "center",
+                }}
+              >
+                {privateForums.map((forum) => (
+                  <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
+                    <MediaCard
+                      id={forum.id}
+                      name={forum.name}
+                      purpose={forum.purpose}
+                      logo={forum.logo}
+                      createdBy={forum.createdBy}
+                      forumId={forum.forum_id}
+                      canSubscribe={false}
+                      onViewDetails={(event) =>
+                        handleViewDetails(event, forum.forum_id)
+                      }
+                      myForum={true}
+                      onEditForum={(event) =>
+                        handleEditForum(event, forum.forum_id)
+                      }
+                      isArchived={false}
+                      onArchive={(event) =>
+                        handleArchiveForum(event, forum.id, true)
+                      }
+                    />
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-          </Grid>
-        )}
+            </Grid>
+          )}
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={2}>
+          {archivedForums.length === 0 &&
+            <p>No Archived Forums found</p>
+          }
+          {archivedForums.length > 0 && (
+            <Grid size={12}>
+              <Grid
+                container
+                spacing={{ xs: 2, md: 3 }}
+                columns={{ xs: 3, sm: 8, md: 12 }}
+                sx={{
+                  mx: 1,
+                  py: 1,
+                  justifyContent: "center",
+                  alignContent: "center",
+                }}
+              >
+                {archivedForums.map((forum) => (
+                  <Grid key={forum.id} size={{ xs: 2, sm: 3, md: 3 }}>
+                    <MediaCard
+                      id={forum.id}
+                      name={forum.name}
+                      purpose={forum.purpose}
+                      logo={forum.logo}
+                      createdBy={forum.createdBy}
+                      forumId={forum.forum_id}
+                      canSubscribe={false}
+                      onViewDetails={(event) =>
+                        handleViewDetails(event, forum.forum_id)
+                      }
+                      myForum={true}
+                      onEditForum={(event) =>
+                        handleEditForum(event, forum.forum_id)
+                      }
+                      isArchived={true}
+                      onArchive={(event) =>
+                        handleArchiveForum(event, forum.id, false)
+                      }
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+          )}
+        </CustomTabPanel>
+
+
+
       </Box>
       <FloatingActionButtons onClick={handleCreate} />
     </>
@@ -218,15 +281,20 @@ export async function forumLoader() {
     const response = await axios.get('http://localhost:8080/forum/my-forums', {
       withCredentials: true
     });
-    const publicForums = response.data.publicUserForums;
-    const privateForums = response.data.privateUserForums;
-    const archivedForums = response.data.archivedUserForums;
-    
+    const publicForums = response.data.publicUserForums || [];
+    const privateForums = response.data.privateUserForums || [];
+    const archivedForums = response.data.archivedUserForums || [];
+
+    // Fix the empty condition check
+    const empty = publicForums.length === 0 &&
+      privateForums.length === 0 &&
+      archivedForums.length === 0;
+
     return {
       publicForums,
       privateForums,
       archivedForums,
-      empty: !publicForums && publicForums.length === 0 && !privateForums && privateForums.length === 0 && !archivedForums && archivedForums.length === 0
+      empty
     };
 
   } catch (error) {
