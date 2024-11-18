@@ -170,7 +170,7 @@ export default Index;
 export async function forumDetailsLoader({params}) {
   const forum_id = params.forum_id
   if (forum_id) {
-    const response = await axios.get(`http://localhost:8080/forum/${forum_id}`, {withCredentials: true});    
+    const response = await axios.get(`http://localhost:8080/forum/forum-id/${forum_id}`, {withCredentials: true});    
     return response.data.data
   }
   else {

@@ -48,18 +48,18 @@ export default function MyPosts() {
     console.log("useeffect");
     
     async function getForumTopics() {
-      const forumTopics = await axios.get(`http://localhost:8080/topic/my-topics`, {
+      const myTopics = await axios.get(`http://localhost:8080/topic/my-topics`, {
         withCredentials: true,
     });
-    console.log(forumTopics);
+    console.log(myTopics);
 
-    const forumTopicsData = forumTopics.data.data;
-    const topicCreatorsList = await Promise.all(forumTopicsData.map(forumTopic => axios.get(`http://localhost:8080/user/${forumTopic.forum_id}`, {withCredentials: true})))
-    const topicCreatorsUsername = topicCreatorsList.map(creator => creator.data.user.username)
+    const myTopicsData = myTopics.data.data;
+    const forumsList = await Promise.all(myTopicsData.map(forumTopic => axios.get(`http://localhost:8080/forum/${forumTopic.forum_id}`, {withCredentials: true})))
+    const forumNames = forumsList.map(creator => creator.data.data.name)
 
-    const updatedForumTopics = forumTopicsData.map((forumTopic, index) => ({
+    const updatedForumTopics = myTopicsData.map((forumTopic, index) => ({
       ...forumTopic,              
-      username: topicCreatorsUsername[index]  
+      username: forumNames[index]  
     }));
     
     setForumTopics(updatedForumTopics);
