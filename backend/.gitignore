@@ -1,11 +1,11 @@
 node_modules
 *.env
 package-lock.json
-avatar/*.jpg
-avatar/*.png
-avatar/*.gif
-avatar/*.jpeg
-avatar/*.bmp
+avatars/*.jpg
+avatars/*.png
+avatars/*.gif
+avatars/*.jpeg
+avatars/*.bmp
 forumLogos/*.jpg
 forumLogos/*.png
 forumLogos/*.gif

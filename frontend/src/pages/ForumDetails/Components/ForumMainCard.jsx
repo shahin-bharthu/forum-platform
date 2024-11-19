@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -38,31 +38,31 @@ const ExpandMore = styled((props) => {
   ],
 }));
 
-export default function ForumMainCard({forum}) {
-  const [forumTopics, setForumTopics] = useState([{title: 'topic title', content: 'topic content', username: 'username'}]);
-  const [expanded, setExpanded] = useState([{isExpanded: false}]);
+export default function ForumMainCard({ forum }) {
+  const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', username: 'username' }]);
+  const [expanded, setExpanded] = useState([{ isExpanded: false }]);
 
-  useEffect(() => {    
+  useEffect(() => {
     async function getForumTopics() {
       const forumTopics = await axios.get(`http://localhost:8080/forum/topics/${forum.forum_id}`, {
         withCredentials: true,
-    });
-    const forumTopicsData = forumTopics.data.data;
-    const topicCreatorsList = await Promise.all(forumTopicsData.map(forumTopic => axios.get(`http://localhost:8080/user/${forumTopic.createdBy}`, {withCredentials: true})))
-    const topicCreatorsUsername = topicCreatorsList.map(creator => creator.data.user.username)
+      });
+      const forumTopicsData = forumTopics.data.data;
+      const topicCreatorsList = await Promise.all(forumTopicsData.map(forumTopic => axios.get(`http://localhost:8080/user/${forumTopic.createdBy}`, { withCredentials: true })))
+      const topicCreatorsUsername = topicCreatorsList.map(creator => creator.data.user.username)
 
-    const updatedForumTopics = forumTopicsData.map((forumTopic, index) => ({
-      ...forumTopic,              
-      username: topicCreatorsUsername[index]  
-    }));
-    
-    setForumTopics(updatedForumTopics);
+      const updatedForumTopics = forumTopicsData.map((forumTopic, index) => ({
+        ...forumTopic,
+        username: topicCreatorsUsername[index]
+      }));
 
-    let array = [];
+      setForumTopics(updatedForumTopics);
 
-    for (let i = 0; i < updatedForumTopics.length; i++) array.push({isExpanded: false});
+      let array = [];
 
-    setExpanded(array);
+      for (let i = 0; i < updatedForumTopics.length; i++) array.push({ isExpanded: false });
+
+      setExpanded(array);
     }
 
     getForumTopics();
@@ -74,48 +74,62 @@ export default function ForumMainCard({forum}) {
     setExpanded(array);
   };
 
+  if (forumTopics.length === 0) {
+    return (
+      <>
+        <Box mb={2}>
+          <Card sx={{ height: '50vh' }} >
+            <Typography variant="h5"  component="div" sx={{ textAlign: "center", py:5 }}>
+              No Posts Yet!
+            </Typography>
+          </Card>
+        </Box>
+      </>
+    )
+  }
+
   return (
     <>
-    {forumTopics.map((topic, index) => 
-    <Box key={index} mb={2}>
-      <Card >
-      <CardHeader
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title = {topic.title}
-        subheader = {new Date(topic.createdAt).toLocaleDateString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric'
-        })}
-      />
+      {forumTopics.map((topic, index) =>
+        <Box key={index} mb={2}>
+          <Card >
+            <CardHeader
+              action={
+                <IconButton aria-label="settings">
+                  <MoreVertIcon />
+                </IconButton>
+              }
+              title={topic.title}
+              subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+              })}
+            />
 
-      <CardContent>
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {topic.username}
-        </Typography>
-      </CardContent>
-      <CardActions disableSpacing>
-        <ExpandMore
-          expand={expanded[index].isExpanded}
-          onClick={() => handleExpandClick(index)}
-          aria-expanded={expanded[index].isExpanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
-      </CardActions>
-      <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography sx={{ marginBottom: 2 }}>{topic.content}</Typography>
-        </CardContent>
-      </Collapse>
-      </Card>
-    </Box>
-    )}
+            <CardContent sx={{ py: 0 }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {topic.username}
+              </Typography>
+            </CardContent>
+            <CardActions disableSpacing>
+              <ExpandMore
+                expand={expanded[index].isExpanded}
+                onClick={() => handleExpandClick(index)}
+                aria-expanded={expanded[index].isExpanded}
+                aria-label="show more"
+              >
+                <ExpandMoreIcon fontSize='small' />
+              </ExpandMore>
+            </CardActions>
+            <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
+              <CardContent>
+                <Typography sx={{ marginBottom: 2 }}>{topic.content}</Typography>
+              </CardContent>
+            </Collapse>
+          </Card>
+        </Box>
+      )}
     </>
   );
 }

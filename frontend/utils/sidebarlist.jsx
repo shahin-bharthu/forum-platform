@@ -7,7 +7,7 @@ const menuList=[
     { text: 'Home', icon: <HomeIcon />, path: '/user/dashboard' },
     { text: 'My Posts', icon: <ForumIcon />, path: '/post/my-posts' },
     { text: 'My Forums', icon: <SignpostIcon />, path: '/user/my-forums' },
-    { text: 'Messages', icon: <MarkAsUnreadIcon />, path: 'messages' },
+    // { text: 'Messages', icon: <MarkAsUnreadIcon />, path: 'messages' },
     { text: 'All Forums', icon: <ForumIcon />, path: '/user/forums' },
     { text: 'Logout', icon: <LogoutIcon />, path: 'logout' },
 ]
