@@ -63,4 +63,19 @@ const getTopicByForumId = async (forumId) => {
     return await forumRepository.getTopicByForumId(forumId);
 }
 
-export { getForums, createForum, getForumsByCreator, updateForum, archiveForum, updateForumBanner, getForumByForumId, getForumById, getTopicByForumId }
+const getIsSubscribed = async (user_id, forum_id) => {
+    return await forumRepository.getIsSubscribed(user_id, forum_id);
+}
+
+export {
+  getForums,
+  createForum,
+  getForumsByCreator,
+  updateForum,
+  archiveForum,
+  updateForumBanner,
+  getForumByForumId,
+  getForumById,
+  getTopicByForumId,
+  getIsSubscribed
+};
