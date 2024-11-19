@@ -285,10 +285,7 @@ export async function forumLoader() {
     const privateForums = response.data.privateUserForums || [];
     const archivedForums = response.data.archivedUserForums || [];
 
-    // Fix the empty condition check
-    const empty = publicForums.length === 0 &&
-      privateForums.length === 0 &&
-      archivedForums.length === 0;
+    const empty = publicForums.length === 0 && privateForums.length === 0 && archivedForums.length === 0;
 
     return {
       publicForums,

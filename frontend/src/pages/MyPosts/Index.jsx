@@ -14,6 +14,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios';
 import { Box } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
+import Grid from '@mui/material/Grid2';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -82,6 +83,7 @@ export default function MyPosts() {
 
   return (
     <>
+    <Grid size={12} sx={{width:'100%', px:3}} >
     <h1>My Posts</h1>
     {forumTopics.map((topic, index) => 
     <Box key={index} mb={2}>
@@ -99,8 +101,7 @@ export default function MyPosts() {
           year: 'numeric'
         })}
       />
-
-      <CardContent>
+      <CardContent sx={{py:0}} >
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           {topic.username}
         </Typography>
@@ -112,7 +113,7 @@ export default function MyPosts() {
           aria-expanded={expanded[index].isExpanded}
           aria-label="show more"
         >
-          <ExpandMoreIcon />
+          <ExpandMoreIcon fontSize='small' />
         </ExpandMore>
       </CardActions>
       <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
@@ -123,6 +124,7 @@ export default function MyPosts() {
       </Card>
     </Box>
     )}
+    </Grid>
     </>
   );
 }

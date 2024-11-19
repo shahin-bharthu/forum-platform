@@ -69,7 +69,7 @@ const CreatePost = () => {
         withCredentials: true
       });
       setSuccessMessage(response.data.message);
-      navigate("/user/dashboard"); 
+      navigate(-1); 
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error:", error);

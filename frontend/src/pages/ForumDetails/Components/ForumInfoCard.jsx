@@ -13,7 +13,7 @@ import EmailIcon from '@mui/icons-material/Email';
 
 export default function ForumInfoCard({ forum, creator }) {
     return (
-        <Card>
+        <Card sx={{mb:2}}>
             <CardContent>
                 <Typography variant="h5"fontWeight='fontWeightMedium' component="div" sx={{ textAlign: "left" }}>
                     {forum.name}
