@@ -163,13 +163,20 @@ const getSubscribedForums = asyncErrorHandler(async (req,res,next) => {
     return res.json({message: "subscribed forums list", data: subscribedForumsData});
 })
 
+const getIsSubscribed = asyncErrorHandler(async (req,res,next) => {
+    const user_id = req.user.id;
+    const {id} = req.params;
+
+    const isSubscribed = await forumServices.getIsSubscribed(user_id, id);
+    return res.status(200).json({isSubscribed})
+})
 
 const archiveForum = asyncErrorHandler(async (req,res,next) => {
     const userId = req.user.id;
     const {id} = req.params;
     const archivedForum = await forumServices.archiveForum(userId, id);
 
-    return res.json({message: 'Forum archived', data: archivedForum})
+    return res.status(200).json({message: 'Forum archived', data: archivedForum})
 })
 
 
@@ -235,5 +242,6 @@ export {
   updateForumBanner,
   getForumBanner,
   getTopicByForumId,
-  getForumByForumId
+  getForumByForumId,
+  getIsSubscribed
 };

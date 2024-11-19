@@ -1,4 +1,4 @@
-import { where } from "sequelize";
+import { Op, where } from "sequelize";
 import { db } from "../../config/connection.js";
 import { CustomError } from "../../util/customError.js";
 import deleteFile from "../../util/deleteFile.js";
@@ -93,4 +93,33 @@ const getTopicByForumId = async (forumId) => {
     return topic
 }
 
-export {getForums, createForum, getForumById, getForumsByCreator, getForumByForumId, updateForum, archiveForum, updateForumBanner, getTopicByForumId}
+const getIsSubscribed = async (user_id, forum_id) => {
+    const isCreator = await db.Forum.findOne({where: {id: forum_id, createdBy: user_id}});
+    
+    const existingMembership = await db.UserMembership.findOne({
+        where: {
+            user_id,            
+            forum_id
+        },
+    });
+
+    if (existingMembership || isCreator) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+export {
+  getForums,
+  createForum,
+  getForumById,
+  getForumsByCreator,
+  getForumByForumId,
+  updateForum,
+  archiveForum,
+  updateForumBanner,
+  getTopicByForumId,
+  getIsSubscribed
+};
