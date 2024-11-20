@@ -1,7 +1,6 @@
 import { validationResult } from 'express-validator';
 import path from 'path';
 import { promises as fs } from 'fs';
-
 import * as userService from './userService.js';
 import { asyncErrorHandler } from '../../util/asyncErrorHandler.js';
 
@@ -68,7 +67,7 @@ const getAvatar = asyncErrorHandler(async (req, res, next) => {
       await fs.access(filePath); 
 
       res.sendFile(fileName, {
-        root: path.join(new URL('../../avatars', import.meta.url).pathname),
+        root: path.join(new URL('../../avatars', import.meta.url).pathname)
       });
     } catch (err) {
       return res.status(404).json({
@@ -107,5 +106,12 @@ const getAvatar = asyncErrorHandler(async (req, res, next) => {
 //   }
 // });
 
+const getAvatarById = asyncErrorHandler (async (req,res,next) => {
+  const {id} = req.params;
+  const {avatarPath} = await userService.getAvatarById(id);
 
-export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatar}
+  return res.sendFile(avatarPath)
+})
+
+
+export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatar, getAvatarById}

@@ -18,4 +18,9 @@ const getMyTopics = async (id) => {
     return await topicRepository.getMyTopics(id);
 }
 
-export { createTopic, getTopics, getTopicById, getMyTopics }
+const getRecentTopics = async (id) => {
+    const topics = topicRepository.getRecentTopics(id);
+    return topics
+}
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics }
