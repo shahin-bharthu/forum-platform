@@ -4,6 +4,7 @@ import { db } from "../../config/connection.js";
 import { promises as fs } from 'fs';
 import { CustomError } from "../../util/customError.js";
 import path from 'path';
+import { Op, where } from "sequelize";
 
 const createForum = asyncErrorHandler(async (req,res,next) => {
     const createdBy = req.user.id
@@ -101,9 +102,6 @@ const unSubscribeForum = asyncErrorHandler(async(req,res,next) => {
         if (!forum) {
             return res.status(404).json({ message: 'Forum not found' });
         }
-        console.log(forum.createdBy);
-        console.log(id);
-        
 
         const user = await db.User.findByPk(id); 
         if (!user) {
@@ -135,7 +133,7 @@ const unSubscribeForum = asyncErrorHandler(async(req,res,next) => {
 
 const getForumsToSubscribe = asyncErrorHandler(async (req, res, next) => {    
     const {id} = req.user;    
-    const allForums = await db.Forum.findAll();    
+    const allForums = await db.Forum.findAll({where: {isActive: true}});    
     const userForums = await db.Forum.findAll({where: {createdBy: id}});
     const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
     
@@ -228,6 +226,17 @@ const getTopicByForumId = asyncErrorHandler(async (req, res, next) => {
     return res.status(200).json({message: 'Fetched forum topics', data: topics})
 })
 
+
+const getRecentForums = asyncErrorHandler(async (req,res,next) => {
+    const forums = await db.Forum.findAll({
+        where: {createdBy: {[Op.ne]: req.user.id}},
+        order: [['createdAt', 'DESC']],  
+        limit: 5
+    });
+
+    return res.status(200).json({message: 'Fetched recent forums', data: forums})
+})
+
 export {
   getForums,
   createForum,
@@ -243,5 +252,6 @@ export {
   getForumBanner,
   getTopicByForumId,
   getForumByForumId,
-  getIsSubscribed
+  getIsSubscribed,
+  getRecentForums,
 };

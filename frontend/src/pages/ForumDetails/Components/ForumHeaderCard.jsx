@@ -14,17 +14,45 @@ export default function ForumHeaderCard({ forum }) {
   const navigate=useNavigate()
   const [subscribed, setSubscribed] = useState(false);
 
+  const [banner, setBanner] = useState();
+  const [bannerUrl, setBannerUrl] = useState();
+
+  // useEffect(() => {
+  // }, []);
+  
   useEffect(() => {
     async function isSubscribed(forum) {
       const isUserSubscribed = await axios.get(`http://localhost:8080/forum/is-subscribed/${forum.id}`, {
         withCredentials: true,
-    });
-      console.log(isUserSubscribed.data.isSubscribed);
+      });
+      console.log(isUserSubscribed.data.isSubscribed);  
       setSubscribed(isUserSubscribed.data.isSubscribed);
     }
+    
+    const fetchAvatar = async () => {
+      const data = await handleFileRead();
+    };
 
+    fetchAvatar().catch(console.error);
     isSubscribed(forum);
   }, []);
+  
+  const handleFileRead = async () => {
+    const file = await axios.get(`http://localhost:8080/forum/banner/${forum.id}`, {
+      withCredentials: true,
+      responseType: "blob",
+    });
+
+    if (file.data) {
+      setBanner(file.data);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBannerUrl(reader.result);
+      };
+      reader.readAsDataURL(file.data);
+    }
+  };
+  
 
   const handleSubscribe = async (event, forumId) => {
     event.preventDefault();
@@ -67,15 +95,14 @@ export default function ForumHeaderCard({ forum }) {
         component="img"
         alt="Forum Header"
         height="100"
-        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJmEl5gk6MOADiLcjX04ablq3EGntiGWrI3A&s"
-        sx={{ borderRadius: 1 }}
+        image="https://cdn.textures4photoshop.com/tex/thumbs/300/webp/blue-sky-gradient-thumb17.webp"
       />
       <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between', width: '100%' }}>
         <CardContent>
           <Stack spacing={2} direction="row" sx={{ alignItems: 'center' }}>
             <Avatar
               alt="Forum Logo"
-              src={forum.logo}
+              src={bannerUrl}
               sx={{ width: 60, height: 60, border: 3, borderColor: 'primary.main' }}
             />
             <Typography variant="h4" component="div" >

@@ -123,8 +123,8 @@ export default function MyPosts() {
 
   return (
     <>
-      <Grid size={12} sx={{ width: '100%', px: 3 }} >
-        <h1>My Posts</h1>
+      <Grid size={12} sx={{ width: '100%', px: 3 , mt:10, alignSelf: 'start'}} >
+        {/* <h1>My Posts</h1> */}
         {forumTopics.map((topic, index) =>
           <Box key={index} mb={2}>
             <Card >
