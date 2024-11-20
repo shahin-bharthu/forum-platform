@@ -19,7 +19,7 @@ export default function ForumInfoCard({ forum, creator }) {
                     {forum.name}
                 </Typography>
                 <Typography fontWeight='fontWeightMedium' sx={{ color: 'text.secondary', mb: 1.5,textAlign: "left" }}>{forum.purpose}</Typography>
-                <Typography variant="body2" sx={{ my: 2 }}>
+                <Typography variant="body2" component="div" sx={{ my: 2 }}>
                     <Stack spacing={2} direction="row">
                         <CakeOutlinedIcon />
                         <Box fontWeight='fontWeightMedium' sx={{ alignContent: 'end' }}>
@@ -35,7 +35,7 @@ export default function ForumInfoCard({ forum, creator }) {
                     </Stack>
                 </Typography>
                 <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between' }}>
-                    <Typography variant="body2">
+                    <Typography variant="body2" component="div">
                         <Stack spacing={2} direction="row">
                             <LanguageIcon />
                             <Box fontWeight='fontWeightMedium' sx={{ alignContent: 'end' }}>
@@ -43,7 +43,7 @@ export default function ForumInfoCard({ forum, creator }) {
                             </Box>
                         </Stack>
                     </Typography>
-                    <Typography variant="body2">
+                    <Typography variant="body2" component="div">
                         <Stack spacing={2} direction="row">
                             <GroupsOutlinedIcon fontSize='medium' />
                             <Box fontWeight='fontWeightMedium' sx={{ alignContent: 'end' }}>
