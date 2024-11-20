@@ -125,9 +125,9 @@ export default function MyForum() {
         )}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', position: 'sticky', }}>
           <Tabs value={value} onChange={handleChange} centered>
-            <Tab icon={<PublicIcon />} iconPosition="start" label="Public Forums" {...a11yProps(0)} />
-            <Tab icon={<VpnLockIcon />} iconPosition="start" label="Private Forums" {...a11yProps(1)} />
-            <Tab icon={<ArchiveIcon />} iconPosition="start" label="Archived Forums" {...a11yProps(2)} />
+            <Tab icon={<PublicIcon />} iconPosition="start" label="Public" {...a11yProps(0)} wrapped/>
+            <Tab icon={<VpnLockIcon />} iconPosition="start" label="Private" {...a11yProps(1)} wrapped/>
+            <Tab icon={<ArchiveIcon />} iconPosition="start" label="Archived" {...a11yProps(2)} wrapped/>
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>

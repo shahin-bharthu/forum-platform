@@ -9,7 +9,7 @@ export default function IntroDivider() {
     const { forumDetails, forumCreatedBy } = useLoaderData();
     return (
         <>
-            <Grid container spacing={3} direction="column" sx={{ px: 2, width: '80%', mt: 10 }}>
+            <Grid container spacing={3} direction="column" sx={{ px: 2, width: '80%', mt: 10 , alignSelf: 'start'}}>
                 <Grid size={12} sx={{ borderRadius: 2 }}>
                     <ForumHeaderCard forum={forumDetails} />
                 </Grid>

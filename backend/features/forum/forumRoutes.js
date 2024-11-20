@@ -14,7 +14,8 @@ import {
   getForumBanner,
   getTopicByForumId,
   getForumByForumId,
-  getIsSubscribed
+  getIsSubscribed,
+  getRecentForums
 } from "./forumController.js";
 import upload from '../../util/uploadForumBanner.js';
 
@@ -28,6 +29,7 @@ router.get('/can-subscribe-to', getForumsToSubscribe);
 router.patch('/archive/:id', archiveForum);
 router.post('/subscribe/:forum_id', subscribeToForum);
 router.post('/unsubscribe/:forum_id', unSubscribeForum);
+router.get('/recent-forums', getRecentForums);
 router.get('/is-subscribed/:id', getIsSubscribed)
 router.get('/topics/:forumId', getTopicByForumId);
 router.get('/:id', getForumById);
