@@ -29,7 +29,9 @@ const getTopics = async () => {
 }
 
 const getTopicById = async (id) => {
-    return await db.Topic.findByPk(id);
+    const topic = await db.Topic.findByPk(id);
+    const creator = await topic.getUser();
+    return {topic, username: creator.username};
 };
 
 // const getForumByForumId = async (forum_id) => {
@@ -41,12 +43,13 @@ const getMyTopics = async (id) => {
 }
 
 const getRecentTopics = async (id) => {
-    const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
-    const topics = await Promise.all(subscribedForums.map(async (forum) => {
-        const topics = await db.Topic.findAll({where: {forum_id: forum.forum_id}, order: [['createdAt', 'DESC']], limit: 2})
+    const userSubscriptions = await db.UserMembership.findAll({where: {user_id: id}})
+    const recentTopics = await Promise.all(userSubscriptions.map(async (subscription) => {
+        const topics = await db.Topic.findAll({where: {forum_id: subscription.forum_id}, order: [['createdAt', 'DESC']], limit: 2, include: 'forum'})
         return topics
     }));
-    return topics
+ 
+    return recentTopics.flat();
 }
 
 export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics}

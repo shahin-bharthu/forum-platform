@@ -74,4 +74,23 @@ db.Forum.belongsToMany(db.User, {
 });
 
 
+db.User.hasMany(db.Topic, {
+  as: 'topics',
+  foreignKey:"createdBy"
+});
+db.Topic.belongsTo(db.User, {
+  as: 'user',
+  foreignKey: "createdBy"
+});
+
+
+db.Forum.hasMany(db.Topic, {
+  as: 'topics',
+  foreignKey:"forum_id"
+});
+db.Topic.belongsTo(db.Forum, {
+  as: 'forum',
+  foreignKey: "forum_id"
+});
+
 export { db, check };
