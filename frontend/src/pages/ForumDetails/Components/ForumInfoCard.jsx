@@ -10,8 +10,9 @@ import LanguageIcon from '@mui/icons-material/Language';
 import FaceOutlinedIcon from '@mui/icons-material/FaceOutlined';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import EmailIcon from '@mui/icons-material/Email';
+import NumbersRoundedIcon from '@mui/icons-material/NumbersRounded';
 
-export default function ForumInfoCard({ forum, creator }) {
+export default function ForumInfoCard({ forum, creator,postLength }) {
     return (
         <Card sx={{mb:2}}>
             <CardContent>
@@ -40,6 +41,14 @@ export default function ForumInfoCard({ forum, creator }) {
                             <LanguageIcon />
                             <Box fontWeight='fontWeightMedium' sx={{ alignContent: 'end' }}>
                                 {forum.isPublic === false ? 'Private' : 'Public'}
+                            </Box>
+                        </Stack>
+                    </Typography>
+                    <Typography variant="body2" component="div">
+                        <Stack spacing={2} direction="row">
+                            <NumbersRoundedIcon fontSize='medium' />
+                            <Box fontWeight='fontWeightMedium' sx={{ alignContent: 'end' }}>
+                                {postLength}
                             </Box>
                         </Stack>
                     </Typography>

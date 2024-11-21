@@ -4,9 +4,12 @@ import Grid from '@mui/material/Grid2';
 import ForumHeaderCard from "./Components/ForumHeaderCard";
 import ForumInfoCard from "./Components/ForumInfoCard";
 import ForumMainCard from "./Components/ForumMainCard";
+import { useState } from "react";
 
 export default function IntroDivider() {
     const { forumDetails, forumCreatedBy } = useLoaderData();
+    const [postLength,setPostLength]=useState()
+
     return (
         <>
             <Grid container spacing={3} direction="column" sx={{ px: 2, width: '80%', mt: 10 , alignSelf: 'start'}}>
@@ -15,11 +18,11 @@ export default function IntroDivider() {
                 </Grid>
                 <Grid size={12} container spacing={2}>
                     <Grid size={{ xs: 12, md: 9 }}>
-                        <ForumMainCard forum={forumDetails}/>
+                        <ForumMainCard forum={forumDetails} setPostLength={setPostLength} />
                     </Grid>
                     <Grid size={{ xs: 0, md: 3 }}>
                         {/* xs=6 md=4 */}
-                        <ForumInfoCard creator={forumCreatedBy} forum={forumDetails}/>
+                        <ForumInfoCard creator={forumCreatedBy} forum={forumDetails} postLength={postLength}/>
                     </Grid>
                 </Grid>
             </Grid>

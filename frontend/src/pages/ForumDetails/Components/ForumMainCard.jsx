@@ -52,7 +52,7 @@ const ExpandMore = styled((props) => {
   ],
 }));
 
-export default function ForumMainCard({ forum }) {
+export default function ForumMainCard({ forum, setPostLength }) {
   const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', username: 'username' }]);
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [userAvatar, setUserAvatar] = useState({})
@@ -78,7 +78,8 @@ export default function ForumMainCard({ forum }) {
       for (let i = 0; i < updatedForumTopics.length; i++) array.push({ isExpanded: false });
 
       setExpanded(array);
-
+      setPostLength(updatedForumTopics.length)
+      
       await Promise.all(
         forumTopicsData.map(async (topic) => {
           try {

@@ -1,3 +1,4 @@
+import { Op, where } from "sequelize";
 import { db } from "../../config/connection.js";
 import { CustomError } from "../../util/customError.js";
 
@@ -39,4 +40,13 @@ const getMyTopics = async (id) => {
     return await db.Topic.findAll({ where: { createdBy: id } });
 }
 
-export {createTopic, getTopics, getTopicById, getMyTopics}
+const getRecentTopics = async (id) => {
+    const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
+    const topics = await Promise.all(subscribedForums.map(async (forum) => {
+        const topics = await db.Topic.findAll({where: {forum_id: forum.forum_id}, order: [['createdAt', 'DESC']], limit: 2})
+        return topics
+    }));
+    return topics
+}
+
+export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics}

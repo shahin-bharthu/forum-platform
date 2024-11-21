@@ -189,11 +189,42 @@ const updateForumBanner = asyncErrorHandler(async (req,res,next) => {
 
 
 //for linux
+// const getForumBanner = asyncErrorHandler(async (req, res, next) => {
+//     const forumId = req.params.id;
+//     const forum = await db.Forum.findByPk(forumId);
+    
+//     const filepath = forum.logo.split('/');
+//     const fileName = filepath[filepath.length - 1];
+    
+//     if (!fileName) {
+//       return res.status(404).json({
+//         status: 'failed',
+//         message: 'Banner not found',
+//       });
+//     } else {
+//       const filePath = path.join(import.meta.url.replace('file://', ''), '../../../forumLogos', fileName);
+      
+//       try {
+//         await fs.access(filePath); 
+        
+//         res.sendFile(fileName, {
+//           root: path.join(new URL('../../forumLogos', import.meta.url).pathname),
+//         });
+//       } catch (err) {
+//         return res.status(404).json({
+//           status: 'failed',
+//           message: 'Banner not found',
+//         });
+//       }
+//     }
+// });
+
+//for Windows
 const getForumBanner = asyncErrorHandler(async (req, res, next) => {
     const forumId = req.params.id;
     const forum = await db.Forum.findByPk(forumId);
     
-    const filepath = forum.logo.split('/');
+    const filepath = forum.logo.split('\\');
     const fileName = filepath[filepath.length - 1];
     
     if (!fileName) {
@@ -202,13 +233,13 @@ const getForumBanner = asyncErrorHandler(async (req, res, next) => {
         message: 'Banner not found',
       });
     } else {
-      const filePath = path.join(import.meta.url.replace('file://', ''), '../../../forumLogos', fileName);
+      const filePath = path.join(import.meta.url.replace('file:///', ''), '../../../forumLogos');
       
       try {
         await fs.access(filePath); 
         
         res.sendFile(fileName, {
-          root: path.join(new URL('../../forumLogos', import.meta.url).pathname),
+          root: filePath
         });
       } catch (err) {
         return res.status(404).json({

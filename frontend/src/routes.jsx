@@ -1,5 +1,4 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-
 import SignupPage from "./pages/Signup.jsx";
 import LoginPage from "./pages/Login.jsx";
 import { loader as loginLoader } from "./components/LoginForm.jsx"
@@ -7,7 +6,7 @@ import AuthPage from "./pages/AuthPage.jsx";
 import UserProfilePage from "./pages/UserProfilePage.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
-import Index from './pages/Dashboard/Index.jsx'
+import Dashboard, { dashboardLoader } from './pages/Dashboard/Index.jsx'
 import { tokenLoader } from "../utils/auth.js";
 import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
@@ -54,7 +53,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/user/dashboard" /> },
       { path: "profile", element: <UserProfilePage /> },
-      { path: "dashboard", element: <Index /> },
+      { path: "dashboard",loader:dashboardLoader, element: <Dashboard /> },
       { path: "my-forums", loader: forumLoader, element: <MyForum /> },
       { path: "add-forum", element: <AddForum isEdit={false}/> },
       { path: "edit-forum/:forum_id", loader: forumDetails, element: <AddForum isEdit={true}/> },

@@ -26,4 +26,10 @@ const getMyTopics = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: "Topics fetched successfully", data: topics});
 })
 
-export { createTopic, getTopics, getTopicById, getMyTopics }
+const getRecentTopics = asyncErrorHandler(async (req,res,next) => {
+    const { id } = req.user;
+    const topics = await topicServices.getRecentTopics(id);
+    return res.status(200).json({message: "Fetched recent topics", data: topics});
+})
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics }

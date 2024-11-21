@@ -103,7 +103,7 @@ export default function ForumHeaderCard({ forum }) {
             <Avatar
               alt="Forum Logo"
               src={bannerUrl}
-              sx={{ width: 60, height: 60, border: 3, borderColor: 'primary.main' }}
+              sx={{ width: 60, height: 60, border: 2, borderColor: 'primary.main' }}
             />
             <Typography variant="h4" component="div" >
               {forum.name}
