@@ -53,7 +53,7 @@ const ExpandMore = styled((props) => {
 }));
 
 export default function ForumMainCard({ forum, setPostLength }) {
-  const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', username: 'username' }]);
+  const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', user: {username: 'username'}, }]);
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [userAvatar, setUserAvatar] = useState({})
 
@@ -63,22 +63,16 @@ export default function ForumMainCard({ forum, setPostLength }) {
         withCredentials: true,
       });
       const forumTopicsData = forumTopics.data.data;
-      const topicCreatorsList = await Promise.all(forumTopicsData.map(forumTopic => axios.get(`http://localhost:8080/user/${forumTopic.createdBy}`, { withCredentials: true })))
-      const topicCreatorsUsername = topicCreatorsList.map(creator => creator.data.user.username)
+      console.log("FORUM TOPICS DATA:",forumTopicsData);
 
-      const updatedForumTopics = forumTopicsData.map((forumTopic, index) => ({
-        ...forumTopic,
-        username: topicCreatorsUsername[index]
-      }));
-
-      setForumTopics(updatedForumTopics);
+      setForumTopics(forumTopicsData);
 
       let array = [];
 
-      for (let i = 0; i < updatedForumTopics.length; i++) array.push({ isExpanded: false });
+      for (let i = 0; i < forumTopicsData.length; i++) array.push({ isExpanded: false });
 
       setExpanded(array);
-      setPostLength(updatedForumTopics.length)
+      setPostLength(forumTopicsData.length)
       
       await Promise.all(
         forumTopicsData.map(async (topic) => {
@@ -147,7 +141,7 @@ export default function ForumMainCard({ forum, setPostLength }) {
                   <MoreVertIcon />
                 </IconButton>
               }
-              title={topic.username}
+              title={topic.user.username}
               subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
                 month: 'long',
                 day: 'numeric',

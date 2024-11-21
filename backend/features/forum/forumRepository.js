@@ -86,11 +86,11 @@ const updateForumBanner = async (id, { logo }) => {
 
 const getTopicByForumId = async (forumId) => {
     const forum = await db.Forum.findOne({where: {forum_id: forumId}})
-    const topic = await db.Topic.findAll({where: {forum_id: forum.id}});
-    if (!topic) {
-        throw new CustomError('Topic not found for given forum', 404)
+    const topics = await db.Topic.findAll({where: {forum_id: forum.id}, include: 'user'});
+    if (!topics) {
+        throw new CustomError('No topics found for given forum', 404)
     }
-    return topic
+    return topics
 }
 
 const getIsSubscribed = async (user_id, forum_id) => {

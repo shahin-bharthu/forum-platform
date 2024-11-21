@@ -52,7 +52,7 @@ const ExpandMore = styled((props) => {
 }));
 
 export default function MyPosts() {
-    const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', username: 'username' }]);
+    const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', forum: {name: 'username'} }]);
     const [expanded, setExpanded] = useState([{ isExpanded: false }]);
     const [forumBanner, setForumBanner] = useState({})
     //   const {topics} = useLoaderData();
@@ -61,38 +61,38 @@ export default function MyPosts() {
         // console.log("useeffect");
 
         async function getForumTopics() {
-            const myTopics = await axios.get(`http://localhost:8080/topic/my-topics`, {
+            const myTopics = await axios.get(`http://localhost:8080/topic/recent-topics`, {
                 withCredentials: true,
             });
-            // console.log(myTopics);
-
             const myTopicsData = myTopics.data.data;
-            const forumsList = await Promise.all(myTopicsData.map(forumTopic => axios.get(`http://localhost:8080/forum/${forumTopic.forum_id}`, { withCredentials: true })))
-            const forumNames = forumsList.map(creator => creator.data.data.name)
+            // const forumsList = await Promise.all(myTopicsData.map(async (forumTopic) => await axios.get(`http://localhost:8080/forum/${forumTopic.forum_id}`, { withCredentials: true })))
+            // console.log(forumsList);
+            // const forumNames = forumsList.map(creator => creator.data.data.name)
 
-            const updatedForumTopics = myTopicsData.map((forumTopic, index) => ({
-                ...forumTopic,
-                forumname: forumNames[index]
-            }));
-
-            setForumTopics(updatedForumTopics);
+            // const updatedForumTopics = myTopicsData.map((forumTopic, index) => ({
+            //     ...forumTopic,
+            //     forumname: forumNames[index]
+            // }));
+            console.log(myTopicsData);
+            setForumTopics(myTopicsData);
 
             let array = [];
 
-            for (let i = 0; i < updatedForumTopics.length; i++) array.push({ isExpanded: false });
+            for (let i = 0; i < myTopicsData.length; i++) array.push({ isExpanded: false });
 
             setExpanded(array);
 
             await Promise.all(
                 myTopicsData.map(async (topic) => {
                     try {
+                        console.log("IN MAP",topic.forum_id);
                         const response = await axios.get(
                             `http://localhost:8080/forum/banner/${topic.forum_id}`,
                             {
                                 withCredentials: true,
                                 responseType: "blob",
                             }
-                        )
+                        )                        
 
                         if (response.data) {
                             const reader = new FileReader()
@@ -131,7 +131,7 @@ export default function MyPosts() {
                             <StyledCardHeader
                                 avatar={
                                     <Avatar aria-label="Forum Banner" src={forumBanner[topic.forum_id]}>
-                                        {topic.forumname}
+                                        {topic.forum.name}
                                     </Avatar>
                                 }
                                 action={
@@ -139,7 +139,7 @@ export default function MyPosts() {
                                         <MoreVertIcon />
                                     </IconButton>
                                 }
-                                title={topic.forumname}
+                                title={topic.forum.name}
                                 subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
                                     month: 'long',
                                     day: 'numeric',
