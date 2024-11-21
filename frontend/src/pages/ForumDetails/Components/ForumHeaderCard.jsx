@@ -25,7 +25,6 @@ export default function ForumHeaderCard({ forum }) {
       const isUserSubscribed = await axios.get(`http://localhost:8080/forum/is-subscribed/${forum.id}`, {
         withCredentials: true,
       });
-      console.log(isUserSubscribed.data.isSubscribed);  
       setSubscribed(isUserSubscribed.data.isSubscribed);
     }
     
@@ -113,7 +112,7 @@ export default function ForumHeaderCard({ forum }) {
         <CardActions sx={{ pr: 4 }}>
           <Tooltip title="Create Post" arrow>
             <Button
-              onClick={()=>navigate('/user/create-post')}
+              onClick={()=>navigate('/user/create-post', { state: { forumName: forum.name, forumId: forum.id } })}
               variant="outlined"
               startIcon={<AddIcon />}
               sx={{ borderRadius: 28, border: 2 }}
@@ -132,7 +131,7 @@ export default function ForumHeaderCard({ forum }) {
               // color={subscribed? 'secondary' : 'primary'}
               sx={{ borderRadius: 28, border: 2 }}
               disableElevation
-              onClick={subscribed? (event) => handleUnsubscribe(event, forum.id) : handleSubscribe}
+              onClick={subscribed? (event) => handleSubscribe(event, forum.id) : handleSubscribe}
             >
               {subscribed? 'Subscribed' : 'Subscribe'}
             </Button>

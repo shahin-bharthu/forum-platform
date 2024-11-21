@@ -33,14 +33,12 @@ export default function IntroDivider() {
 
 export async function forumDetailsLoader({ request, params }) {
     const forum_id = params.forum_id;
-    console.log(forum_id);
     
     try {
         const response = await axios.get(`http://localhost:8080/forum/forum-id/${forum_id}`, {
             withCredentials: true,
         });
         const forumData = response.data.data;
-        console.log(response);
 
         const forumCreatorId = forumData.createdBy;
         const forumCreatorData = await axios.get(
@@ -49,7 +47,6 @@ export async function forumDetailsLoader({ request, params }) {
         }
         );
 
-        // console.log(forumCreatorData.data.user.username);
 
         return {
             forumDetails: forumData,

@@ -29,9 +29,7 @@ const StyledCardHeader = styled(CardHeader)`
     margin: 0;
   }
 `;
-export default function RecentNewForumsCard({ recentForumData , forumAvatar}) {
-  console.log(forumAvatar);
-  
+export default function RecentNewForumsCard({ recentForumData }) {  
   const navigate=useNavigate()
   const handleViewDetails = (event, forum_id) => {    
     event.preventDefault();
@@ -46,7 +44,7 @@ export default function RecentNewForumsCard({ recentForumData , forumAvatar}) {
             avatar={
               <Avatar
                 aria-label="Forum Banner"
-                src={forum.Avatar}
+                src={forum.avatarUrl}
                 sx={{ width: 75, height: 75 }}>
                 {forum.name}
               </Avatar>

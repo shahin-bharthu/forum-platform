@@ -63,7 +63,6 @@ export default function ForumMainCard({ forum, setPostLength }) {
         withCredentials: true,
       });
       const forumTopicsData = forumTopics.data.data;
-      console.log("FORUM TOPICS DATA:",forumTopicsData);
 
       setForumTopics(forumTopicsData);
 

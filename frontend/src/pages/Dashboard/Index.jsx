@@ -6,7 +6,7 @@ import { Typography } from "@mui/material";
 import { useLoaderData } from "react-router-dom";
 
 export default function Dashboard() {
-    const { recentForumData,forumAvatar , empty } = useLoaderData()
+    const { recentForumData, forumAvatar, empty } = useLoaderData()
     return (
         <>
             <Grid container spacing={6} size={12} direction="row" sx={{ width: '100%', px: 0, mx: 3, alignSelf: 'start' }}>
@@ -22,7 +22,7 @@ export default function Dashboard() {
                         RECENT FORUMS
                     </Typography>
                     {empty && <p>No recent forums</p>}
-                    {!empty && <RecentNewForumsCard recentForumData={recentForumData} forumAvatar={forumAvatar}/>}
+                    {!empty && <RecentNewForumsCard recentForumData={recentForumData}/>}
                 </Grid>
             </Grid>
         </>
@@ -34,22 +34,19 @@ export async function dashboardLoader() {
         const recentForums = await axios.get('http://localhost:8080/forum/recent-forums', {
             withCredentials: true
         });
-        const recentForumData = recentForums.data.data || [];
-
+        const recentForumData = recentForums.data.data || [];        
         const forumAvatar = await Promise.all(
             recentForumData.map(async (forum) => {
                 try {
                     const avatarResponse = await axios.get(
-                        `http://localhost:8080/forum/banner/${forum.forum_id}`,
+                        `http://localhost:8080/forum/banner/${forum.id}`,
                         {
                             withCredentials: true,
                             responseType: "blob",
                         }
-                    )
-
+                    )                    
                     if (avatarResponse.data) {
-                        const avatarBlob = avatarResponse.data
-
+                        const avatarBlob = avatarResponse.data                        
                         return {
                             forumId: forum.forum_id,
                             avatarUrl: URL.createObjectURL(avatarBlob)
@@ -64,21 +61,22 @@ export async function dashboardLoader() {
                     }
                 }
             })
-        )
-
-        const empty = recentForumData.length === 0;
-
+        )        
+            const enrichedForumData = recentForumData.map(forum => {
+            const avatarInfo = forumAvatar.find(b => b.forumId === forum.forum_id);
+            return {
+                ...forum,
+                avatarUrl: avatarInfo?.avatarUrl
+            };
+        });        const empty = enrichedForumData.length === 0;        
         return {
-            recentForumData,
-            forumAvatar,
-            empty
-        };
-
+            recentForumData:enrichedForumData,
+            empty:empty,
+        };    
     } catch (error) {
         console.log(error.message);
         return {
             recentForumData: [],
-            forumAvatar:[],
             empty: true
         };
     }

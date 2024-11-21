@@ -24,6 +24,7 @@ const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
     const user = await userService.updateUserAvatar(id, {avatar});
     return res.status(200).json({message: 'Your avatar has been updated!', user: user})
 })
+
 // const getAvatar = asyncErrorHandler(async (req, res, next)=> {
 //     const filepath = req.user.avatar.split("/");
 //     const fileName = filepath[filepath.length - 1];
@@ -38,6 +39,7 @@ const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
 //       });
 //     }
 // })
+
 //for linux
 const getAvatar = asyncErrorHandler(async (req, res, next) => {
   const filepath = req.user.avatar.split('/');
@@ -62,6 +64,7 @@ const getAvatar = asyncErrorHandler(async (req, res, next) => {
     }
   }
 });
+
 //for windows
 // const getAvatar = asyncErrorHandler(async (req, res, next) => {
 //   const filepath = req.user.avatar.split('\\');
