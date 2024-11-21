@@ -135,7 +135,7 @@ export default function ForumMainCard({ forum, setPostLength }) {
     <>
       {forumTopics.map((topic, index) =>
         <Box key={index} mb={2}>
-          <Card >
+          <Card>
             <StyledCardHeader
               avatar={
                 <Avatar aria-label="user avatar" src={userAvatar[topic.createdBy]} >

@@ -6,23 +6,23 @@ import { Typography } from "@mui/material";
 import { useLoaderData } from "react-router-dom";
 
 export default function Dashboard() {
-    const { recentForumData,forumAvatar , empty } = useLoaderData()
+    const { recentForumData, empty } = useLoaderData()
     return (
         <>
-            <Grid container spacing={6} size={12} direction="row" sx={{ width: '100%', px: 0, mx: 3, alignSelf: 'start' }}>
+            <Grid container spacing={{xs:1,md:5}} size={12} direction="row" sx={{ width: '100%', px: 0, mx: 3, alignSelf: 'start' }}>
 
                 <Grid size={{ xs: 12, md: 9 }} sx={{ mt: 10, alignSelf: 'start' }}>
-                    <Typography fontWeight='fontWeightMedium' variant="body2" sx={{ m: 1, textAlign: "left", color: 'text.secondary' }}>
+                    <Typography fontWeight='fontWeightMedium' variant="body2" sx={{ mb:2,mt: 1, mx:1, textAlign: "left", color: 'text.secondary' }}>
                         RECENT POSTS
                     </Typography>
                     <RecentNewPostsCard />
                 </Grid>
                 <Grid size={{ xs: 12, md: 3 }} sx={{ mt: 10, alignSelf: 'start' }}>
                     <Typography fontWeight='fontWeightMedium' variant="body2" sx={{ m: 1, textAlign: "left", color: 'text.secondary' }}>
-                        RECENT FORUMS
+                        RECENT NEW FORUMS
                     </Typography>
                     {empty && <p>No recent forums</p>}
-                    {!empty && <RecentNewForumsCard recentForumData={recentForumData} forumAvatar={forumAvatar}/>}
+                    {!empty && <RecentNewForumsCard recentForumData={recentForumData}/>}
                 </Grid>
             </Grid>
         </>
@@ -38,15 +38,15 @@ export async function dashboardLoader() {
 
         const forumAvatar = await Promise.all(
             recentForumData.map(async (forum) => {
-                try {
+                try {                    
                     const avatarResponse = await axios.get(
-                        `http://localhost:8080/forum/banner/${forum.forum_id}`,
+                        `http://localhost:8080/forum/banner/${forum.id}`,
                         {
                             withCredentials: true,
                             responseType: "blob",
                         }
                     )
-
+                    
                     if (avatarResponse.data) {
                         const avatarBlob = avatarResponse.data
 
@@ -65,20 +65,28 @@ export async function dashboardLoader() {
                 }
             })
         )
+        
 
-        const empty = recentForumData.length === 0;
+        const enrichedForumData = recentForumData.map(forum => {
+            const avatarInfo = forumAvatar.find(b => b.forumId === forum.forum_id);
+            return {
+                ...forum,
+                avatarUrl: avatarInfo?.avatarUrl
+            };
+        });
+
+        const empty = enrichedForumData.length === 0;
+
 
         return {
-            recentForumData,
-            forumAvatar,
-            empty
+            recentForumData:enrichedForumData,
+            empty:empty,
         };
 
     } catch (error) {
         console.log(error.message);
         return {
             recentForumData: [],
-            forumAvatar:[],
             empty: true
         };
     }

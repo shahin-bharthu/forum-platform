@@ -121,9 +121,23 @@ export default function MyPosts() {
     setExpanded(array);
   };
 
+  if (forumTopics.length === 0) {
+    return (
+      <>
+        <Box mb={2}>
+
+            <Typography variant="h5" component="div" sx={{ textAlign: "center", py: 5 }}>
+              No Posts Yet!
+            </Typography>
+
+        </Box>
+      </>
+    )
+  }
+
   return (
     <>
-      <Grid size={12} sx={{ width: '100%', px: 3 , mt:10, alignSelf: 'start'}} >
+      <Grid size={12} sx={{ width: '100%', px: 3, mt: 10, alignSelf: 'start' }} >
         {/* <h1>My Posts</h1> */}
         {forumTopics.map((topic, index) =>
           <Box key={index} mb={2}>
@@ -163,7 +177,7 @@ export default function MyPosts() {
                 </ExpandMore>
               </CardActions>
               <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
-                <CardContent sx={{px:3}}>
+                <CardContent sx={{ px: 3 }}>
                   <Typography sx={{ marginBottom: 2, textAlign: 'left' }}>{topic.content}</Typography>
                 </CardContent>
               </Collapse>
