@@ -3,11 +3,6 @@ import path from 'path';
 import { promises as fs } from 'fs';
 import * as userService from './userService.js';
 import { asyncErrorHandler } from '../../util/asyncErrorHandler.js';
-import { validationResult } from 'express-validator';
-import path from 'path';
-import { promises as fs } from 'fs';
-import * as userService from './userService.js';
-import { asyncErrorHandler } from '../../util/asyncErrorHandler.js';
 const getUserDetails = asyncErrorHandler(async (req,res,next) => {
     const id = req.params.id;
     const user = await userService.getUserDetails(id)
