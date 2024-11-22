@@ -1,7 +1,8 @@
 import {CustomError} from "../../util/customError.js"
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 import { db } from "../../config/connection.js";
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
+import util from 'util';
 
 export const authMiddleware = asyncErrorHandler(async (req, res, next) => {
     // 1. Read the jwtToken and check if it exists
@@ -10,11 +11,11 @@ export const authMiddleware = asyncErrorHandler(async (req, res, next) => {
     let jwtToken = token;    
   
     if (!jwtToken) {
-      next(new CustomError("You are not logged in!", 401));
+      throw new CustomError("You are not logged in!", 401);
     }
   
     // 2. Validate the jwtToken
-    const decodedjwtToken = jwt.verify(jwtToken, process.env.JWT_SECRET);
+    const decodedjwtToken = await util.promisify(jwt.verify)(jwtToken, process.env.JWT_SECRET);
   
     // 3. Check if the vendor exists
     const user = await db.User.findByPk(decodedjwtToken.id);

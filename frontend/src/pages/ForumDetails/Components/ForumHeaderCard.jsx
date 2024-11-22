@@ -9,16 +9,15 @@ import { Avatar, Stack, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import PositionedSnackbar from '../../../components/SnackBar';
 
 export default function ForumHeaderCard({ forum }) {
+  
   const navigate=useNavigate()
   const [subscribed, setSubscribed] = useState(false);
-
+  const [message, setMessage] = useState();
   const [banner, setBanner] = useState();
   const [bannerUrl, setBannerUrl] = useState();
-
-  // useEffect(() => {
-  // }, []);
   
   useEffect(() => {
     async function isSubscribed(forum) {
@@ -66,15 +65,10 @@ export default function ForumHeaderCard({ forum }) {
       );
 
       setMessage(`Subscribed to ${response.data.data.name}`);
-      setSubscribableForumsState((prevState) =>
-        prevState.filter((id) => id !== forumId)
-      );
 
       setTimeout(() => {
         setMessage(null);
-        // window.location.reload();
-        setCounter((val) => val + 1);
-        navigate('/user/forums')
+        setSubscribed(true)
       }, 1000);
 
 
@@ -88,6 +82,37 @@ export default function ForumHeaderCard({ forum }) {
     }
   };
 
+
+  const handleUnSubscribe = async (event, forumId) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/forum/unsubscribe/${forumId}`,
+        null,
+        {
+          "Content-Type": "application/json",
+          withCredentials: true,
+        }
+      );
+
+      setMessage(`Unsubscribed from ${response.data.data.name}`);
+
+      setTimeout(() => {
+        setMessage(null);
+        setSubscribed(false);
+      }, 1000);
+
+    } catch (error) {
+      console.error("Error: ", error);
+      return {
+        allForums: [],
+        subscribableForums: [],
+        empty: true,
+      };
+    }
+  };
+
+
   return (
     <Card sx={{ width: '100%' }}>
       <CardMedia
@@ -96,6 +121,9 @@ export default function ForumHeaderCard({ forum }) {
         height="100"
         image="https://cdn.textures4photoshop.com/tex/thumbs/300/webp/blue-sky-gradient-thumb17.webp"
       />
+      {message && (
+        <PositionedSnackbar message={message} />
+      )}
       <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between', width: '100%' }}>
         <CardContent>
           <Stack spacing={2} direction="row" sx={{ alignItems: 'center' }}>
@@ -131,7 +159,7 @@ export default function ForumHeaderCard({ forum }) {
               // color={subscribed? 'secondary' : 'primary'}
               sx={{ borderRadius: 28, border: 2 }}
               disableElevation
-              onClick={subscribed? (event) => handleSubscribe(event, forum.id) : handleSubscribe}
+              onClick={subscribed? (event) => handleUnSubscribe(event, forum.forum_id) : (event) => handleSubscribe(event, forum.forum_id)}
             >
               {subscribed? 'Subscribed' : 'Subscribe'}
             </Button>

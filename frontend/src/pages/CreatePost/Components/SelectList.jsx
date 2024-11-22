@@ -7,13 +7,12 @@ import Select from '@mui/material/Select';
 import useForumNames from "../Hooks/useForumNames";
 import { TextField } from '@mui/material';
 
-export default function SelectList({ selectedForumName }) {
+export default function SelectList({ selectedForumName, getForum }) {
   const { forums, error } = useForumNames();
   const [forum, setForum] = useState('');
-  console.log("selected forum name:",selectedForumName);
 
   const handleChange = (event) => {
-    console.log("",event.target.value);
+    // console.log("",event.target.value);
     setForum(event.target.value);
     getForum(event.target.value);
   };
@@ -32,7 +31,7 @@ export default function SelectList({ selectedForumName }) {
           },
         }}>
         {selectedForumName ? 
-          <TextField id="outlined-basic" value={selectedForumName} disabled label="Forum" variant="outlined"/>
+          <TextField id="outlined-basic" defaultValue={selectedForumName} value={selectedForumName} disabled label="Forum" variant="outlined"/>
           :
           <>
           <InputLabel id="demo-simple-select-label" required>Forum</InputLabel>

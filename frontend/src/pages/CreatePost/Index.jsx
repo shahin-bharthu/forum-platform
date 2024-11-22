@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomButton from "../../components/Button";
 import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import TextInputField from "./Components/TextInput.jsx";
@@ -10,7 +10,6 @@ import Stack from '@mui/material/Stack';
 import { Card } from "@mui/material";
 
 const CreatePost = () => {
-  const token = useRouteLoaderData('root');
   const titleInput = useRef();
   const bodyInput = useRef();
   const location = useLocation();
@@ -24,21 +23,15 @@ const CreatePost = () => {
   const [errors, setErrors] = useState({});
   const [selectedForum, setSelectedForum] = useState(null); 
 
-  const handleInputChange = (event) => {
-    const { name } = event.target;
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
-  };
-
-  const handleInputFocus = (event) => {
-    const { name } = event.target;
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
-  };
+  useEffect(() => {
+    if (forumName !== null && forumId !== null) {
+      setSelectedForum(forumId)
+    }
+  }, []);
 
   const getSelectedForumFromList = (selectedForumFromList) => {
     console.log(selectedForumFromList);
-    setSelectedForum(selectedForumFromList || forumId); 
+    setSelectedForum(selectedForumFromList ?? forumId); 
   };
 
   async function submitHandler(event) {
@@ -55,7 +48,7 @@ const CreatePost = () => {
     const formData = { 
       title: enteredTitle, 
       content: enteredBody, 
-      forum_id: selectedForum
+      forum_id: selectedForum 
     };
     console.log(formData);
 

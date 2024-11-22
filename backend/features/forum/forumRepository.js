@@ -11,6 +11,12 @@ const createForum = async (forumData) => {
         createdBy: forumData.createdBy,
         forum_id: forumData.forum_id
     });
+
+    const createAdminMembership = await db.UserMembership.create({
+        user_id: forum.createdBy,
+        forum_id: forum.id,
+        membership_role: 'ADMIN'
+    })
     
     return forum;
 };

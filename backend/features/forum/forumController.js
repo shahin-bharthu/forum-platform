@@ -24,7 +24,7 @@ const updateForum = asyncErrorHandler(async (req,res,next) => {
     const userId = req.user.id;
     const body = req.body;
     
-    const data = forumServices.updateForum(id, userId, body);
+    const data = await forumServices.updateForum(id, userId, body);
 
     return res.status(200).json({message: "Forum details have been updated successfully", data: data});
 })
@@ -152,7 +152,7 @@ const getForumsToSubscribe = asyncErrorHandler(async (req, res, next) => {
 
 const getSubscribedForums = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.user;
-    const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
+    const subscribedForums = await db.UserMembership.findAll({where: {[Op.and] : {user_id: id}, membership_role: {[Op.ne]: 'ADMIN'}}})
     const subscribedForumIds = subscribedForums.map(membership => membership.forum_id);
     const subscribedForumsData = await Promise.all(subscribedForumIds.map(async (subscribedForum) => {
         return await db.Forum.findByPk(subscribedForum)
