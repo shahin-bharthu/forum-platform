@@ -180,9 +180,10 @@ const archiveForum = asyncErrorHandler(async (req,res,next) => {
 
 const updateForumBanner = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.params;
+    const userId = req.user.id;
     const banner = req.file?.path ?? "";
     
-    const forum = await forumServices.updateForumBanner(id, {logo: banner});
+    const forum = await forumServices.updateForumBanner(id, userId, {logo: banner});
     
     return res.status(200).json({message: 'Your banner has been updated!', forum})
 });

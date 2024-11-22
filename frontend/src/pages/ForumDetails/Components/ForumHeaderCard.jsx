@@ -12,8 +12,7 @@ import axios from 'axios';
 import PositionedSnackbar from '../../../components/SnackBar';
 
 export default function ForumHeaderCard({ forum }) {
-  
-  const navigate=useNavigate()
+  const navigate = useNavigate()
   const [subscribed, setSubscribed] = useState(false);
   const [message, setMessage] = useState();
   const [banner, setBanner] = useState();
@@ -140,6 +139,7 @@ export default function ForumHeaderCard({ forum }) {
         <CardActions sx={{ pr: 4 }}>
           <Tooltip title="Create Post" arrow>
             <Button
+              disabled = {forum.isActive? false : true}
               onClick={()=>navigate('/user/create-post', { state: { forumName: forum.name, forumId: forum.id } })}
               variant="outlined"
               startIcon={<AddIcon />}
@@ -153,10 +153,9 @@ export default function ForumHeaderCard({ forum }) {
 
           <Tooltip title={subscribed ? "Unsubscribe": "Subscribe"} arrow>
             <Button
-              // onClick={handleCreatePost}
+              disabled = {forum.isActive? false : true}
               size="small"
               variant={subscribed? 'outlined': 'contained'}
-              // color={subscribed? 'secondary' : 'primary'}
               sx={{ borderRadius: 28, border: 2 }}
               disableElevation
               onClick={subscribed? (event) => handleUnSubscribe(event, forum.forum_id) : (event) => handleSubscribe(event, forum.forum_id)}

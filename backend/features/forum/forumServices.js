@@ -55,8 +55,8 @@ const archiveForum = async (userId, id) => {
     return await forumRepository.archiveForum(userId, id);
 }
 
-const updateForumBanner = async (id, {logo}) => {
-    return await forumRepository.updateForumBanner(id, {logo});
+const updateForumBanner = async (id, userId, {logo}) => {
+    return await forumRepository.updateForumBanner(id, userId, {logo});
 }
 
 const getTopicByForumId = async (forumId) => {

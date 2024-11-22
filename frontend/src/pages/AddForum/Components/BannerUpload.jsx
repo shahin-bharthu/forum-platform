@@ -15,6 +15,7 @@ import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -35,6 +36,7 @@ const ForumBannerUpload = ({ forumId }) => {
   const [updateMessage, setUpdateMessage] = useState("");
   const [bannerUrl, setBannerUrl] = useState(null);
   const [banner, setBanner] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAvatar = async () => {
@@ -89,7 +91,10 @@ const ForumBannerUpload = ({ forumId }) => {
           window.location.reload(); // Reload the page to reflect the changes
         }, 1500);
       } catch (error) {
-        console.error("Error uploading file:", error);
+        setUpdateMessage(error.response.data.message);
+        setTimeout(() => {
+          navigate('/user/dashboard');
+        }, 3000);
       }
     },
     [forumId, selectedFile]
@@ -227,9 +232,8 @@ const ForumBannerUpload = ({ forumId }) => {
             </Stack>
           </form>
 
-          {/* Display upload message */}
           {updateMessage && (
-            <Typography variant="body2" color="success.main" sx={{ mt: 2 }}>
+            <Typography variant="body2" color="info" sx={{ mt: 2 }}>
               {updateMessage}
             </Typography>
           )}

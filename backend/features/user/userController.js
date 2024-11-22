@@ -3,6 +3,8 @@ import path from 'path';
 import { promises as fs } from 'fs';
 import * as userService from './userService.js';
 import { asyncErrorHandler } from '../../util/asyncErrorHandler.js';
+import os from 'os';
+
 const getUserDetails = asyncErrorHandler(async (req,res,next) => {
     const id = req.params.id;
     const user = await userService.getUserDetails(id)
@@ -25,45 +27,34 @@ const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: 'Your avatar has been updated!', user: user})
 })
 
-// const getAvatar = asyncErrorHandler(async (req, res, next)=> {
-//     const filepath = req.user.avatar.split("/");
-//     const fileName = filepath[filepath.length - 1];
-//     if(fileName === ""){
-//       return res.status(404).json({
-//         status: "failed",
-//         message: "Avatar not found",
-//       });
-//     } else {
-//       res.sendFile(fileName, {
-//         root: path.join(__dirname, "../../avatars"),
-//       });
-//     }
-// })
-
 //for linux
 const getAvatar = asyncErrorHandler(async (req, res, next) => {
-  const filepath = req.user.avatar.split('/');
-  const fileName = filepath[filepath.length - 1];
+  const osType = os.type();
+  const pathDelimiter = osType === 'Linux' ? '/' : '\\';
+  const avatarPath = req.user.avatar.split(pathDelimiter);
+  const fileName = avatarPath.pop(); 
+
   if (!fileName) {
     return res.status(404).json({
       status: 'failed',
       message: 'Avatar not found',
     });
-  } else {
-    const filePath = path.join(import.meta.url.replace('file://', ''), '../../../avatars', fileName);
-    try {
-      await fs.access(filePath);
-      res.sendFile(fileName, {
-        root: path.join(new URL('../../avatars', import.meta.url).pathname)
-      });
-    } catch (err) {
-      return res.status(404).json({
-        status: 'failed',
-        message: 'Avatar not found',
-      });
-    }
+  }
+
+  const basePath = import.meta.url.replace(osType === 'Linux' ? 'file://' : 'file:///', '');
+  const filePath = path.join(basePath, '../../../avatars');
+
+  try {
+    await fs.access(filePath);
+    res.sendFile(fileName, { root: filePath });
+  } catch (err) {
+    return res.status(404).json({
+      status: 'failed',
+      message: 'Avatar not found',
+    });
   }
 });
+
 
 //for windows
 // const getAvatar = asyncErrorHandler(async (req, res, next) => {
@@ -89,16 +80,13 @@ const getAvatar = asyncErrorHandler(async (req, res, next) => {
 //     }
 //   }
 // });
+
 const getAvatarById = asyncErrorHandler (async (req,res,next) => {
   const {id} = req.params;
   const {avatarPath} = await userService.getAvatarById(id);
   return res.sendFile(avatarPath)
 })
 export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatar, getAvatarById}
-
-
-
-
 
 
 

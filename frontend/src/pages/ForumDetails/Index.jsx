@@ -57,32 +57,3 @@ export async function forumDetailsLoader({ request, params }) {
         console.log(error.message);
     }
 }
-
-
-     {/* <Card variant="outlined" sx={{ maxWidth: 360 }}>
-                <Box sx={{ p: 2 }}>
-                    <Stack
-                    direction="row"
-                    sx={{ justifyContent: "space-between", alignItems: "center" }}
-                    >
-                    <Typography gutterBottom variant="h5" component="div">
-                        {forumDetails.name}
-                    </Typography>
-                    <Typography gutterBottom variant="h6" component="div">
-                        {forumDetails.subscriber_count}
-                    </Typography>
-                    </Stack>
-                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    {forumDetails.purpose}
-                    </Typography>
-                </Box>
-                <Divider />
-                <Box sx={{ p: 2 }}>
-                    <Typography gutterBottom variant="body2">
-                    Created By
-                    </Typography>
-                    <Stack direction="row" spacing={1}>
-                    <Chip color="primary" label={forumCreatedBy} size="small" />
-                    </Stack>
-                </Box>
-                </Card> */}

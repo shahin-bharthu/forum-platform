@@ -72,10 +72,13 @@ const archiveForum = async (userId, id) => {
 }
 
 
-const updateForumBanner = async (id, { logo }) => {
+const updateForumBanner = async (id, userId, { logo }) => {
     const forum = await db.Forum.findByPk(id);
     if (!forum) {
-        throw new Error('Forum not found');
+        throw new CustomError('Forum not found', 404);
+    }
+    if (forum.createdBy !== userId) {
+        throw new CustomError('You are not authorized to edit this forum', 403);
     }
     const oldAvatarPath = forum.logo;
     await forum.update({

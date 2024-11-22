@@ -4,10 +4,15 @@ import { CustomError } from "../../util/customError.js";
 
 const createTopic = async (topicData) => {
     const forumExists = await db.Forum.findByPk(topicData.forum_id);
+
     if (!forumExists) {
         throw new CustomError('Forum not found', 404);
     }
 
+    if (!forumExists.isActive) {
+        throw new CustomError('Cannot create a post in an archived forum', 405);
+    }
+    
     const topic = await db.Topic.create({
         title: topicData.title,
         content: topicData.content,
