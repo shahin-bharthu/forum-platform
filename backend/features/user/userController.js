@@ -27,7 +27,7 @@ const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: 'Your avatar has been updated!', user: user})
 })
 
-//for linux
+
 const getAvatar = asyncErrorHandler(async (req, res, next) => {
   const osType = os.type();
   const pathDelimiter = osType === 'Linux' ? '/' : '\\';
@@ -55,31 +55,6 @@ const getAvatar = asyncErrorHandler(async (req, res, next) => {
   }
 });
 
-
-//for windows
-// const getAvatar = asyncErrorHandler(async (req, res, next) => {
-//   const filepath = req.user.avatar.split('\\');
-//   const fileName = filepath[filepath.length - 1];
-//   if (!fileName) {
-//     return res.status(404).json({
-//       status: 'failed',
-//       message: 'Avatar not found',
-//     });
-//   } else {
-//     const filePath = path.join(import.meta.url.replace('file:///', ''), '../../../avatars');
-//     try {
-//       await fs.access(filePath);
-//       res.sendFile(fileName, {
-//         root: filePath,
-//       });
-//     } catch (err) {
-//       return res.status(404).json({
-//         status: 'failed',
-//         message: 'Avatar not found',
-//       });
-//     }
-//   }
-// });
 
 const getAvatarById = asyncErrorHandler (async (req,res,next) => {
   const {id} = req.params;

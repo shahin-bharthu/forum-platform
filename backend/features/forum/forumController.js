@@ -1,10 +1,11 @@
-import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
+import os from 'os';
+import { Op, where } from "sequelize";
+import { promises as fs } from 'fs';
+import path from 'path';
 import * as forumServices from "./forumServices.js";
 import { db } from "../../config/connection.js";
-import { promises as fs } from 'fs';
+import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 import { CustomError } from "../../util/customError.js";
-import path from 'path';
-import { Op, where } from "sequelize";
 
 const createForum = asyncErrorHandler(async (req,res,next) => {
     const createdBy = req.user.id
@@ -194,8 +195,10 @@ const getForumBanner = asyncErrorHandler(async (req, res, next) => {
     const forumId = req.params.id;
     const forum = await db.Forum.findByPk(forumId);
     
-    const filepath = forum.logo.split('/');
-    const fileName = filepath[filepath.length - 1];
+    const osType = os.type();
+    const pathDelimiter = osType === 'Linux' ? '/' : '\\';
+    const logoPath = forum.logo.split(pathDelimiter);
+    const fileName = logoPath.pop(); 
     
     if (!fileName) {
       return res.status(404).json({
@@ -203,14 +206,12 @@ const getForumBanner = asyncErrorHandler(async (req, res, next) => {
         message: 'Banner not found',
       });
     } else {
-      const filePath = path.join(import.meta.url.replace('file://', ''), '../../../forumLogos', fileName);
+      const basePath = import.meta.url.replace(osType === 'Linux' ? 'file://' : 'file:///', '');
+      const filePath = path.join(basePath, '../../../forumLogos');
       
       try {
         await fs.access(filePath); 
-        
-        res.sendFile(fileName, {
-          root: path.join(new URL('../../forumLogos', import.meta.url).pathname),
-        });
+        res.sendFile(fileName, {root: filePath});
       } catch (err) {
         return res.status(404).json({
           status: 'failed',
@@ -219,37 +220,6 @@ const getForumBanner = asyncErrorHandler(async (req, res, next) => {
       }
     }
 });
-
-//for Windows
-// const getForumBanner = asyncErrorHandler(async (req, res, next) => {
-//     const forumId = req.params.id;
-//     const forum = await db.Forum.findByPk(forumId);
-    
-//     const filepath = forum.logo.split('\\');
-//     const fileName = filepath[filepath.length - 1];
-    
-//     if (!fileName) {
-//       return res.status(404).json({
-//         status: 'failed',
-//         message: 'Banner not found',
-//       });
-//     } else {
-//       const filePath = path.join(import.meta.url.replace('file:///', ''), '../../../forumLogos');
-      
-//       try {
-//         await fs.access(filePath); 
-        
-//         res.sendFile(fileName, {
-//           root: filePath
-//         });
-//       } catch (err) {
-//         return res.status(404).json({
-//           status: 'failed',
-//           message: 'Banner not found',
-//         });
-//       }
-//     }
-// });
 
 
 const getTopicByForumId = asyncErrorHandler(async (req, res, next) => {

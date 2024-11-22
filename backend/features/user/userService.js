@@ -1,3 +1,4 @@
+import os from 'os';
 import path from 'path';
 import { promises as fs } from 'fs';
 import { CustomError } from '../../util/customError.js';
@@ -16,17 +17,21 @@ const getUserDetails = async (id) => {
 }
 
 const getAvatarById = async (id) => {
+    const osType = os.type();
+
     const user = await userRepository.getUserById(id);
-    const filepath = user.avatar.split('/');
-    const fileName = filepath[filepath.length - 1];
+
+    const pathDelimiter = osType === 'Linux' ? '/' : '\\';
+    const avatarPath = user.avatar.split(pathDelimiter);
+    const fileName = avatarPath.pop(); 
 
     if (!fileName) {
         throw new CustomError("Avatar not found", 404);
     } else {
-        const filePath = path.join(import.meta.url.replace('file://', ''), '../../../avatars', fileName);
+        const basePath = import.meta.url.replace(osType === 'Linux' ? 'file://' : 'file:///', '');
+        const filePath = path.join(basePath, '../../../avatars');
         await fs.access(filePath);
-        const root = path.join(new URL('../../avatars', import.meta.url).pathname);
-        const avatarPath = path.join(root, fileName)
+        const avatarPath = path.join(filePath, fileName)
         return { avatarPath }
       }
 }
