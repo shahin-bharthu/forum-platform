@@ -35,14 +35,12 @@ export default function IntroDivider() {
 
 export async function forumDetailsLoader({ request, params }) {
     const forum_id = params.forum_id;
-    // console.log(forum_id);
     
     try {
         const response = await axios.get(`http://localhost:8080/forum/forum-id/${forum_id}`, {
             withCredentials: true,
         });
         const forumData = response.data.data;
-        // console.log(response);
 
         const forumCreatorId = forumData.createdBy;
         const forumCreatorData = await axios.get(
@@ -51,7 +49,6 @@ export async function forumDetailsLoader({ request, params }) {
         }
         );
 
-        // console.log(forumCreatorData.data.user.username);
 
         return {
             forumDetails: forumData,
@@ -62,32 +59,3 @@ export async function forumDetailsLoader({ request, params }) {
         console.log(error.message);
     }
 }
-
-
-     {/* <Card variant="outlined" sx={{ maxWidth: 360 }}>
-                <Box sx={{ p: 2 }}>
-                    <Stack
-                    direction="row"
-                    sx={{ justifyContent: "space-between", alignItems: "center" }}
-                    >
-                    <Typography gutterBottom variant="h5" component="div">
-                        {forumDetails.name}
-                    </Typography>
-                    <Typography gutterBottom variant="h6" component="div">
-                        {forumDetails.subscriber_count}
-                    </Typography>
-                    </Stack>
-                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    {forumDetails.purpose}
-                    </Typography>
-                </Box>
-                <Divider />
-                <Box sx={{ p: 2 }}>
-                    <Typography gutterBottom variant="body2">
-                    Created By
-                    </Typography>
-                    <Stack direction="row" spacing={1}>
-                    <Chip color="primary" label={forumCreatedBy} size="small" />
-                    </Stack>
-                </Box>
-                </Card> */}

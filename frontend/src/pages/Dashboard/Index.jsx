@@ -34,8 +34,7 @@ export async function dashboardLoader() {
         const recentForums = await axios.get('http://localhost:8080/forum/recent-forums', {
             withCredentials: true
         });
-        const recentForumData = recentForums.data.data || [];
-
+        const recentForumData = recentForums.data.data || [];        
         const forumAvatar = await Promise.all(
             recentForumData.map(async (forum) => {
                 try {                    
@@ -48,8 +47,7 @@ export async function dashboardLoader() {
                     )
                     
                     if (avatarResponse.data) {
-                        const avatarBlob = avatarResponse.data
-
+                        const avatarBlob = avatarResponse.data                        
                         return {
                             forumId: forum.forum_id,
                             avatarUrl: URL.createObjectURL(avatarBlob)

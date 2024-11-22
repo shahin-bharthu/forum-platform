@@ -24,7 +24,7 @@ const updateForum = asyncErrorHandler(async (req,res,next) => {
     const userId = req.user.id;
     const body = req.body;
     
-    const data = forumServices.updateForum(id, userId, body);
+    const data = await forumServices.updateForum(id, userId, body);
 
     return res.status(200).json({message: "Forum details have been updated successfully", data: data});
 })
@@ -152,7 +152,7 @@ const getForumsToSubscribe = asyncErrorHandler(async (req, res, next) => {
 
 const getSubscribedForums = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.user;
-    const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
+    const subscribedForums = await db.UserMembership.findAll({where: {[Op.and] : {user_id: id}, membership_role: {[Op.ne]: 'ADMIN'}}})
     const subscribedForumIds = subscribedForums.map(membership => membership.forum_id);
     const subscribedForumsData = await Promise.all(subscribedForumIds.map(async (subscribedForum) => {
         return await db.Forum.findByPk(subscribedForum)
@@ -180,51 +180,21 @@ const archiveForum = asyncErrorHandler(async (req,res,next) => {
 
 const updateForumBanner = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.params;
+    const userId = req.user.id;
     const banner = req.file?.path ?? "";
     
-    const forum = await forumServices.updateForumBanner(id, {logo: banner});
+    const forum = await forumServices.updateForumBanner(id, userId, {logo: banner});
     
     return res.status(200).json({message: 'Your banner has been updated!', forum})
 });
 
 
 //for linux
-// const getForumBanner = asyncErrorHandler(async (req, res, next) => {
-//     const forumId = req.params.id;
-//     const forum = await db.Forum.findByPk(forumId);
-    
-//     const filepath = forum.logo.split('/');
-//     const fileName = filepath[filepath.length - 1];
-    
-//     if (!fileName) {
-//       return res.status(404).json({
-//         status: 'failed',
-//         message: 'Banner not found',
-//       });
-//     } else {
-//       const filePath = path.join(import.meta.url.replace('file://', ''), '../../../forumLogos', fileName);
-      
-//       try {
-//         await fs.access(filePath); 
-        
-//         res.sendFile(fileName, {
-//           root: path.join(new URL('../../forumLogos', import.meta.url).pathname),
-//         });
-//       } catch (err) {
-//         return res.status(404).json({
-//           status: 'failed',
-//           message: 'Banner not found',
-//         });
-//       }
-//     }
-// });
-
-// for Windows
 const getForumBanner = asyncErrorHandler(async (req, res, next) => {
     const forumId = req.params.id;
     const forum = await db.Forum.findByPk(forumId);
     
-    const filepath = forum.logo.split('\\');
+    const filepath = forum.logo.split('/');
     const fileName = filepath[filepath.length - 1];
     
     if (!fileName) {
@@ -233,13 +203,13 @@ const getForumBanner = asyncErrorHandler(async (req, res, next) => {
         message: 'Banner not found',
       });
     } else {
-      const filePath = path.join(import.meta.url.replace('file:///', ''), '../../../forumLogos');
+      const filePath = path.join(import.meta.url.replace('file://', ''), '../../../forumLogos', fileName);
       
       try {
         await fs.access(filePath); 
         
         res.sendFile(fileName, {
-          root: filePath
+          root: path.join(new URL('../../forumLogos', import.meta.url).pathname),
         });
       } catch (err) {
         return res.status(404).json({
@@ -249,6 +219,37 @@ const getForumBanner = asyncErrorHandler(async (req, res, next) => {
       }
     }
 });
+
+//for Windows
+// const getForumBanner = asyncErrorHandler(async (req, res, next) => {
+//     const forumId = req.params.id;
+//     const forum = await db.Forum.findByPk(forumId);
+    
+//     const filepath = forum.logo.split('\\');
+//     const fileName = filepath[filepath.length - 1];
+    
+//     if (!fileName) {
+//       return res.status(404).json({
+//         status: 'failed',
+//         message: 'Banner not found',
+//       });
+//     } else {
+//       const filePath = path.join(import.meta.url.replace('file:///', ''), '../../../forumLogos');
+      
+//       try {
+//         await fs.access(filePath); 
+        
+//         res.sendFile(fileName, {
+//           root: filePath
+//         });
+//       } catch (err) {
+//         return res.status(404).json({
+//           status: 'failed',
+//           message: 'Banner not found',
+//         });
+//       }
+//     }
+// });
 
 
 const getTopicByForumId = asyncErrorHandler(async (req, res, next) => {

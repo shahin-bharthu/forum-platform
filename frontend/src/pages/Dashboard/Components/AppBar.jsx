@@ -61,7 +61,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const handleCreatePost = useCallback(() => {
     handleMobileMenuClose();
-    navigate('/user/create-post')
+    navigate('/user/create-post', { state: { forumName: null, forumId: null } })
   }, [handleMobileMenuClose]);
 
   const handleMobileMenuOpen = useCallback((event) => {

@@ -55,25 +55,13 @@ export default function MyPosts() {
     const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', forum: {name: 'username'} }]);
     const [expanded, setExpanded] = useState([{ isExpanded: false }]);
     const [forumBanner, setForumBanner] = useState({})
-    //   const {topics} = useLoaderData();
 
     useEffect(() => {
-        // console.log("useeffect");
-
         async function getForumTopics() {
             const myTopics = await axios.get(`http://localhost:8080/topic/recent-topics`, {
                 withCredentials: true,
             });
             const myTopicsData = myTopics.data.data;
-            // const forumsList = await Promise.all(myTopicsData.map(async (forumTopic) => await axios.get(`http://localhost:8080/forum/${forumTopic.forum_id}`, { withCredentials: true })))
-            // console.log(forumsList);
-            // const forumNames = forumsList.map(creator => creator.data.data.name)
-
-            // const updatedForumTopics = myTopicsData.map((forumTopic, index) => ({
-            //     ...forumTopic,
-            //     forumname: forumNames[index]
-            // }));
-            console.log(myTopicsData);
             setForumTopics(myTopicsData);
 
             let array = [];

@@ -4,14 +4,15 @@ import { CustomError } from "../../util/customError.js";
 
 const createTopic = async (topicData) => {
     const forumExists = await db.Forum.findByPk(topicData.forum_id);
+
     if (!forumExists) {
         throw new CustomError('Forum not found', 404);
     }
 
-    const subscribedForum = await db.UserMembership.findOne()
-    // if (forumExists.createdBy !== topicData.createdBy || ) {
-        
-    // }
+    if (!forumExists.isActive) {
+        throw new CustomError('Cannot create a post in an archived forum', 405);
+    }
+    
     const topic = await db.Topic.create({
         title: topicData.title,
         content: topicData.content,
@@ -34,18 +35,14 @@ const getTopicById = async (id) => {
     return {topic, username: creator.username};
 };
 
-// const getForumByForumId = async (forum_id) => {
-//     return await db.Forum.findOne({where: {forum_id}})
-// }
-
 const getMyTopics = async (id) => {
-    return await db.Topic.findAll({ where: { createdBy: id } });
+    return await db.Topic.findAll({ where: { createdBy: id }, order: [['createdAt', 'DESC']] });
 }
 
 const getRecentTopics = async (id) => {
     const userSubscriptions = await db.UserMembership.findAll({where: {user_id: id}})
     const recentTopics = await Promise.all(userSubscriptions.map(async (subscription) => {
-        const topics = await db.Topic.findAll({where: {forum_id: subscription.forum_id}, order: [['createdAt', 'DESC']], limit: 2, include: 'forum'})
+        const topics = await db.Topic.findAll({where: {forum_id: subscription.forum_id, createdBy: {[Op.ne]: id}}, order: [['createdAt', 'DESC']], limit: 2, include: 'forum'})
         return topics
     }));
  

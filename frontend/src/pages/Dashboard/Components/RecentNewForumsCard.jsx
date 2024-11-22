@@ -29,9 +29,9 @@ const StyledCardHeader = styled(CardHeader)`
     margin: 0;
   }
 `;
-export default function RecentNewForumsCard({ recentForumData }) {
-  const navigate = useNavigate()
-  const handleViewDetails = (event, forum_id) => {
+export default function RecentNewForumsCard({ recentForumData }) {  
+  const navigate=useNavigate()
+  const handleViewDetails = (event, forum_id) => {    
     event.preventDefault();
     navigate(`/forum/${forum_id}`);
   }

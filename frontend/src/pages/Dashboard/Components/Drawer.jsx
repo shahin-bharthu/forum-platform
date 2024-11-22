@@ -38,7 +38,7 @@ export default function ClippedDrawer() {
         withCredentials: true
       });
       console.log(response);
-      window.location.reload();
+      navigate('/login/201');
     } catch (error) {
       console.error("couldn't log user out", error);
     }

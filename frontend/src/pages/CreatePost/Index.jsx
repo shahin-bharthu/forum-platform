@@ -1,18 +1,19 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomButton from "../../components/Button";
 import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import TextInputField from "./Components/TextInput.jsx";
 import axios from "axios";
 import Button from "@mui/material/Button";
-import { useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useLocation, useNavigate, useRouteLoaderData } from "react-router-dom";
 import SelectList from "./Components/SelectList.jsx";
 import Stack from '@mui/material/Stack';
 import { Card } from "@mui/material";
 
 const CreatePost = () => {
-  const token = useRouteLoaderData('root');
   const titleInput = useRef();
   const bodyInput = useRef();
+  const location = useLocation();
+  const {forumName, forumId} = location.state || null
 
   const navigate = useNavigate();
 
@@ -22,21 +23,15 @@ const CreatePost = () => {
   const [errors, setErrors] = useState({});
   const [selectedForum, setSelectedForum] = useState(null); 
 
-  const handleInputChange = (event) => {
-    const { name } = event.target;
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
-  };
-
-  const handleInputFocus = (event) => {
-    const { name } = event.target;
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
-  };
+  useEffect(() => {
+    if (forumName !== null && forumId !== null) {
+      setSelectedForum(forumId)
+    }
+  }, []);
 
   const getSelectedForumFromList = (selectedForumFromList) => {
     console.log(selectedForumFromList);
-    setSelectedForum(selectedForumFromList); 
+    setSelectedForum(selectedForumFromList ?? forumId); 
   };
 
   async function submitHandler(event) {
@@ -53,7 +48,7 @@ const CreatePost = () => {
     const formData = { 
       title: enteredTitle, 
       content: enteredBody, 
-      forum_id: selectedForum
+      forum_id: selectedForum 
     };
     console.log(formData);
 
@@ -84,7 +79,7 @@ const CreatePost = () => {
       <h3>Create Post</h3>
       <form onSubmit={submitHandler}>
 
-        <SelectList getForum={getSelectedForumFromList}/>
+        <SelectList selectedForumName={forumName} getForum={getSelectedForumFromList}/>
 
         <TextInputField
           label="Title"
