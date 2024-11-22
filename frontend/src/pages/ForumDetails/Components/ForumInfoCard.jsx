@@ -12,7 +12,7 @@ import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import EmailIcon from '@mui/icons-material/Email';
 import NumbersRoundedIcon from '@mui/icons-material/NumbersRounded';
 
-export default function ForumInfoCard({ forum, creator,postLength }) {
+export default function ForumInfoCard({ forum, creator,postLength, setIsPrivate}) {
     return (
         <Card sx={{mb:2}}>
             <CardContent>

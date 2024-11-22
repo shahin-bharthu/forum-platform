@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import PositionedSnackbar from '../../../components/SnackBar';
 
-export default function ForumHeaderCard({ forum }) {
+export default function ForumHeaderCard({ forum, setIsSubbed }) {
   const navigate = useNavigate()
   const [subscribed, setSubscribed] = useState(false);
   const [message, setMessage] = useState();
@@ -24,8 +24,10 @@ export default function ForumHeaderCard({ forum }) {
         withCredentials: true,
       });
       setSubscribed(isUserSubscribed.data.isSubscribed);
+      setIsSubbed(isUserSubscribed.data.isSubscribed)
+
     }
-    
+
     const fetchAvatar = async () => {
       const data = await handleFileRead();
     };
@@ -33,7 +35,7 @@ export default function ForumHeaderCard({ forum }) {
     fetchAvatar().catch(console.error);
     isSubscribed(forum);
   }, []);
-  
+
   const handleFileRead = async () => {
     const file = await axios.get(`http://localhost:8080/forum/banner/${forum.id}`, {
       withCredentials: true,
@@ -49,7 +51,7 @@ export default function ForumHeaderCard({ forum }) {
       reader.readAsDataURL(file.data);
     }
   };
-  
+
 
   const handleSubscribe = async (event, forumId) => {
     event.preventDefault();
@@ -151,7 +153,7 @@ export default function ForumHeaderCard({ forum }) {
             </Button>
           </Tooltip>
 
-          <Tooltip title={subscribed ? "Unsubscribe": "Subscribe"} arrow>
+          <Tooltip title={subscribed ? "Unsubscribe" : "Subscribe"} arrow>
             <Button
               disabled = {forum.isActive? false : true}
               size="small"
@@ -160,7 +162,7 @@ export default function ForumHeaderCard({ forum }) {
               disableElevation
               onClick={subscribed? (event) => handleUnSubscribe(event, forum.forum_id) : (event) => handleSubscribe(event, forum.forum_id)}
             >
-              {subscribed? 'Subscribed' : 'Subscribe'}
+              {subscribed ? 'Subscribed' : 'Subscribe'}
             </Button>
           </Tooltip>
         </CardActions>

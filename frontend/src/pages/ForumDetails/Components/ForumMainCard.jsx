@@ -52,8 +52,8 @@ const ExpandMore = styled((props) => {
   ],
 }));
 
-export default function ForumMainCard({ forum, setPostLength }) {
-  const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', user: {username: 'username'}, }]);
+export default function ForumMainCard({ forum, setPostLength, isBlur }) {
+  const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', user: { username: 'username' }, }]);
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [userAvatar, setUserAvatar] = useState({})
 
@@ -72,7 +72,7 @@ export default function ForumMainCard({ forum, setPostLength }) {
 
       setExpanded(array);
       setPostLength(forumTopicsData.length)
-      
+
       await Promise.all(
         forumTopicsData.map(async (topic) => {
           try {
@@ -110,7 +110,7 @@ export default function ForumMainCard({ forum, setPostLength }) {
     setExpanded(array);
   };
 
-  if (forumTopics.length === 0) {
+  if (forumTopics.length === 0 && !isBlur) {
     return (
       <>
         <Box mb={2}>
@@ -123,12 +123,36 @@ export default function ForumMainCard({ forum, setPostLength }) {
       </>
     )
   }
-
+  else if (forumTopics.length === 0 && isBlur) {
+    return (
+      <>
+        <Box mb={2}
+          sx={{
+            opacity: 0.5,
+            pointerEvents: 'none',
+            filter: 'blur(5px)'
+          }}
+        >
+          <Card sx={{ height: '30vh' }} >
+            <Typography variant="h5" component="div" sx={{ textAlign: "center", py: 5 }}>
+              No Posts Yet!
+            </Typography>
+          </Card>
+        </Box>
+      </>
+    )
+  }
   return (
     <>
       {forumTopics.map((topic, index) =>
-        <Box key={index} mb={2}>
-          <Card >
+        <Box key={index} mb={2}
+          sx={isBlur ? {
+            opacity: 0.5,
+            pointerEvents: 'none',
+            filter: 'blur(5px)'
+          } : {}}
+        >
+          <Card>
             <StyledCardHeader
               avatar={
                 <Avatar aria-label="user avatar" src={userAvatar[topic.createdBy]} >
@@ -171,7 +195,7 @@ export default function ForumMainCard({ forum, setPostLength }) {
               </ExpandMore>
             </CardActions>
             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
-              <CardContent sx={{px:3}} >
+              <CardContent sx={{ px: 3 }} >
                 <Typography sx={{ marginBottom: 2, textAlign: 'left' }}>{topic.content}</Typography>
               </CardContent>
             </Collapse>

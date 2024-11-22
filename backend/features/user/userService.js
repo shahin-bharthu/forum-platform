@@ -16,6 +16,7 @@ const getUserDetails = async (id) => {
     return await userRepository.getUserById(id);
 }
 
+//for windows
 const getAvatarById = async (id) => {
     const osType = os.type();
 
@@ -35,5 +36,4 @@ const getAvatarById = async (id) => {
         return { avatarPath }
       }
 }
-
 export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatarById}
