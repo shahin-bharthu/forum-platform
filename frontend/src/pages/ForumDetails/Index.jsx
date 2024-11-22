@@ -9,19 +9,21 @@ import { useState } from "react";
 export default function IntroDivider() {
     const { forumDetails, forumCreatedBy } = useLoaderData();
     const [postLength,setPostLength]=useState()
-
+    const [isSubbed,setIsSubbed]=useState()
+    const isPrivate=!(forumDetails.isPublic)
+    const isBlur=(isPrivate && !isSubbed)    
+        
     return (
         <>
             <Grid container spacing={3} direction="column" sx={{ px: 2, width: '80%', mt: 10 , alignSelf: 'start'}}>
                 <Grid size={12} sx={{ borderRadius: 2 }}>
-                    <ForumHeaderCard forum={forumDetails} />
+                    <ForumHeaderCard forum={forumDetails} setIsSubbed={setIsSubbed} />
                 </Grid>
                 <Grid size={12} container spacing={2}>
                     <Grid size={{ xs: 12, md: 9 }}>
-                        <ForumMainCard forum={forumDetails} setPostLength={setPostLength} />
+                        <ForumMainCard forum={forumDetails} setPostLength={setPostLength} isSubbed={isSubbed} isBlur={isBlur}/>
                     </Grid>
                     <Grid size={{ xs: 0, md: 3 }}>
-                        {/* xs=6 md=4 */}
                         <ForumInfoCard creator={forumCreatedBy} forum={forumDetails} postLength={postLength}/>
                     </Grid>
                 </Grid>
@@ -33,14 +35,14 @@ export default function IntroDivider() {
 
 export async function forumDetailsLoader({ request, params }) {
     const forum_id = params.forum_id;
-    console.log(forum_id);
+    // console.log(forum_id);
     
     try {
         const response = await axios.get(`http://localhost:8080/forum/forum-id/${forum_id}`, {
             withCredentials: true,
         });
         const forumData = response.data.data;
-        console.log(response);
+        // console.log(response);
 
         const forumCreatorId = forumData.createdBy;
         const forumCreatorData = await axios.get(

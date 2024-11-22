@@ -14,21 +14,37 @@ const updateUserAvatar = async (id, userData) => {
 const getUserDetails = async (id) => {
     return await userRepository.getUserById(id);
 }
+//for linux
+// const getAvatarById = async (id) => {
+//     const user = await userRepository.getUserById(id);
+//     const filepath = user.avatar.split('/');
+//     const fileName = filepath[filepath.length - 1];
 
+//     if (!fileName) {
+//         throw new CustomError("Avatar not found", 404);
+//     } else {
+//         const filePath = path.join(import.meta.url.replace('file://', ''), '../../../avatars', fileName);
+//         await fs.access(filePath);
+//         const root = path.join(new URL('../../avatars', import.meta.url).pathname);
+//         const avatarPath = path.join(root, fileName)
+//         return { avatarPath }
+//       }
+// }
+
+//for windows
 const getAvatarById = async (id) => {
     const user = await userRepository.getUserById(id);
-    const filepath = user.avatar.split('/');
+    const filepath = user.avatar.split('\\');
     const fileName = filepath[filepath.length - 1];
 
     if (!fileName) {
         throw new CustomError("Avatar not found", 404);
     } else {
-        const filePath = path.join(import.meta.url.replace('file://', ''), '../../../avatars', fileName);
+        const filePath = path.join(import.meta.url.replace('file:///', ''), '../../../avatars');
         await fs.access(filePath);
-        const root = path.join(new URL('../../avatars', import.meta.url).pathname);
+        const root =filePath
         const avatarPath = path.join(root, fileName)
         return { avatarPath }
       }
 }
-
 export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatarById}

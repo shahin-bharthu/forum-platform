@@ -10,8 +10,8 @@ import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function ForumHeaderCard({ forum }) {
-  const navigate=useNavigate()
+export default function ForumHeaderCard({ forum, setIsSubbed }) {
+  const navigate = useNavigate()
   const [subscribed, setSubscribed] = useState(false);
 
   const [banner, setBanner] = useState();
@@ -19,16 +19,18 @@ export default function ForumHeaderCard({ forum }) {
 
   // useEffect(() => {
   // }, []);
-  
+
   useEffect(() => {
     async function isSubscribed(forum) {
       const isUserSubscribed = await axios.get(`http://localhost:8080/forum/is-subscribed/${forum.id}`, {
         withCredentials: true,
       });
-      console.log(isUserSubscribed.data.isSubscribed);  
+      // console.log(isUserSubscribed.data.isSubscribed);  
       setSubscribed(isUserSubscribed.data.isSubscribed);
+      setIsSubbed(isUserSubscribed.data.isSubscribed)
+
     }
-    
+
     const fetchAvatar = async () => {
       const data = await handleFileRead();
     };
@@ -36,7 +38,7 @@ export default function ForumHeaderCard({ forum }) {
     fetchAvatar().catch(console.error);
     isSubscribed(forum);
   }, []);
-  
+
   const handleFileRead = async () => {
     const file = await axios.get(`http://localhost:8080/forum/banner/${forum.id}`, {
       withCredentials: true,
@@ -52,7 +54,7 @@ export default function ForumHeaderCard({ forum }) {
       reader.readAsDataURL(file.data);
     }
   };
-  
+
 
   const handleSubscribe = async (event, forumId) => {
     event.preventDefault();
@@ -113,7 +115,7 @@ export default function ForumHeaderCard({ forum }) {
         <CardActions sx={{ pr: 4 }}>
           <Tooltip title="Create Post" arrow>
             <Button
-              onClick={()=>navigate('/user/create-post')}
+              onClick={() => navigate('/user/create-post')}
               variant="outlined"
               startIcon={<AddIcon />}
               sx={{ borderRadius: 28, border: 2 }}
@@ -124,17 +126,17 @@ export default function ForumHeaderCard({ forum }) {
             </Button>
           </Tooltip>
 
-          <Tooltip title={subscribed ? "Unsubscribe": "Subscribe"} arrow>
+          <Tooltip title={subscribed ? "Unsubscribe" : "Subscribe"} arrow>
             <Button
               // onClick={handleCreatePost}
               size="small"
-              variant={subscribed? 'outlined': 'contained'}
+              variant={subscribed ? 'outlined' : 'contained'}
               // color={subscribed? 'secondary' : 'primary'}
               sx={{ borderRadius: 28, border: 2 }}
               disableElevation
-              onClick={subscribed? (event) => handleUnsubscribe(event, forum.id) : handleSubscribe}
+              onClick={subscribed ? (event) => handleUnsubscribe(event, forum.id) : handleSubscribe}
             >
-              {subscribed? 'Subscribed' : 'Subscribe'}
+              {subscribed ? 'Subscribed' : 'Subscribe'}
             </Button>
           </Tooltip>
         </CardActions>
