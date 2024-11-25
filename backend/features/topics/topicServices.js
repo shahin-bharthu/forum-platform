@@ -23,4 +23,14 @@ const getRecentTopics = async (id) => {
     return topics
 }
 
-export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics }
+const updateTopic = async (userId, topicId, title, content) => {
+    const topicExists = await topicRepository.getTopicById(topicId);
+    
+    if (!topicExists || topicExists.topic.createdBy !== userId) {
+        throw new CustomError("Topic not found or User not authorized to edit this topic", 404);
+    }
+
+    return await topicRepository.updateTopic(topicExists.topic, title, content);
+}
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic }

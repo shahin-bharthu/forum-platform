@@ -49,4 +49,13 @@ const getRecentTopics = async (id) => {
     return recentTopics.flat();
 }
 
-export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics}
+const updateTopic = async(topic, title, content) => {
+    await topic.update({
+        title: title,
+        content: content
+    })
+    await topic.save();
+    return topic;
+}
+
+export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic}
