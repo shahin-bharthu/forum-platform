@@ -82,7 +82,7 @@ export default function Index() {
   const fullName = `${user.firstname} ${user.lastname}`;
 
   return (
-    <Grid container direction="column">
+    <Grid container direction="column" sx={{alignSelf: 'start', mt:7}}>
       <Grid size={{xs:12, md:12}}>
         <img
           alt="avatar"

@@ -52,7 +52,7 @@ const ExpandMore = styled((props) => {
 }));
 
 export default function MyPosts() {
-    const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', forum: {name: 'username'} }]);
+    const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', forum: { name: 'username' } }]);
     const [expanded, setExpanded] = useState([{ isExpanded: false }]);
     const [forumBanner, setForumBanner] = useState({})
 
@@ -73,14 +73,14 @@ export default function MyPosts() {
             await Promise.all(
                 myTopicsData.map(async (topic) => {
                     try {
-                        console.log("IN MAP",topic.forum_id);
+                        console.log("IN MAP", topic.forum_id);
                         const response = await axios.get(
                             `http://localhost:8080/forum/banner/${topic.forum_id}`,
                             {
                                 withCredentials: true,
                                 responseType: "blob",
                             }
-                        )                        
+                        )
 
                         if (response.data) {
                             const reader = new FileReader()
@@ -111,7 +111,7 @@ export default function MyPosts() {
 
     return (
         <>
-            <Grid size={12} sx={{ width: '100%'}} >
+            <Grid size={12} sx={{ width: '100%' }} >
                 {/* <h1>My Posts</h1> */}
                 {forumTopics.map((topic, index) =>
                     <Box key={index} mb={2}>
@@ -135,7 +135,7 @@ export default function MyPosts() {
                                 })}
                             />
                             <CardContent sx={{ py: 0, px: 3 }} >
-                                <Typography variant="h6" sx={{ textAlign: 'left' }}>
+                                <Typography variant="h6" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>
                                     {topic.title}
                                 </Typography>
                             </CardContent>
@@ -152,7 +152,9 @@ export default function MyPosts() {
                             </CardActions>
                             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
                                 <CardContent sx={{ px: 3 }}>
-                                    <Typography sx={{ marginBottom: 2, textAlign: 'left' }}>{topic.content}</Typography>
+                                    <Typography variant='body2' sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word' }}>
+                                        {topic.content}
+                                    </Typography>
                                 </CardContent>
                             </Collapse>
                         </Card>

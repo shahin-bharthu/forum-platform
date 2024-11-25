@@ -99,7 +99,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
         </IconButton>
         <p>Create Post</p>
       </MenuItem>
-      <MenuItem>
+      {/* <MenuItem>
         <IconButton
           size="large"
           aria-label="show 17 new notifications"
@@ -110,7 +110,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
           </Badge>
         </IconButton>
         <p>Notifications</p>
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem onClick={handleEditProfile}>
         <IconButton
           size="large"
@@ -169,7 +169,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
               </Button>
             </Tooltip>
             
-            <Tooltip title="Notifications" arrow>
+            {/* <Tooltip title="Notifications" arrow>
             <IconButton
               size="large"
               aria-label="show 17 new notifications"
@@ -179,7 +179,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title="Profile" arrow>
             <IconButton
               size="large"

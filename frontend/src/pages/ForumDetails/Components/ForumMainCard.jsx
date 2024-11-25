@@ -52,7 +52,7 @@ const ExpandMore = styled((props) => {
   ],
 }));
 
-export default function ForumMainCard({ forum, setPostLength, isBlur }) {
+export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
   const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', user: { username: 'username' }, }]);
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [userAvatar, setUserAvatar] = useState({})
@@ -110,48 +110,22 @@ export default function ForumMainCard({ forum, setPostLength, isBlur }) {
     setExpanded(array);
   };
 
-  if (forumTopics.length === 0 && !isBlur) {
+  if (forumTopics.length === 0) {
     return (
       <>
-        <Box mb={2}>
-          <Card sx={{ height: '50vh' }} >
+        <Box mb={2} sx={style}>
             <Typography variant="h5" component="div" sx={{ textAlign: "center", py: 5 }}>
               No Posts Yet!
             </Typography>
-          </Card>
         </Box>
       </>
     )
   }
-  else if (forumTopics.length === 0 && isBlur) {
-    return (
-      <>
-        <Box mb={2}
-          sx={{
-            opacity: 0.5,
-            pointerEvents: 'none',
-            filter: 'blur(5px)'
-          }}
-        >
-          <Card sx={{ height: '30vh' }} >
-            <Typography variant="h5" component="div" sx={{ textAlign: "center", py: 5 }}>
-              No Posts Yet!
-            </Typography>
-          </Card>
-        </Box>
-      </>
-    )
-  }
+ 
   return (
     <>
       {forumTopics.map((topic, index) =>
-        <Box key={index} mb={2}
-          sx={isBlur ? {
-            opacity: 0.5,
-            pointerEvents: 'none',
-            filter: 'blur(5px)'
-          } : {}}
-        >
+        <Box key={index} mb={2} sx={style}>
           <Card>
             <StyledCardHeader
               avatar={
@@ -173,7 +147,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur }) {
             />
 
             <CardContent sx={{ py: 0, px: 3 }}>
-              <Typography variant="h6" sx={{ textAlign: 'left' }}>
+              <Typography variant="h6" sx={{ textAlign: 'left',wordBreak: 'break-word' }}>
                 {topic.title}
               </Typography>
             </CardContent>
@@ -196,7 +170,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur }) {
             </CardActions>
             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
               <CardContent sx={{ px: 3 }} >
-                <Typography sx={{ marginBottom: 2, textAlign: 'left' }}>{topic.content}</Typography>
+                <Typography sx={{ marginBottom: 2, textAlign: 'left',wordBreak: 'break-word' }}>{topic.content}</Typography>
               </CardContent>
             </Collapse>
           </Card>

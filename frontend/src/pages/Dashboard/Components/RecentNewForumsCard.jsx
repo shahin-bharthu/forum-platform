@@ -38,7 +38,7 @@ export default function RecentNewForumsCard({ recentForumData }) {
 
   return (
     // <>
-      <Grid2 container size={{ xs: 3, md: 12 }} direction="column">
+      <Grid2  size={{ md: 12 }} direction="row">
         {recentForumData.map((forum) => (
           <Card key={forum.id} size={12} sx={{ width: '100%', my: 2 }}>
             <StyledCardHeader
@@ -77,7 +77,6 @@ export default function RecentNewForumsCard({ recentForumData }) {
           </Card>
         ))}
       </Grid2>
-    // {/* </> */}
   );
 }
 

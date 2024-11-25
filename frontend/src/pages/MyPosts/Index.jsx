@@ -126,9 +126,9 @@ export default function MyPosts() {
       <>
         <Box mb={2}>
 
-            <Typography variant="h5" component="div" sx={{ textAlign: "center", py: 5 }}>
-              No Posts Yet!
-            </Typography>
+          <Typography variant="h5" component="div" sx={{ textAlign: "center", py: 5 }}>
+            No Posts Yet!
+          </Typography>
 
         </Box>
       </>
@@ -161,7 +161,7 @@ export default function MyPosts() {
                 })}
               />
               <CardContent sx={{ py: 0, px: 3 }} >
-                <Typography variant="h6" sx={{ textAlign: 'left' }}>
+                <Typography variant="h6" sx={{ textAlign: 'left',wordBreak: 'break-word' }}>
                   {topic.title}
                 </Typography>
               </CardContent>
@@ -178,7 +178,9 @@ export default function MyPosts() {
               </CardActions>
               <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
                 <CardContent sx={{ px: 3 }}>
-                  <Typography sx={{ marginBottom: 2, textAlign: 'left' }}>{topic.content}</Typography>
+                  <Typography variant='body2' sx={{ marginBottom: 2, textAlign: 'left', wordBreak:'break-word'}}>
+                    {topic.content}
+                  </Typography>
                 </CardContent>
               </Collapse>
             </Card>
