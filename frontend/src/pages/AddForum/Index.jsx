@@ -66,7 +66,7 @@ const Index = ({isEdit}) => {
       setIsSubmitting(false);
       console.error("Error:", error);
       setErrorMessage(
-        error.response?.data?.message || "An error occurred. Please try again later."
+        error.response?.data?.errors[0].msg || "An error occurred. Please try again later."
       );
     }
   }
@@ -105,8 +105,8 @@ const Index = ({isEdit}) => {
 
   const handleFormReset = (e) => {
     e.preventDefault()
-    purposeInput.current.value = null,
-    nameInput.current.value = null
+    purposeInput.current.value = null;
+    nameInput.current.value = null;
   }
 
   return ( 
@@ -143,9 +143,8 @@ const Index = ({isEdit}) => {
           value={isEdit ? forumData.purpose:null}
         />
 
-
         <FormControlLabel 
-          control={<Switch checked={isPublic} onChange={handleSwitchToggle} />} 
+          control={<Switch checked={forumData.isPublic} onChange={handleSwitchToggle} />} 
           label="Keep forum public" 
         />
         
@@ -155,10 +154,9 @@ const Index = ({isEdit}) => {
           label={isEdit ? "Edit Forum" : "Create Forum"}
           disabled={isSubmitting}
         />
-        {/* <br /> <br /> */}
-        <Button disableElevation onClick={handleFormReset}>
+        {!isEdit && <Button disableElevation onClick={handleFormReset}>
           Reset
-        </Button>
+        </Button>}
         </Stack>
       </form>
     </Card>

@@ -1,7 +1,12 @@
+import { validationResult } from "express-validator";
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
-import * as topicServices from "./topicServices.js"
+import * as topicServices from "./topicServices.js";
 
 const createTopic = asyncErrorHandler(async (req,res,next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
     const createdBy = req.user.id
     const {title, content, forum_id} = req.body;
     const topic = await topicServices.createTopic({title, content, forum_id, createdBy});
