@@ -69,7 +69,7 @@ const CreatePost = () => {
       setIsSubmitting(false);
       console.error("Error:", error);
       setErrorMessage(
-        error.response?.data?.message || "An error occurred. Please try again later."
+        error.response?.data?.errors[0].msg || "An error occurred. Please try again later."
       );
     }
   }

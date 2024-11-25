@@ -73,7 +73,6 @@ export default function MyPosts() {
             await Promise.all(
                 myTopicsData.map(async (topic) => {
                     try {
-                        console.log("IN MAP",topic.forum_id);
                         const response = await axios.get(
                             `http://localhost:8080/forum/banner/${topic.forum_id}`,
                             {

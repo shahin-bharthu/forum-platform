@@ -2,12 +2,17 @@ import os from 'os';
 import { Op, where } from "sequelize";
 import { promises as fs } from 'fs';
 import path from 'path';
+import { validationResult } from "express-validator";
 import * as forumServices from "./forumServices.js";
 import { db } from "../../config/connection.js";
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 import { CustomError } from "../../util/customError.js";
 
 const createForum = asyncErrorHandler(async (req,res,next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
     const createdBy = req.user.id
     const {name, purpose, isPublic} = req.body;
     const forum = await forumServices.createForum({name, purpose, isPublic, createdBy});
