@@ -13,6 +13,9 @@ import axios from 'axios';
 import { Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import PositionedSnackbar from '../../components/SnackBar';
+import { useNavigate } from 'react-router-dom';
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   '.MuiCardHeader-content': {
@@ -55,7 +58,24 @@ export default function MyPosts() {
   const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', username: 'username' }]);
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [forumBanner, setForumBanner] = useState({})
+  const [message, setMessage] = useState();
+  const navigate = useNavigate();
   //   const {topics} = useLoaderData();
+
+  const handleDeleteTopic = async (event, id) => {
+    const response = await axios.delete(`http://localhost:8080/topic/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true
+    });
+    setMessage('Post deleted');
+    setTimeout(() => {
+      setMessage(null);
+      // navigate('/post/my-posts')
+      window.location.reload();
+    }, 1000);
+  }
 
   useEffect(() => {
     // console.log("useeffect");
@@ -138,8 +158,10 @@ export default function MyPosts() {
   return (
     <>
       <Grid size={12} sx={{ width: '100%', px: 3, mt: 10, alignSelf: 'start' }} >
-        {/* <h1>My Posts</h1> */}
-        {forumTopics.map((topic, index) =>
+      {message && (
+        <PositionedSnackbar message={message} />
+      )}        
+      {forumTopics.map((topic, index) =>
           <Box key={index} mb={2}>
             <Card >
               <StyledCardHeader
@@ -149,8 +171,8 @@ export default function MyPosts() {
                   </Avatar>
                 }
                 action={
-                  <IconButton aria-label="settings">
-                    <MoreVertIcon />
+                  <IconButton aria-label="settings" onClick={(event) => handleDeleteTopic(event, topic.id)}>
+                    <DeleteOutlineIcon />
                   </IconButton>
                 }
                 title={topic.forumname}

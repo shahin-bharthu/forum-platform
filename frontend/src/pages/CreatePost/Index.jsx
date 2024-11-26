@@ -9,7 +9,7 @@ import SelectList from "./Components/SelectList.jsx";
 import Stack from '@mui/material/Stack';
 import { Card } from "@mui/material";
 
-const CreatePost = () => {
+const CreatePost = ({isEdit}) => {
   const titleInput = useRef();
   const bodyInput = useRef();
   const location = useLocation();
@@ -79,7 +79,7 @@ const CreatePost = () => {
       <h3>Create Post</h3>
       <form onSubmit={submitHandler}>
 
-        <SelectList selectedForumName={forumName} getForum={getSelectedForumFromList}/>
+        {!isEdit && <SelectList selectedForumName={forumName} getForum={getSelectedForumFromList}/>}
 
         <TextInputField
           label="Title"

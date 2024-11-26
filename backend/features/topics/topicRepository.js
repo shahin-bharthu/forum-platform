@@ -58,4 +58,8 @@ const updateTopic = async(topic, title, content) => {
     return topic;
 }
 
-export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic}
+const deleteTopic = async(topic) => {
+    return await topic.destroy();
+}
+
+export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic}

@@ -38,6 +38,10 @@ const getRecentTopics = asyncErrorHandler(async (req,res,next) => {
 })
 
 const updateTopic = asyncErrorHandler(async (req,res,next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
     const userId = req.user.id;
     const {id} = req.params;
     const {title, content} = req.body;
@@ -45,4 +49,12 @@ const updateTopic = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: "Topic edited successfully", data: topic});
 })
 
-export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic }
+
+const deleteTopic = asyncErrorHandler(async (req,res,next) => {
+    const userId = req.user.id;
+    const {id} = req.params;
+    const topic = await topicServices.deleteTopic(userId, id);
+    return res.status(204).json();
+})
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic }

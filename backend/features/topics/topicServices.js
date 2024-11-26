@@ -33,4 +33,15 @@ const updateTopic = async (userId, topicId, title, content) => {
     return await topicRepository.updateTopic(topicExists.topic, title, content);
 }
 
-export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic }
+
+const deleteTopic = async (userId, topicId) => {
+    const topicExists = await topicRepository.getTopicById(topicId);
+    
+    if (!topicExists || topicExists.topic.createdBy !== userId) {
+        throw new CustomError("Topic not found or User not authorized to delete this topic", 404);
+    }
+    
+    return await topicRepository.deleteTopic(topicExists.topic);
+}
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic }
