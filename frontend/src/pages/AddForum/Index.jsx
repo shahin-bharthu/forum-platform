@@ -144,7 +144,7 @@ const Index = ({isEdit}) => {
         />
 
         <FormControlLabel 
-          control={<Switch checked={forumData.isPublic} onChange={handleSwitchToggle} />} 
+          control={<Switch checked={forumData?.isPublic} onChange={handleSwitchToggle} />} 
           label="Keep forum public" 
         />
         
