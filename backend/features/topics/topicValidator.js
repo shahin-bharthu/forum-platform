@@ -6,7 +6,7 @@ export const validateTopicCreation = (req, res, next) => {
             .trim()
             .isLength({min: 10, max: 200})
             .withMessage('Please enter a valid post title of minimum 10 characters.')
-            .isAlphanumeric('en-US', {ignore: ' '})
+            .isString()
             .withMessage('Please enter a valid post title.'),
         
         body('content')

@@ -10,9 +10,10 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
+import { useNavigate } from 'react-router-dom';
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     '.MuiCardHeader-content': {
@@ -55,7 +56,7 @@ export default function MyPosts() {
     const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', forum: { name: 'username' } }]);
     const [expanded, setExpanded] = useState([{ isExpanded: false }]);
     const [forumBanner, setForumBanner] = useState({})
-
+    const navigate=useNavigate()
     useEffect(() => {
         async function getForumTopics() {
             const myTopics = await axios.get(`http://localhost:8080/topic/recent-topics`, {
@@ -108,10 +109,18 @@ export default function MyPosts() {
         setExpanded(array);
     };
 
+    if (forumTopics.length === 0) {
+        return (
+            <Box sx={{justifySelf:'left', mx:2,py:3}}>
+                <p>Subscribe to forums of your interest to see their latest posts!</p>
+                <Button onClick={()=>navigate('/user/forums')}>Explore Forums</Button>
+            </Box>
+        )
+    }
+    
     return (
         <>
             <Grid size={12} sx={{ width: '100%' }} >
-                {/* <h1>My Posts</h1> */}
                 {forumTopics.map((topic, index) =>
                     <Box key={index} mb={2}>
                         <Card >
@@ -121,11 +130,11 @@ export default function MyPosts() {
                                         {topic.forum.name}
                                     </Avatar>
                                 }
-                                action={
-                                    <IconButton aria-label="settings">
-                                        <MoreVertIcon />
-                                    </IconButton>
-                                }
+                                // action={
+                                //     <IconButton aria-label="settings">
+                                //         <MoreVertIcon />
+                                //     </IconButton>
+                                // }
                                 title={topic.forum.name}
                                 subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
                                     month: 'long',

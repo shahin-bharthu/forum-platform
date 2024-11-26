@@ -133,11 +133,11 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
                   {topic.username?.[0]?.toUpperCase()}
                 </Avatar>
               }
-              action={
-                <IconButton aria-label="settings">
-                  <MoreVertIcon />
-                </IconButton>
-              }
+              // action={
+              //   <IconButton aria-label="settings">
+              //     <MoreVertIcon />
+              //   </IconButton>
+              // }
               title={topic.user.username}
               subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
                 month: 'long',
