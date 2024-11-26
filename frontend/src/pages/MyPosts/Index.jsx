@@ -72,7 +72,6 @@ export default function MyPosts() {
     setMessage('Post deleted');
     setTimeout(() => {
       setMessage(null);
-      // navigate('/post/my-posts')
       window.location.reload();
     }, 1000);
   }
