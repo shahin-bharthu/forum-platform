@@ -72,6 +72,22 @@ db.Forum.belongsToMany(db.User, {
   foreignKey: 'forum_id', 
   as: 'users'
 });
+db.User.hasMany(db.UserMembership, {
+  as: 'memberships',
+  foreignKey: 'user_id'
+});
+db.UserMembership.belongsTo(db.User, {
+  as: 'users',
+  foreignKey:'user_id'
+});
+db.Forum.hasMany(db.UserMembership, {
+  as: 'memberships',
+  foreignKey:'forum_id'
+});
+db.UserMembership.belongsTo(db.Forum, {
+  as: 'forums',
+  foreignKey: 'forum_id'
+});
 
 
 db.User.hasMany(db.Topic, {

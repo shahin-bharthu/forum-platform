@@ -77,7 +77,7 @@ export async function dashboardLoader() {
 
 
         return {
-            recentForumData:enrichedForumData,
+            recentForumData: enrichedForumData,
             empty:empty,
         };
 

@@ -46,12 +46,6 @@ export default (sequelize, Sequelize) => {
     {
         tableName:'forums',
         timeStamps: true,
-        // hooks: {
-        //     beforeCreate: (forum) => {
-        //         // Generate forum_id by replacing spaces with underscores and converting to lowercase
-        //         forum.forum_id = forum.name.replace(/\s+/g, '_').toLowerCase();
-        //     },
-        // },
     }
 );
 
