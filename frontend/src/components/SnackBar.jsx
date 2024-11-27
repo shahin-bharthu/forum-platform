@@ -72,9 +72,7 @@ const theme = createTheme({
     },
 });
 
-export default function 
-
-PositionedSnackbar({ message, vertical, horizontal }) {
+export default function PositionedSnackbar({ message, vertical, horizontal }) {
     const [open, setOpen] = useState(true);
 
     const handleClose = (event, reason) => {

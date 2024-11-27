@@ -16,6 +16,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import { Divider } from "@mui/material";
+import PositionedSnackbar from "../../../components/SnackBar.jsx";
 
 export default function SettingsCard(props) {
   const genderSelect = [
@@ -87,7 +88,8 @@ export default function SettingsCard(props) {
 
       setUpdateMessage(response.data.message);
       setTimeout(() => {
-        navigate("/user/dashboard");
+        setUpdateMessage(null)
+        navigate("/user/profile");
       }, 1500);
 
       setDialogOpen(false);
@@ -99,11 +101,9 @@ export default function SettingsCard(props) {
   return (
     <Card variant="outlined" sx={{ height: "100%", width: "100%" }}>
       <br />
+
       {updateMessage && (
-        <>
-          <p style={{ color: "#1e88e5" }}>{updateMessage}</p>
-          <Divider />
-        </>
+        <PositionedSnackbar message={updateMessage} />
       )}
 
       {/* MAIN CONTENT CONTAINER */}

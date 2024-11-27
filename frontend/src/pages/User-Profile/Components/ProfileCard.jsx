@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { 
-  Card, 
-  Typography, 
-  Avatar, 
-  Badge, 
-  Button, 
-  Box, 
-  Modal, 
+import {
+  Card,
+  Typography,
+  Avatar,
+  Badge,
+  Button,
+  Box,
+  Modal,
   IconButton,
   Stack,
   Divider
@@ -17,6 +17,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import PositionedSnackbar from "../../../components/SnackBar";
 
 const styles = {
   details: {
@@ -73,13 +74,13 @@ export default function ProfileCard(props) {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [avatar, setAvatar]=useState(null)
-  const [avatrUrl,setAvatarUrl]=useState(null)
+  const [avatar, setAvatar] = useState(null)
+  const [avatrUrl, setAvatarUrl] = useState(null)
   const [updateMessage, setUpdateMessage] = useState("");
   const navigate = useNavigate();
 
   const handleOpen = () => setOpen(true);
-  
+
   const handleClose = () => {
     setOpen(false);
     setSelectedFile(null);
@@ -90,7 +91,7 @@ export default function ProfileCard(props) {
     const fetchAvatar = async () => {
       const data = await handleFileRead();
     }
-    
+
     fetchAvatar().catch(console.error);
   }, [])
 
@@ -107,7 +108,7 @@ export default function ProfileCard(props) {
     }
   };
 
-  const handleFileRead = async() => {
+  const handleFileRead = async () => {
     const file = await axios.get(
       `http://localhost:8080/user/avatar/`,
       {
@@ -115,7 +116,7 @@ export default function ProfileCard(props) {
         responseType: 'blob'
       }
     );
-    
+
     if (file.data) {
       setAvatar(file.data);
       const reader = new FileReader();
@@ -134,11 +135,11 @@ export default function ProfileCard(props) {
     const formData = new FormData();
     formData.append("avatar", selectedFile);
     formData.append("email", props.email);
-  
+
     try {
       const response = await axios.put(
         `http://localhost:8080/user/update/avatar/${props.id}`,
-        formData, 
+        formData,
         {
           withCredentials: true
         }
@@ -146,13 +147,14 @@ export default function ProfileCard(props) {
       handleClose();
       setUpdateMessage(response.data.message);
       setTimeout(() => {
+        setUpdateMessage(null)
         window.location.reload();
       }, 1500);
     } catch (error) {
       console.error('Error uploading file:', error);
     }
   }, [props.id, props.email, selectedFile]);
-  
+
   return (
     <Card variant="outlined">
       <Grid
@@ -161,15 +163,11 @@ export default function ProfileCard(props) {
         justifyContent="center"
         alignItems="center"
       >
-      
+        {updateMessage && (
+          <PositionedSnackbar message={updateMessage} />
+        )}
         {/* CARD HEADER START */}
         <Grid sx={{ p: "1.5rem 0rem", textAlign: "center" }}>
-        {updateMessage && (
-        <>
-          <p style={{ color: "#1e88e5" }}>{updateMessage}</p>
-          <Divider />
-        </>
-      )}
           {/* PROFILE PHOTO */}
           <Badge
             overlap="circular"
@@ -234,10 +232,10 @@ export default function ProfileCard(props) {
         aria-labelledby="upload-modal-title"
       >
         <Box sx={styles.modal}>
-          <Typography 
-            id="upload-modal-title" 
-            variant="h6" 
-            component="h2" 
+          <Typography
+            id="upload-modal-title"
+            variant="h6"
+            component="h2"
             sx={{ mb: 3 }}
           >
             Upload Profile Photo
@@ -279,7 +277,7 @@ export default function ProfileCard(props) {
                   Upload Avatar
                 </Button>
               </Box>
-              
+
               {selectedFile && (
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                   Selected: {selectedFile.name}

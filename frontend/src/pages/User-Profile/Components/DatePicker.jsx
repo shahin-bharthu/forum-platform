@@ -16,11 +16,19 @@ export default function DatePickerValue({ value, onChange }) {
           variant: 'outlined',
           fullWidth: true,
           margin: "dense",
+          InputProps: {
+            readOnly: true,
+            disableUnderline: true,
+          },
+          inputProps: {
+            readOnly: true,
+          },
         },
       }}
         value={dayjs(value)} 
         onChange={(newValue) => onChange(newValue?.toDate())} 
         variant='standard'
+        disableFuture 
         required
       />
     </LocalizationProvider>

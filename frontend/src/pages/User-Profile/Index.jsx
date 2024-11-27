@@ -100,7 +100,7 @@ export default function Index() {
       <Grid
         container
         direction={{ xs: "column", md: "row" }}
-        spacing={3} sx={{ mt: -15, px: { xs: 2, md: 7 } }}
+        spacing={3} sx={{ mt: -16, px: { xs: 2, md: 7 } }}
       >
         {/* PROFILE CARD */}
         <Grid size={{xs:12, md:4, lg:3}}>

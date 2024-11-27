@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios';
-import { Box } from '@mui/material';
+import { Box, Link } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
 import { styled, alpha } from '@mui/material/styles';
@@ -123,10 +123,13 @@ export default function MyPosts() {
       const myTopicsData = myTopics.data.data;
       const forumsList = await Promise.all(myTopicsData.map(forumTopic => axios.get(`http://localhost:8080/forum/${forumTopic.forum_id}`, { withCredentials: true })))
       const forumNames = forumsList.map(creator => creator.data.data.name)
+      const forumIds = forumsList.map(creator => creator.data.data.forum_id)
+
 
       const updatedForumTopics = myTopicsData.map((forumTopic, index) => ({
         ...forumTopic,
-        forumname: forumNames[index]
+        forumname: forumNames[index],
+        forumids: forumIds[index]
       }));
 
       setForumTopics(updatedForumTopics);
@@ -195,9 +198,11 @@ export default function MyPosts() {
             <Card >
               <StyledCardHeader
                 avatar={
-                  <Avatar aria-label="Forum Banner" src={forumBanner[topic.forum_id]}>
-                    {topic.forumname}
-                  </Avatar>
+                  <Link href={`/forum/${topic.forumids}`} color="inherit" underline="hover">
+                    <Avatar aria-label="Forum Banner" src={forumBanner[topic.forum_id]}>
+                      {topic.forumname}
+                    </Avatar>
+                  </Link>
                 }
                 action={
                   <>
@@ -232,7 +237,8 @@ export default function MyPosts() {
                     </StyledMenu>
                   </>
                 }
-                title={topic.forumname}
+                // title={topic.forumname}
+                title={<Link href={`/forum/${topic.forumids}`} color="inherit" underline="hover">{topic.forumname}</Link>}
                 subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
                   month: 'long',
                   day: 'numeric',

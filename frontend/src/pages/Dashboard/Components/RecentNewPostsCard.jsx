@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Link } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
@@ -53,10 +53,10 @@ const ExpandMore = styled((props) => {
 }));
 
 export default function MyPosts() {
-    const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', forum: { name: 'username' } }]);
+    const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', forum: { name: 'username', id: null } }]);
     const [expanded, setExpanded] = useState([{ isExpanded: false }]);
     const [forumBanner, setForumBanner] = useState({})
-    const navigate=useNavigate()
+    const navigate = useNavigate()
     useEffect(() => {
         async function getForumTopics() {
             const myTopics = await axios.get(`http://localhost:8080/topic/recent-topics`, {
@@ -111,13 +111,13 @@ export default function MyPosts() {
 
     if (forumTopics.length === 0) {
         return (
-            <Box sx={{justifySelf:'left', mx:2,py:3}}>
+            <Box sx={{ justifySelf: 'left', mx: 2, py: 3 }}>
                 <p>Subscribe to forums of your interest to see their latest posts!</p>
-                <Button onClick={()=>navigate('/user/forums')}>Explore Forums</Button>
+                <Button onClick={() => navigate('/user/forums')}>Explore Forums</Button>
             </Box>
         )
     }
-    
+
     return (
         <>
             <Grid size={12} sx={{ width: '100%' }} >
@@ -126,49 +126,51 @@ export default function MyPosts() {
                         <Card >
                             <StyledCardHeader
                                 avatar={
-                                    <Avatar aria-label="Forum Banner" src={forumBanner[topic.forum_id]}>
-                                        {topic.forum.name}
-                                    </Avatar>
+                                    <Link href={`/forum/${topic.forum.forum_id}`}>
+                                        <Avatar aria-label="Forum Banner" src={forumBanner[topic.forum_id]}>
+                                            {topic.forum.name}
+                                        </Avatar>
+                                    </Link>
                                 }
                                 // action={
                                 //     <IconButton aria-label="settings">
                                 //         <MoreVertIcon />
                                 //     </IconButton>
                                 // }
-                                title={topic.forum.name}
-                                subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
-                                    month: 'long',
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                })}
+                                title = {< Link href={`/forum/${topic.forum.forum_id}`} color="inherit"  underline="hover">{topic.forum.name}</Link>}
+                        subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric'
+                        })}
                             />
-                            <CardContent sx={{ py: 0, px: 3 }} >
-                                <Typography variant="h6" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>
-                                    {topic.title}
+                        <CardContent sx={{ py: 0, px: 3 }} >
+                            <Typography variant="h6" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>
+                                {topic.title}
+                            </Typography>
+                        </CardContent>
+                        <CardActions disableSpacing>
+                            <ExpandMore
+                                expand={expanded[index].isExpanded}
+                                onClick={() => handleExpandClick(index)}
+                                aria-expanded={expanded[index].isExpanded}
+                                aria-label="show more"
+                                size="small"
+                            >
+                                <ExpandMoreIcon fontSize='inherit' />
+                            </ExpandMore>
+                        </CardActions>
+                        <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
+                            <CardContent sx={{ px: 3 }}>
+                                <Typography variant='body2' sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word' }}>
+                                    {topic.content}
                                 </Typography>
                             </CardContent>
-                            <CardActions disableSpacing>
-                                <ExpandMore
-                                    expand={expanded[index].isExpanded}
-                                    onClick={() => handleExpandClick(index)}
-                                    aria-expanded={expanded[index].isExpanded}
-                                    aria-label="show more"
-                                    size="small"
-                                >
-                                    <ExpandMoreIcon fontSize='inherit' />
-                                </ExpandMore>
-                            </CardActions>
-                            <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
-                                <CardContent sx={{ px: 3 }}>
-                                    <Typography variant='body2' sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word' }}>
-                                        {topic.content}
-                                    </Typography>
-                                </CardContent>
-                            </Collapse>
-                        </Card>
+                        </Collapse>
+                    </Card>
                     </Box>
                 )}
-            </Grid>
+        </Grid >
         </>
     );
 }
