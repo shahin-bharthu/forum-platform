@@ -4,13 +4,14 @@ import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import CardActionArea from '@mui/material/CardActionArea';
 import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
-import { Box, Grid2 } from '@mui/material';
+import {Grid2, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import PublicIcon from '@mui/icons-material/Public';
+import VpnLockIcon from '@mui/icons-material/VpnLock';
+import Tooltip from '@mui/material/Tooltip';
 
 const StyledCardHeader = styled(CardHeader)`
   display: flex;
@@ -60,7 +61,7 @@ export default function RecentNewForumsCard({ recentForumData }) {
               </Typography>
             </CardContent>
             <CardActions>
-              <Box sx={{ justifyContent: 'center', width: '100%' }}>
+              <Stack direction="row" spacing={2} sx={{ justifyContent: 'center', width: '100%' }}>
                 <Button
                   size="small"
                   variant='contained'
@@ -72,7 +73,8 @@ export default function RecentNewForumsCard({ recentForumData }) {
                 >
                   View
                 </Button>
-              </Box>
+                {forum.isPublic === false ? <Tooltip title="Private" arrow><VpnLockIcon sx={{alignSelf:'center'}} /></Tooltip> : <Tooltip title="Public" arrow><PublicIcon sx={{alignSelf:'center'}}/></Tooltip>}
+              </Stack>
             </CardActions>
           </Card>
         ))}

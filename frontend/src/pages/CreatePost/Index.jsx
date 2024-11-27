@@ -120,3 +120,7 @@ const CreatePost = ({isEdit}) => {
 };
 
 export default CreatePost;
+
+export const topicDetailsLoader = async ({params}) => {
+  
+}
