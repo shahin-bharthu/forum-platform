@@ -235,12 +235,9 @@ const getTopicByForumId = asyncErrorHandler(async (req, res, next) => {
 
 
 const getRecentForums = asyncErrorHandler(async (req,res,next) => {
-    const forums = await db.Forum.findAll({
-        where: {createdBy: {[Op.ne]: req.user.id}, isActive:1},
-        order: [['createdAt', 'DESC']],  
-        limit: 5
-    });
-
+    const userId = req.user.id;
+    const forums = await forumServices.getRecentForums(userId)
+    
     return res.status(200).json({message: 'Fetched recent forums', data: forums})
 })
 

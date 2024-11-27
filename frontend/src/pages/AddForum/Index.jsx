@@ -17,7 +17,7 @@ const Index = ({isEdit}) => {
   const purposeInput = useRef();
 
   const navigate=useNavigate()
-  const [isPublic, setIsPublic] = useState(true); 
+  const [isPublic, setIsPublic] = useState(forumData ? forumData.isPublic : true); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -35,7 +35,7 @@ const Index = ({isEdit}) => {
     setErrorMessage("");
   };
 
-  const handleSwitchToggle = (event) => {    
+  const handleSwitchToggle = (event) => { 
     setIsPublic(prevState => event.target.checked);
   };
 
@@ -144,7 +144,7 @@ const Index = ({isEdit}) => {
         />
 
         <FormControlLabel 
-          control={<Switch checked={forumData?.isPublic} onChange={handleSwitchToggle} />} 
+          control={<Switch checked={isPublic} onClick={handleSwitchToggle} />} 
           label="Keep forum public" 
         />
         

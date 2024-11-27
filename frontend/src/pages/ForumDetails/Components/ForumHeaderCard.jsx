@@ -25,7 +25,6 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
       });
       setSubscribed(isUserSubscribed.data.isSubscribed);
       setIsSubbed(isUserSubscribed.data.isSubscribed)
-
     }
 
     const fetchAvatar = async () => {
@@ -70,6 +69,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
       setTimeout(() => {
         setMessage(null);
         setSubscribed(true)
+        setIsSubbed(true)
       }, 1000);
 
 
@@ -101,6 +101,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
       setTimeout(() => {
         setMessage(null);
         setSubscribed(false);
+        setIsSubbed(false)
       }, 1000);
 
     } catch (error) {
@@ -139,7 +140,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
           </Stack>
         </CardContent>
         <CardActions sx={{ pr: 4 }}>
-          <Tooltip title="Create Post" arrow>
+          {subscribed && <Tooltip title="Create Post" arrow>
             <Button
               disabled = {forum.isActive? false : true}
               onClick={()=>navigate('/user/create-post', { state: { forumName: forum.name, forumId: forum.id } })}
@@ -151,7 +152,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
             >
               Create
             </Button>
-          </Tooltip>
+          </Tooltip>}
 
           <Tooltip title={subscribed ? "Unsubscribe" : "Subscribe"} arrow>
             <Button

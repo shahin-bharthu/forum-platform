@@ -67,6 +67,10 @@ const getIsSubscribed = async (user_id, forum_id) => {
     return await forumRepository.getIsSubscribed(user_id, forum_id);
 }
 
+const getRecentForums = async (userId) => {
+    const forums = await forumRepository.getRecentForums(userId)
+}
+
 export {
   getForums,
   createForum,
@@ -77,5 +81,6 @@ export {
   getForumByForumId,
   getForumById,
   getTopicByForumId,
-  getIsSubscribed
+  getIsSubscribed,
+  getRecentForums
 };

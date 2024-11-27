@@ -120,6 +120,19 @@ const getIsSubscribed = async (user_id, forum_id) => {
     }
 }
 
+const getRecentForums = async (userId) => {
+    // all active forums
+    const forums = await db.Forum.findAll({
+    where: {createdBy: {[Op.ne]: userId}, isActive:1},
+    order: [['createdAt', 'DESC']],  
+    limit: 5
+    });
+    
+    // forums created by user or subscribed 
+    // const subscribedForums = await db.UserMembership.findAll({where: {user_id: {[Op.ne]: userId}}})
+    return forums;
+}
+
 export {
   getForums,
   createForum,
@@ -130,5 +143,6 @@ export {
   archiveForum,
   updateForumBanner,
   getTopicByForumId,
-  getIsSubscribed
+  getIsSubscribed,
+  getRecentForums
 };
