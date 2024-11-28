@@ -1,5 +1,6 @@
 import { CustomError } from "../../util/customError.js";
 import * as forumRepository from "./forumRepository.js";
+import { db } from "../../config/connection.js";
 
 const createForum = async (forumData) => {
     const forum_id = forumData.name.replace(/\s+/g, '_').toLowerCase();
@@ -67,8 +68,21 @@ const getIsSubscribed = async (user_id, forum_id) => {
     return await forumRepository.getIsSubscribed(user_id, forum_id);
 }
 
-const getRecentForums = async (userId) => {
-    const forums = await forumRepository.getRecentForums(userId)
+const getRecentForums = async (id) => {
+    const allForums = await db.Forum.findAll({where: {isActive: true}, order: [['createdAt', 'DESC']]});    
+    const userForums = await db.Forum.findAll({where: {createdBy: id}});
+    const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
+    
+    // Convert `userForums` and `subscribedForums` into sets of forum IDs
+    const userForumIds = userForums.map(forum => forum.id);
+    const subscribedForumIds = subscribedForums.map(membership => membership.forum_id);
+    
+    // Filter out forums that are either created by the user or already subscribed to
+    const forumsToSubscribe = allForums.filter(forum => 
+        !userForumIds.includes(forum.id) && !subscribedForumIds.includes(forum.id)
+    );
+    
+    return forumsToSubscribe.slice(0,5);
 }
 
 export {

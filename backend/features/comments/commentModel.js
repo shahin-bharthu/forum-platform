@@ -1,59 +1,34 @@
 export default (sequelize, Sequelize) => {
-    const Forum = sequelize.define("forum", {
+    const Comment = sequelize.define("comment", {
         id: {
             type: Sequelize.UUID,
             defaultValue: Sequelize.UUIDV4, 
             primaryKey: true 
         },
-        name: {
+        user_id: {
             type: Sequelize.STRING,
             allowNull: false,
             unique: true
         },
-        forum_id: {
+        topic_id: {
             type: Sequelize.STRING,
             unique: true,
             // allowNull: false
         },
-        purpose: {
+        parent_comment_id: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        isPublic: {
+        content: {
             type: Sequelize.BOOLEAN,
             defaultValue: true
         },
-        isActive: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: true
-        },
-        logo: {
-            type: Sequelize.STRING,
-            defaultValue: "forumLogos/defaultAvatar.png"
-        },
-        subscriber_count: {
-            type: Sequelize.BIGINT,
-            defaultValue: 1
-          },        
-        createdBy: {
-            type: Sequelize.UUID,
-            allowNull: false,
-            // onUpdate: "cascade",
-            onDelete: "cascade",
-            references: { model: "users", key: "id" },
-        }
     }, 
     {
-        tableName:'forums',
+        tableName:'comments',
         timeStamps: true,
-        // hooks: {
-        //     beforeCreate: (forum) => {
-        //         // Generate forum_id by replacing spaces with underscores and converting to lowercase
-        //         forum.forum_id = forum.name.replace(/\s+/g, '_').toLowerCase();
-        //     },
-        // },
     }
 );
 
-  return Forum;
+  return Comment;
 };
