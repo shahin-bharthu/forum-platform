@@ -10,6 +10,7 @@ export default function TextInput({
     onChange,
     onFocus,
     reference,
+    isDisabled
 }) {
   return (
     <Box
@@ -19,7 +20,7 @@ export default function TextInput({
       autoComplete="off"
     >
       <div>
-        <TextField label={label} id={name} defaultValue={value} onChange={onChange} onFocus={onFocus} inputRef={reference} placeholder={placeholder} type={type} required />
+        <TextField label={label} id={name} defaultValue={value} onChange={onChange} onFocus={onFocus} inputRef={reference} placeholder={placeholder} type={type} disabled={isDisabled} required />
       </div>
     </Box>
   );

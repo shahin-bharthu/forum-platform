@@ -13,7 +13,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios';
 import { Avatar, Box } from '@mui/material';
-
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   '.MuiCardHeader-content': {
     display: 'flex',
@@ -152,12 +154,12 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
-              {/* <IconButton >
-                <ThumbUpAltRoundedIcon />
+              <IconButton >
+                <FavoriteBorderIcon />
               </IconButton>
               <IconButton >
-                <ThumbDownAltRoundedIcon />
-              </IconButton> */}
+                <ChatBubbleOutlineIcon />
+              </IconButton>
               <ExpandMore
                 expand={expanded[index].isExpanded}
                 onClick={() => handleExpandClick(index)}
