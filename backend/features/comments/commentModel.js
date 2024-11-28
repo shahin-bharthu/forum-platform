@@ -5,23 +5,25 @@ export default (sequelize, Sequelize) => {
             defaultValue: Sequelize.UUIDV4, 
             primaryKey: true 
         },
-        user_id: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            unique: true
-        },
         topic_id: {
-            type: Sequelize.STRING,
-            unique: true,
-            // allowNull: false
+            type: Sequelize.UUID,
+            allowNull: false,
+            onDelete: "cascade",
+            references: { model: "topics", key: "id" },
         },
         parent_comment_id: {
-            type: Sequelize.STRING,
-            allowNull: false
+            type: Sequelize.UUID,
+            references: { model: "comments", key: "id" }
         },
         content: {
-            type: Sequelize.BOOLEAN,
+            type: Sequelize.STRING,
             defaultValue: true
+        },
+        createdBy: {
+            type: Sequelize.UUID,
+            allowNull: false,
+            onDelete: "cascade",
+            references: { model: "users", key: "id" },
         },
     }, 
     {
@@ -29,6 +31,5 @@ export default (sequelize, Sequelize) => {
         timeStamps: true,
     }
 );
-
   return Comment;
 };

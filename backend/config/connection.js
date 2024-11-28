@@ -6,6 +6,7 @@ import topicModel from "../features/topics/topicModel.js";
 
 import Sequelize from "sequelize";
 import userMembershipModel from "../features/forum/userMembershipModel.js";
+import commentModel from "../features/comments/commentModel.js";
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -29,6 +30,7 @@ db.AuditTrail = auditTrailModel(sequelize, Sequelize);
 db.Forum = forumModel(sequelize, Sequelize);
 db.Topic = topicModel(sequelize, Sequelize);
 db.UserMembership = userMembershipModel(sequelize, Sequelize);
+db.Comment = commentModel(sequelize, Sequelize);
 
 const check = async () => {
     try {
@@ -107,6 +109,24 @@ db.Forum.hasMany(db.Topic, {
 db.Topic.belongsTo(db.Forum, {
   as: 'forum',
   foreignKey: "forum_id"
+});
+
+
+db.User.hasMany(db.Comment, {
+  as: 'comments',
+  foreignKey: 'user_id'
+});
+db.Comment.belongsTo(db.User, {
+  as: 'user',
+  foreignKey: 'user_id'
+});
+db.Topic.hasMany(db.Comment, {
+  as: 'comments',
+  foreignKey: 'topic_id'
+});
+db.Comment.belongsTo(db.Topic, {
+  as: 'topic',
+  foreignKey: 'topic_id'
 });
 
 export { db, check };

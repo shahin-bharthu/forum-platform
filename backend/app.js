@@ -5,7 +5,8 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./features/auth/authRoutes.js";
 import userRoutes from "./features/user/userRoutes.js";
 import forumRoutes from "./features/forum/forumRoutes.js";
-import topicRoutes from "./features/topics/topicRoutes.js"
+import topicRoutes from "./features/topics/topicRoutes.js";
+import commentRoutes from "./features/comments/commentRoutes.js";
 import {check} from "./config/connection.js";
 import { globalErrorHandler } from "./util/globalErrorHandler.js";
 import { logAuditTrails } from "./features/auditLogs/auditTrailMiddleware.js";
@@ -28,7 +29,7 @@ app.use('/auth', logAuditTrails, authRoutes);
 app.use('/user', authMiddleware, logAuditTrails, userRoutes);
 app.use('/forum', authMiddleware, logAuditTrails, forumRoutes);
 app.use('/topic', authMiddleware, logAuditTrails, topicRoutes);
-
+app.use('/comment', authMiddleware, logAuditTrails, commentRoutes);
 
 app.use(globalErrorHandler);
 
