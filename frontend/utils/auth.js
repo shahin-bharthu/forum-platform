@@ -23,14 +23,14 @@ export function getAuthToken() {
     const token = getCookie('token');
     
     if (!token) {
-        console.log("token not found in getAuthToken");
+        // console.log("token not found in getAuthToken");
         return null;
     }
     
     const tokenDuration = getTokenDuration();
     
     if (tokenDuration < 0) {
-        console.log("Expired");
+        // console.log("Expired");
         // return 'EXPIRED';
         return null;
     }

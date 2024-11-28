@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardContent, CardActions, Collapse, IconButton, Typography, Box, Grid2 as Grid, Avatar, Menu, MenuItem } from "@mui/material";
+import { Card, CardHeader, CardContent, CardActions, Collapse, IconButton, Typography, Box, Grid2 as Grid, Avatar, Menu, MenuItem, Link } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 import axios from "axios";
 import PositionedSnackbar from "../../components/SnackBar";
 import { ExpandMore as ExpandMoreIcon, MoreVert as MoreVertIcon, Edit as EditIcon, Archive as ArchiveIcon, DeleteRounded as DeleteRoundedIcon } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-content": {
@@ -95,7 +95,7 @@ export default function MyPosts() {
   const [message, setMessage] = useState();
   const [menuAnchor, setMenuAnchor] = useState(null);  // Track the anchor element for the menu
   const [activeIndex, setActiveIndex] = useState(null);
-
+  const navigate=useNavigate()
   useEffect(() => {
     async function getForumTopics() {
       const myTopics = await axios.get(
@@ -182,6 +182,13 @@ export default function MyPosts() {
     }, 1000);
   };
 
+  const handleEditTopic = (event, id) => {
+    handleCloseMenu()
+    event.preventDefault();
+    navigate(`/post/edit/${id}`)
+    // console.log('in edit',id);
+  }
+
   const handleExpandClick = (i) => {
     const array = [...expanded];
     array[i].isExpanded = !array[i].isExpanded;
@@ -233,9 +240,10 @@ export default function MyPosts() {
                       onClose={handleCloseMenu}
                     >
                       <MenuItem
-                        onClick={handleCloseMenu} 
+                        // onClick={handleCloseMenu}
                         // onClick={()=>navigate(`/post/edit`, { state: { forumName: forum.name, forumId: forum.id } })} 
-                      disableRipple>
+                        onClick={(event)=>handleEditTopic(event,topic.id)}
+                        disableRipple>
                         <EditIcon />
                         Edit
                       </MenuItem>

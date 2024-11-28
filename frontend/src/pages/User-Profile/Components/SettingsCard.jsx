@@ -242,7 +242,7 @@ export default function SettingsCard(props) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose} color="primary">
+          <Button onClick={handleDialogClose} color="error">
             Cancel
           </Button>
           <Button onClick={handleConfirmUpdate} color="primary">

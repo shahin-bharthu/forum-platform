@@ -137,40 +137,40 @@ export default function MyPosts() {
                                 //         <MoreVertIcon />
                                 //     </IconButton>
                                 // }
-                                title = {< Link href={`/forum/${topic.forum.forum_id}`} color="inherit"  underline="hover">{topic.forum.name}</Link>}
-                        subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric'
-                        })}
+                                title={< Link href={`/forum/${topic.forum.forum_id}`} color="inherit" underline="hover">{topic.forum.name}</Link>}
+                                subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
+                                    month: 'long',
+                                    day: 'numeric',
+                                    year: 'numeric'
+                                })}
                             />
-                        <CardContent sx={{ py: 0, px: 3 }} >
-                            <Typography variant="h6" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>
-                                {topic.title}
-                            </Typography>
-                        </CardContent>
-                        <CardActions disableSpacing>
-                            <ExpandMore
-                                expand={expanded[index].isExpanded}
-                                onClick={() => handleExpandClick(index)}
-                                aria-expanded={expanded[index].isExpanded}
-                                aria-label="show more"
-                                size="small"
-                            >
-                                <ExpandMoreIcon fontSize='inherit' />
-                            </ExpandMore>
-                        </CardActions>
-                        <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
-                            <CardContent sx={{ px: 3 }}>
-                                <Typography variant='body2' sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word' }}>
-                                    {topic.content}
+                            <CardContent sx={{ py: 0, px: 3 }} >
+                                <Typography variant="h6" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>
+                                    {topic.title}
                                 </Typography>
                             </CardContent>
-                        </Collapse>
-                    </Card>
+                            <CardActions disableSpacing>
+                                <ExpandMore
+                                    expand={expanded[index].isExpanded}
+                                    onClick={() => handleExpandClick(index)}
+                                    aria-expanded={expanded[index].isExpanded}
+                                    aria-label="show more"
+                                    size="small"
+                                >
+                                    <ExpandMoreIcon fontSize='inherit' />
+                                </ExpandMore>
+                            </CardActions>
+                            <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
+                                <CardContent sx={{ px: 3 }}>
+                                    <Typography variant='body2' sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word' }}>
+                                        {topic.content}
+                                    </Typography>
+                                </CardContent>
+                            </Collapse>
+                        </Card>
                     </Box>
                 )}
-        </Grid >
+            </Grid >
         </>
     );
 }

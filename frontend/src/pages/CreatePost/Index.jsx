@@ -1,19 +1,23 @@
+import classes from "../../components/AuthForm.module.css";
 import { useEffect, useRef, useState } from "react";
 import CustomButton from "../../components/Button";
 import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import TextInputField from "./Components/TextInput.jsx";
 import axios from "axios";
 import Button from "@mui/material/Button";
-import { useLocation, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useLoaderData, useLocation, useNavigate, useRouteLoaderData } from "react-router-dom";
 import SelectList from "./Components/SelectList.jsx";
 import Stack from '@mui/material/Stack';
 import { Card } from "@mui/material";
 
 const CreatePost = ({isEdit}) => {
+  const topicData = useLoaderData();
   const titleInput = useRef();
   const bodyInput = useRef();
   const location = useLocation();
-  const {forumName, forumId} = location.state || null
+  // console.log(topicData);
+  
+  const {forumName, forumId} = location.state || null || topicData.topic.forum_id
 
   const navigate = useNavigate();
 
@@ -34,11 +38,11 @@ const CreatePost = ({isEdit}) => {
     setSelectedForum(selectedForumFromList ?? forumId); 
   };
 
-  async function submitHandler(event) {
+  async function addPostHandler(event) {
     event.preventDefault();
 
     const enteredTitle = titleInput.current.value.trim();
-    const enteredBody = bodyInput.current.value.trim();
+    const enteredBody = bodyInput.current.value
 
     if (!selectedForum) {
       setErrorMessage("Please select a forum.");
@@ -74,10 +78,44 @@ const CreatePost = ({isEdit}) => {
     }
   }
 
+  async function editPostHandler(event, id) {
+    event.preventDefault();
+    
+    const enteredTitle = titleInput.current.value.trim();
+    const enteredBody = bodyInput.current.value
+
+    const formData = {title:enteredTitle, content: enteredBody};
+    
+    setErrorMessage("");
+    setErrors({});
+
+    try {
+      setIsSubmitting(true);
+      
+      const response = await axios.patch(`http://localhost:8080/topic/${id}`, formData, {
+        "Content-Type": "application/json",
+        withCredentials: true
+      });
+      
+      setSuccessMessage(response.data.message);
+      setIsSubmitting(false);
+      setTimeout(() => {
+        navigate(`/post/my-posts`)
+      }, 1000);
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error("Error:", error);
+      setErrorMessage(
+        error.response?.data?.message || "An error occurred. Please try again later."
+      );
+    }
+  }
+
   return (
     <Card variant="outlined" sx={{ m: 2, p: 3, justifyContent: 'left' }}>
-      <h3>Create Post</h3>
-      <form onSubmit={submitHandler}>
+      {/* <h3>Create Post</h3> */}
+      <h3 className={classes["heading"]}>{isEdit? 'Edit': 'Create'} Post</h3>
+      <form onSubmit={isEdit? (event)=>editPostHandler(event, topicData.topic.id):  addPostHandler} noValidate>
 
         {!isEdit && <SelectList selectedForumName={forumName} getForum={getSelectedForumFromList}/>}
 
@@ -89,6 +127,8 @@ const CreatePost = ({isEdit}) => {
           reference={titleInput}
           // onChange={handleInputChange}
           // onFocus={handleInputFocus}
+          isDisabled={isEdit}
+          value={isEdit ? topicData.topic.title:null}
         />
 
         <TextAreaInputField
@@ -99,6 +139,7 @@ const CreatePost = ({isEdit}) => {
           reference={bodyInput}
           // onChange={handleInputChange}
           // onFocus={handleInputFocus}
+          value={isEdit ? topicData.topic.content:null}
         />
 
         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
@@ -107,11 +148,11 @@ const CreatePost = ({isEdit}) => {
         <Stack spacing={2} direction="row" sx={{ m: 1, pt: 2, justifyContent: 'right' }}>
           <CustomButton
             type="submit"
-            label={isSubmitting ? "Creating Post..." : "Create Post"}
-            disabled={isSubmitting}
+            label={isEdit ? "Edit Post" : "Create Post"}
+          disabled={isSubmitting}
           />
           <Button disableElevation onClick={() => { navigate(-1) }}>
-            Back
+            Cancel
           </Button>
         </Stack>
       </form>
@@ -122,5 +163,12 @@ const CreatePost = ({isEdit}) => {
 export default CreatePost;
 
 export const topicDetailsLoader = async ({params}) => {
-  
+  const topicId = params.id
+  if (topicId) {
+    const response = await axios.get(`http://localhost:8080/topic/${topicId}`, {withCredentials: true});    
+    return response.data.data
+  }
+  else {
+    return null;
+  }
 }

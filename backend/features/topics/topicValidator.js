@@ -23,12 +23,12 @@ export const validateTopicCreation = (req, res, next) => {
 
 export const validateTopicUpdate = (req, res, next) => {
     return [
-        body('title')
-            .trim()
-            .isLength({min: 10, max: 200})
-            .withMessage('Please enter a valid post title of minimum 10 characters.')
-            .isAlphanumeric('en-US', {ignore: ' '})
-            .withMessage('Please enter a valid post title.'),
+        // body('title')
+        //     .trim()
+        //     .isLength({min: 10, max: 200})
+        //     .withMessage('Please enter a valid post title of minimum 10 characters.')
+        //     .isAlphanumeric('en-US', {ignore: ' '})
+        //     .withMessage('Please enter a valid post title.'),
         
         body('content')
             .trim()  

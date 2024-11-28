@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect } from 'react';
-import { Box, Drawer, CssBaseline, Toolbar, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Drawer, CssBaseline, Toolbar, List, ListItem, ListItemButton, ListItemIcon, ListItemText, DialogTitle, Button } from '@mui/material';
 import CombinedAppBar from './AppBar';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -7,16 +7,22 @@ import menuList from '../../../../utils/sidebarlist';
 import { useNavigate, useLocation } from 'react-router-dom';
 import deleteCookie from '../../../../utils/deleteCookie';
 import axios from 'axios';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 
 const drawerWidth = 200;
 
 export default function ClippedDrawer() {
-  const [mobileOpen, setMobileOpen] = useState(false); 
-  const [activeItem, setActiveItem] = useState(null); 
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeItem, setActiveItem] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -37,7 +43,8 @@ export default function ClippedDrawer() {
         "Content-Type": "application/json",
         withCredentials: true
       });
-      console.log(response);
+      // console.log(response);
+      setDialogOpen(false);
       navigate('/login/201');
     } catch (error) {
       console.error("couldn't log user out", error);
@@ -46,13 +53,42 @@ export default function ClippedDrawer() {
 
   const handleMenuItemClick = (path) => {
     if (path === 'logout') {
-      handleLogout();
+      handleUpdateClick();
     } else {
       navigate(path);
-      setActiveItem(path); 
+      setActiveItem(path);
     }
-    setMobileOpen(false); 
+    setMobileOpen(false);
   };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  }
+
+  const handleUpdateClick = () => {
+    setDialogOpen(true);
+  };
+
+  const logoutDialog = (
+    <Dialog open={dialogOpen} onClose={handleDialogClose}>
+      <DialogContent>
+        <DialogTitle sx={{px:0}}>
+          Are you sure you want to log out?
+        </DialogTitle>
+        <DialogContentText>
+          You'll need to sign back in to continue participating in discussions.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleDialogClose} color="error">
+          Cancel
+        </Button>
+        <Button onClick={handleLogout} color="primary">
+          Yes, Log Out
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
 
   const drawer = (
     <div>
@@ -64,9 +100,9 @@ export default function ClippedDrawer() {
               <ListItemButton
                 onClick={() => handleMenuItemClick(item.path)}
                 sx={{
-                  backgroundColor: item.path === activeItem ? theme.palette.action.selected : 'transparent', 
+                  backgroundColor: item.path === activeItem ? theme.palette.action.selected : 'transparent',
                   '&:hover': {
-                    backgroundColor: item.path === activeItem ? theme.palette.action.selected : theme.palette.action.hover, 
+                    backgroundColor: item.path === activeItem ? theme.palette.action.selected : theme.palette.action.hover,
                   }
                 }}
               >
@@ -79,6 +115,7 @@ export default function ClippedDrawer() {
           ))}
         </List>
       </Box>
+      {logoutDialog}
     </div>
   );
 
@@ -94,7 +131,7 @@ export default function ClippedDrawer() {
             open={mobileOpen}
             onClose={handleDrawerToggle}
             ModalProps={{
-              keepMounted: true, 
+              keepMounted: true,
             }}
             sx={{
               '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
