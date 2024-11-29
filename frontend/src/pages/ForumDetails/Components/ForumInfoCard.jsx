@@ -6,7 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
-import { Divider, Stack } from "@mui/material";
+import { Divider, Stack, Tooltip } from "@mui/material";
 import LanguageIcon from "@mui/icons-material/Language";
 import FaceOutlinedIcon from "@mui/icons-material/FaceOutlined";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
@@ -63,17 +63,23 @@ export default function ForumInfoCard({
           sx={{ justifyContent: "space-between", mx:1 }}
         >
           {forum.isPublic === false ? (
-            <Chip icon={<VpnLockIcon />} label="Private" sx={{pl:1}} />
+              <Chip icon={<VpnLockIcon />} label="Private" sx={{pl:1}} />
           ) : (
             <Chip icon={<PublicIcon />} label="Public" sx={{pl:1}} />
           )}
-          {<Chip icon={<NumbersRoundedIcon />} label={postLength} sx={{paddingLeft:1}} />}
           {
+            <Tooltip title='Number of posts'>
+              <Chip icon={<NumbersRoundedIcon />} label={postLength} sx={{paddingLeft:1}} />    
+            </Tooltip>
+          }
+          {
+            <Tooltip title='Number of subscribers'>
             <Chip
               icon={<GroupsOutlinedIcon />}
               label={forum.subscriber_count}
               sx={{pl:1}}
-            />
+              />
+            </Tooltip>
           }
         </Stack>
       </CardContent>

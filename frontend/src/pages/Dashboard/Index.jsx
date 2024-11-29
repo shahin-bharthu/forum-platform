@@ -6,7 +6,7 @@ import { Typography } from "@mui/material";
 import { useLoaderData } from "react-router-dom";
 
 export default function Dashboard() {
-    const { recentForumData, empty } = useLoaderData()
+    const { recentForumData, currentUser, empty } = useLoaderData()
     return (
         <>
             <Grid container spacing={{xs:1,md:5}} size={12} direction="row" sx={{ width: '100%', px: 0, mx: 3, alignSelf: 'start' }}>
@@ -34,7 +34,8 @@ export async function dashboardLoader() {
         const recentForums = await axios.get('http://localhost:8080/forum/recent-forums', {
             withCredentials: true
         });
-        const recentForumData = recentForums.data.data || [];        
+        const recentForumData = recentForums.data.data || [];      
+
         const forumAvatar = await Promise.all(
             recentForumData.map(async (forum) => {
                 try {                    
@@ -64,7 +65,6 @@ export async function dashboardLoader() {
             })
         )
         
-
         const enrichedForumData = recentForumData.map(forum => {
             const avatarInfo = forumAvatar.find(b => b.forumId === forum.forum_id);
             return {
@@ -72,9 +72,7 @@ export async function dashboardLoader() {
                 avatarUrl: avatarInfo?.avatarUrl
             };
         });
-
         const empty = enrichedForumData.length === 0;
-
 
         return {
             recentForumData: enrichedForumData,

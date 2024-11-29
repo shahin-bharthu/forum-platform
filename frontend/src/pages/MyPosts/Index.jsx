@@ -4,7 +4,7 @@ import { styled, alpha } from "@mui/material/styles";
 import axios from "axios";
 import PositionedSnackbar from "../../components/SnackBar";
 import { ExpandMore as ExpandMoreIcon, MoreVert as MoreVertIcon, Edit as EditIcon, Archive as ArchiveIcon, DeleteRounded as DeleteRoundedIcon } from "@mui/icons-material";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-content": {
@@ -185,7 +185,7 @@ export default function MyPosts() {
   const handleEditTopic = (event, id) => {
     handleCloseMenu()
     event.preventDefault();
-    navigate(`/post/edit/${id}`)
+    navigate(`/post/edit/${id}`);
     // console.log('in edit',id);
   }
 
