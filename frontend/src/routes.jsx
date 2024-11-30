@@ -54,7 +54,7 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="/user/dashboard" /> },
       { path: "profile", element: <UserProfilePage /> },
       { path: "dashboard",loader:dashboardLoader, element: <Dashboard /> },
-      { path: "my-forums", loader: forumLoader, element: <MyForum /> },
+      { path: "my-forums", id: "my-forums", loader: forumLoader, element: <MyForum /> },
       { path: "add-forum", element: <AddForum isEdit={false}/> },
       { path: "edit-forum/:forum_id", loader: forumDetails, element: <AddForum isEdit={true}/> },
       { path: "forums", loader: allForumLoader, element: <AllForums /> },

@@ -267,9 +267,6 @@ export default function MyForum() {
             </Grid>
           )}
         </CustomTabPanel>
-
-
-
       </Box>
       <FloatingActionButtons onClick={handleCreate} />
     </>
@@ -286,7 +283,7 @@ export async function forumLoader() {
     const archivedForums = response.data.archivedUserForums || [];
 
     const empty = publicForums.length === 0 && privateForums.length === 0 && archivedForums.length === 0;
-
+    
     return {
       publicForums,
       privateForums,

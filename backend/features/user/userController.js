@@ -10,6 +10,13 @@ const getUserDetails = asyncErrorHandler(async (req,res,next) => {
     const user = await userService.getUserDetails(id)
     return res.status(200).json({message: 'User Fetched', user: user})
 })
+
+
+const getCurrentUserDetails = asyncErrorHandler(async (req,res,next) => {
+  return res.status(200).json({user: req.user});
+})
+
+
 const updateUserDetails = asyncErrorHandler(async (req,res,next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -19,6 +26,8 @@ const updateUserDetails = asyncErrorHandler(async (req,res,next) => {
     const user = await userService.updateUserDetails(id, {firstname, lastname, gender, dob, country});
     return res.status(200).json({message: 'Your details have been updated!', user: user})
 })
+
+
 const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.params;
     const {email} =  req.body;
@@ -61,7 +70,6 @@ const getAvatarById = asyncErrorHandler (async (req,res,next) => {
   const {avatarPath} = await userService.getAvatarById(id);
   return res.sendFile(avatarPath)
 })
-export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatar, getAvatarById}
 
 
-
+export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatar, getAvatarById, getCurrentUserDetails}

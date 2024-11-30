@@ -1,13 +1,10 @@
 import { useState, useCallback, memo } from 'react';
 import { styled, alpha } from '@mui/material/styles';
-import { AppBar, Box, Toolbar, IconButton, Typography, InputBase, Badge, MenuItem, Menu } from '@mui/material';
-import { Menu as MenuIcon, Search as SearchIcon, AccountCircle, Notifications as NotificationsIcon, Add as AddIcon, MoreVert as MoreIcon, Adb as AdbIcon } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
+import { AppBar, Box, Toolbar, IconButton, Typography, InputBase, Badge, MenuItem, Menu, Fab, Chip, Avatar } from '@mui/material';
+import { Menu as MenuIcon, Search as SearchIcon, AccountCircle, Notifications as NotificationsIcon, Add as AddIcon, MoreVert as MoreIcon, Adb as AdbIcon, AutoStories } from '@mui/icons-material';
+import { Link, useNavigate, useRouteLoaderData } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-
-// import deleteCookie from '../../../../utils/deleteCookie.js';
-// import axios from 'axios';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -48,9 +45,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-function CombinedAppBar({ handleDrawerToggle }) {
+function CombinedAppBar({ currentUser, profilePhoto, handleDrawerToggle }) {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-
   const navigate = useNavigate();
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -136,9 +132,9 @@ function CombinedAppBar({ handleDrawerToggle }) {
             onClick={handleDrawerToggle}
             sx={{ mr: 0, display: { xs: 'flex', md: 'none' } }}
           >
-            <MenuIcon />
+          <MenuIcon />
           </IconButton>
-          <AdbIcon sx={{ display: 'flex', mr: 2 }} />
+          <AutoStories sx={{ display: 'flex', mr: 2 }} />
           <Tooltip title="Go to Home Page" placement="right" arrow>
           <Typography
             variant="h6"
@@ -147,9 +143,9 @@ function CombinedAppBar({ handleDrawerToggle }) {
             to="dashboard"
             sx={{ display: { xs: 'none', md: 'flex' }, mr: 2, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', textDecoration: 'none', color: 'inherit' }}
           >
-            LOGO
+            BookNook
           </Typography>
-            </Tooltip>
+          </Tooltip>
           
           <Box sx={{ flexGrow: 1 }} />
           {/* <Search>
@@ -164,7 +160,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Tooltip title="Create Post" arrow>
-              <Button onClick={handleCreatePost}  variant="contained" startIcon={<AddIcon />} sx={{borderRadius: 28}} disableElevation>
+              <Button onClick={handleCreatePost} variant="contained" startIcon={<AddIcon />} sx={{borderRadius: 28}} disableElevation>
                 Create
               </Button>
             </Tooltip>
@@ -180,18 +176,20 @@ function CombinedAppBar({ handleDrawerToggle }) {
               </Badge>
             </IconButton>
             </Tooltip> */}
-            <Tooltip title="Profile" arrow>
-            <IconButton
-              size="large"
-              edge="end"
+            <Tooltip title="Go to your profile" arrow>
+            <Button
+              variant="contained"
+              sx={{borderRadius: 28, pl: 1, pr: 2, mx: 1}}
+              size="medium"
               aria-label="account of current user"
               aria-controls={menuId}
-              // aria-haspopup="true"
               onClick={handleEditProfile}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
+              disableElevation
+              >
+            <Avatar src={profilePhoto}
+                    sx={{ width: 30, height: 30, mx: 1 }} />
+              Hi, {currentUser}
+            </Button>
             </Tooltip>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>

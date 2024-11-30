@@ -5,7 +5,7 @@ import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import TextInputField from "./Components/TextInput.jsx";
 import axios from "axios";
 import Button from "@mui/material/Button";
-import { useLoaderData, useLocation, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import SelectList from "./Components/SelectList.jsx";
 import Stack from '@mui/material/Stack';
 import { Card } from "@mui/material";
@@ -15,8 +15,6 @@ const CreatePost = ({isEdit}) => {
   const titleInput = useRef();
   const bodyInput = useRef();
   const location = useLocation();
-  // console.log(topicData);
-  
   const {forumName, forumId} = location.state || null || topicData.topic.forum_id
 
   const navigate = useNavigate();
@@ -25,7 +23,7 @@ const CreatePost = ({isEdit}) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState({});
-  const [selectedForum, setSelectedForum] = useState(null); 
+  const [selectedForum, setSelectedForum] = useState(null);
 
   useEffect(() => {
     if (forumName !== null && forumId !== null) {
@@ -113,7 +111,6 @@ const CreatePost = ({isEdit}) => {
 
   return (
     <Card variant="outlined" sx={{ m: 2, p: 3, justifyContent: 'left' }}>
-      {/* <h3>Create Post</h3> */}
       <h3 className={classes["heading"]}>{isEdit? 'Edit': 'Create'} Post</h3>
       <form onSubmit={isEdit? (event)=>editPostHandler(event, topicData.topic.id):  addPostHandler} noValidate>
 
@@ -122,24 +119,20 @@ const CreatePost = ({isEdit}) => {
         <TextInputField
           label="Title"
           type="text"
-          name="title"
-          placeholder="Title"
+          name="Title"
+          placeholder={isEdit? null : 'Post Title'}
           reference={titleInput}
-          // onChange={handleInputChange}
-          // onFocus={handleInputFocus}
           isDisabled={isEdit}
-          value={isEdit ? topicData.topic.title:null}
+          value={isEdit ? topicData.topic.title : null}
         />
 
         <TextAreaInputField
           label="Body"
           type="text"
           name="Body"
-          placeholder="Body"
+          placeholder={isEdit? null : 'Post Body'}
           reference={bodyInput}
-          // onChange={handleInputChange}
-          // onFocus={handleInputFocus}
-          value={isEdit ? topicData.topic.content:null}
+          value={isEdit ? topicData.topic.content : null}
         />
 
         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
@@ -162,11 +155,11 @@ const CreatePost = ({isEdit}) => {
 
 export default CreatePost;
 
-export const topicDetailsLoader = async ({params}) => {
+export const topicDetailsLoader = async ({request, params}) => {
   const topicId = params.id
   if (topicId) {
     const response = await axios.get(`http://localhost:8080/topic/${topicId}`, {withCredentials: true});    
-    return response.data.data
+    return response.data.data;
   }
   else {
     return null;

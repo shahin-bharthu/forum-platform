@@ -80,9 +80,9 @@ export default function MyPosts() {
                                 withCredentials: true,
                                 responseType: "blob",
                             }
-                        )
+                        )                        
 
-                        if (response.data) {
+                        if (response.data) {                            
                             const reader = new FileReader()
                             reader.onloadend = () => {
                                 setForumBanner(prev => ({

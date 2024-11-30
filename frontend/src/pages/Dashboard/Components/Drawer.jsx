@@ -18,6 +18,8 @@ export default function ClippedDrawer() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState("Your Username");
+  const [profilePhoto, setProfilePhoto] = useState();
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -30,6 +32,36 @@ export default function ClippedDrawer() {
     if (activeMenu) {
       setActiveItem(activeMenu.path);
     }
+
+    async function getCurrentUser() {
+      try {
+      const currentUser = await axios.get('http://localhost:8080/user', {
+        withCredentials: true
+      });
+      setCurrentUser(currentUser.data.user.username)
+
+      const response = await axios.get(
+          `http://localhost:8080/user/avatar/${currentUser.data.user.id}`,
+          {
+              withCredentials: true,
+              responseType: "blob",
+          }
+      )
+      
+      if (response.data) {
+          const reader = new FileReader()
+          reader.onloadend = () => {
+            setProfilePhoto(reader.result)          
+          }
+          reader.readAsDataURL(response.data)
+      }
+    }
+    catch (error) {
+      console.error('Error fetching username or profile photo: ', error);
+    }
+    }
+
+    getCurrentUser();
   }, [location.pathname]);
 
   const handleDrawerToggle = () => {
@@ -123,7 +155,7 @@ export default function ClippedDrawer() {
     <>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <CombinedAppBar handleDrawerToggle={handleDrawerToggle} />
+        <CombinedAppBar currentUser={currentUser} profilePhoto={profilePhoto} handleDrawerToggle={handleDrawerToggle} />
         {/* Drawer for small screens */}
         {isSmallScreen ? (
           <Drawer

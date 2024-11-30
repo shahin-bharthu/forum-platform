@@ -63,8 +63,8 @@ const subscribeToForum = asyncErrorHandler(async(req,res,next) => {
         throw new CustomError('Forum not found', 404)
     }
 
-    if (forum.createdBy === id) {
-        throw new CustomError('Cannot subscribe', 500)
+    if (forum.createdBy === id && forum.isActive === false) {
+        throw new CustomError('Cannot subscribe', 500);
     }
 
     const existingMembership = await db.UserMembership.findOne({
