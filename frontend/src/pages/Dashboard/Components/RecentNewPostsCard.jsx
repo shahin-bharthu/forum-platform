@@ -162,7 +162,7 @@ export default function MyPosts() {
                             </CardActions>
                             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
                                 <CardContent sx={{ px: 3 }}>
-                                    <Typography variant='body2' sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word' }}>
+                                    <Typography variant='body2' sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word', whiteSpace: "pre-wrap" }}>
                                         {topic.content}
                                     </Typography>
                                 </CardContent>

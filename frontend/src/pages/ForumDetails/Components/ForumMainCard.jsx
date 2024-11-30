@@ -172,7 +172,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
             </CardActions>
             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
               <CardContent sx={{ px: 3 }} >
-                <Typography sx={{ marginBottom: 2, textAlign: 'left',wordBreak: 'break-word' }}>{topic.content}</Typography>
+                <Typography sx={{ marginBottom: 2, textAlign: 'left',wordBreak: 'break-word', whiteSpace: "pre-wrap" }}>{topic.content}</Typography>
               </CardContent>
             </Collapse>
           </Card>

@@ -4,7 +4,8 @@ import { styled, alpha } from "@mui/material/styles";
 import axios from "axios";
 import PositionedSnackbar from "../../components/SnackBar";
 import { ExpandMore as ExpandMoreIcon, MoreVert as MoreVertIcon, Edit as EditIcon, Archive as ArchiveIcon, DeleteRounded as DeleteRoundedIcon } from "@mui/icons-material";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-content": {
@@ -95,7 +96,9 @@ export default function MyPosts() {
   const [message, setMessage] = useState();
   const [menuAnchor, setMenuAnchor] = useState(null);  // Track the anchor element for the menu
   const [activeIndex, setActiveIndex] = useState(null);
-  const navigate=useNavigate()
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const navigate = useNavigate()
   useEffect(() => {
     async function getForumTopics() {
       const myTopics = await axios.get(
@@ -167,26 +170,34 @@ export default function MyPosts() {
     setActiveIndex(null);
   };
 
-  const handleDeleteTopic = async (id) => {
-    handleCloseMenu();
-    const response = await axios.delete(`http://localhost:8080/topic/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      withCredentials: true
-    });
-    setMessage('Post deleted');
-    setTimeout(() => {
-      setMessage(null);
-      window.location.reload();
-    }, 1000);
+  const handleDeleteTopic = async () => {
+    if (activeIndex !== null) {
+      try {
+        const response = await axios.delete(`http://localhost:8080/topic/${activeIndex}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true
+        });
+
+        setMessage('Post deleted');
+        setTimeout(() => {
+          setMessage(null);
+          window.location.reload();
+        }, 1000);
+      } catch (error) {
+        console.error("Error deleting post:", error);
+        setMessage('Failed to delete post');
+      }
+    }
+    handleDialogClose();
   };
+
 
   const handleEditTopic = (event, id) => {
     handleCloseMenu()
     event.preventDefault();
     navigate(`/post/edit/${id}`)
-    // console.log('in edit',id);
   }
 
   const handleExpandClick = (i) => {
@@ -194,6 +205,43 @@ export default function MyPosts() {
     array[i].isExpanded = !array[i].isExpanded;
     setExpanded(array);
   };
+
+  const handleUpdateClick = (topicId) => {
+    handleCloseMenu();
+    setDialogOpen(true);
+    setActiveIndex(topicId);
+  };
+
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  }
+
+  const logoutDialog = (
+    <Dialog open={dialogOpen} onClose={handleDialogClose}>
+      <DialogContent>
+        <DialogTitle sx={{ px: 0 }}>
+          Delete Post
+        </DialogTitle>
+        <DialogContentText>
+          Are you sure you want to delete this post?
+          This action cannot be undone, and the post will be permanently removed.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleDialogClose} color="primary">
+          Cancel
+        </Button>
+        <Button
+          onClick={handleDeleteTopic}
+          color="error"
+          variant="contained"
+        >
+          Delete Post
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
 
   if (forumTopics.length === 0) {
     return (
@@ -240,15 +288,13 @@ export default function MyPosts() {
                       onClose={handleCloseMenu}
                     >
                       <MenuItem
-                        // onClick={handleCloseMenu}
-                        // onClick={()=>navigate(`/post/edit`, { state: { forumName: forum.name, forumId: forum.id } })} 
-                        onClick={(event)=>handleEditTopic(event,topic.id)}
+                        onClick={(event) => handleEditTopic(event, topic.id)}
                         disableRipple>
                         <EditIcon />
                         Edit
                       </MenuItem>
                       <MenuItem
-                        onClick={() => handleDeleteTopic(topic.id)}
+                        onClick={() => handleUpdateClick(topic.id)} // Pass the specific topic ID
                         disableRipple
                       >
                         <DeleteRoundedIcon />
@@ -300,6 +346,7 @@ export default function MyPosts() {
                       marginBottom: 2,
                       textAlign: "left",
                       wordBreak: "break-word",
+                      whiteSpace: "pre-wrap"
                     }}
                   >
                     {topic.content}
@@ -309,6 +356,7 @@ export default function MyPosts() {
             </Card>
           </Box>
         ))}
+        {dialogOpen && logoutDialog}
       </Grid>
     </>
   );
