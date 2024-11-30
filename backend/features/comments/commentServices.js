@@ -4,4 +4,8 @@ const createComment = async (topic_id, content, parent_comment_id, createdBy) =>
     return await commentRepository.createComment(topic_id, content, parent_comment_id, createdBy);
 }
 
-export { createComment }
+const getCommentsByPostId = async (postId) => {
+    return await commentRepository.getCommentsByPostId(postId);
+}
+
+export { createComment, getCommentsByPostId }

@@ -9,4 +9,8 @@ const createComment = async (topic_id, content, parent_comment_id, createdBy) =>
     })
 };
 
-export { createComment }
+const getCommentsByPostId = async (postId) => {
+    return await db.Comment.findAll({where: {topic_id: postId}});
+}
+
+export { createComment, getCommentsByPostId }

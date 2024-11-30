@@ -15,5 +15,12 @@ const createComment = asyncErrorHandler(async (req,res,next) => {
 })
 
 
+const getCommentsByPostId = asyncErrorHandler(async (req,res,next) => {
+    const {postId} = req.params;
+    const comments = await commentServices.getCommentsByPostId(postId);
 
-export { createComment }
+    return res.status(200).json({message: `Comments for post id ${postId} fetched successfully`, data: comments});
+})
+
+
+export { createComment, getCommentsByPostId }
