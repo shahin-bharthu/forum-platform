@@ -23,4 +23,19 @@ const getCommentsByPostId = asyncErrorHandler(async (req,res,next) => {
 })
 
 
-export { createComment, getCommentsByPostId }
+const deleteComment = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.params;
+    const comment = await commentServices.deleteComment(id);
+
+    return res.status(200).json({message: `Comment deleted successfully`, data: comment});
+})
+
+
+const getReplies = asyncErrorHandler(async (req,res,next) => {
+    const {parentId} = req.params;
+    const replies = await commentServices.getReplies(parentId);
+
+    return res.status(200).json({message: `Replies fetched successfully`, data: replies});
+})
+
+export { createComment, getCommentsByPostId, deleteComment, getReplies }
