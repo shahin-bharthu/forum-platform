@@ -3,10 +3,10 @@ import * as commentServices from "./commentServices.js";
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 
 const createComment = asyncErrorHandler(async (req,res,next) => {
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //     return res.status(422).json({ errors: errors.array() });
-    // }
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
     const createdBy = req.user.id
     const {topic_id, content, parent_comment_id} = req.body;
     const comment = await commentServices.createComment(topic_id, content, parent_comment_id, createdBy);
