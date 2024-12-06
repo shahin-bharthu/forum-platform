@@ -1,4 +1,5 @@
-import { db } from "../../config/connection.js"
+import { Op } from "sequelize";
+import { db } from "../../config/connection.js";
 
 const createComment = async (topic_id, content, parent_comment_id, createdBy) => {
     return await db.Comment.create({
@@ -9,8 +10,20 @@ const createComment = async (topic_id, content, parent_comment_id, createdBy) =>
     })
 };
 
-const getCommentsByPostId = async (postId) => {
-    return await db.Comment.findAll({where: {topic_id: postId}});
+const getCommentById = async (id) => {
+    return await db.Comment.findByPk(id);
 }
 
-export { createComment, getCommentsByPostId }
+const getCommentsByPostId = async (postId) => {
+    return await db.Comment.findAll({where: {[Op.and]: {topic_id: postId, parent_comment_id: null}}});
+}
+
+const deleteComment = async (comment) => {
+    return await comment.destroy();
+}
+
+const getReplies = async (parentId) => {
+    return await db.Comment.findAll({where: {parent_comment_id: parentId}});
+}
+
+export { createComment, getCommentById, getCommentsByPostId, deleteComment, getReplies }
