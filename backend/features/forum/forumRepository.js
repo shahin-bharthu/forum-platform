@@ -47,7 +47,7 @@ const getForumById = async (id) => {
 };
 
 const getForumByForumId = async (forum_id) => {
-    return await db.Forum.findOne({where: {forum_id}})
+    return await db.Forum.findOne({where: {forum_id}, include: 'user'})
 }
 
 const getForumsByCreator = async (id) => {

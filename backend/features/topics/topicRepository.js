@@ -32,7 +32,10 @@ const getTopics = async () => {
 const getTopicById = async (id) => {
     const topic = await db.Topic.findByPk(id);
     const creator = await topic.getUser();
-    return {topic, username: creator.username};
+    const topic_forum = await topic.getForum();
+    const forum_creator = await topic_forum.getUser();    
+    
+    return {topic, username: creator.username, forum: topic_forum, user: creator, forum_creator};
 };
 
 const getMyTopics = async (id) => {

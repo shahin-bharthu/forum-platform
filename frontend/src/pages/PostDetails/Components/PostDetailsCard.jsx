@@ -25,7 +25,7 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     }
 }));
 
-export default function PostDetailsCard() {
+export default function PostDetailsCard({post, user}) {
     const navigate = useNavigate()
     const [isLiked, setIsLiked] = useState(false)
 
@@ -38,9 +38,7 @@ export default function PostDetailsCard() {
             <Card>
                 <StyledCardHeader
                     avatar={
-                        <Link href={`/forum/533b80d0-8c21-4f19-a2a8-24b9405ecbbd`} color="inherit" underline="hover">
-                            <Avatar aria-label="Forum Banner" src='https://fps.cdnpk.net/images/home/subhome-ai.webp?w=649&h=649' />
-                        </Link>
+                        <Avatar aria-label="Forum Banner" src='https://fps.cdnpk.net/images/home/subhome-ai.webp?w=649&h=649' />
                     }
                     action={
                         <>
@@ -49,7 +47,7 @@ export default function PostDetailsCard() {
                             </IconButton>
                         </>
                     }
-                    title={<Link href={`/forum/533b80d0-8c21-4f19-a2a8-24b9405ecbbd`} color="inherit" underline="hover">idk where tho honestly</Link>}
+                    title={user.username}
                     // subheader={formatDate(topic.createdAt)}
                     subheader='2m'
                 />
@@ -58,7 +56,7 @@ export default function PostDetailsCard() {
                         variant="h6"
                         sx={{ textAlign: "left", wordBreak: "break-word" }}
                     >
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dicta labore odit sit praesentium molestias quidem recusandae aliquid soluta fugiat ad.
+                        {post.title}
                     </Typography>
                     <Typography
                         variant="body2"
@@ -70,7 +68,7 @@ export default function PostDetailsCard() {
                             whiteSpace: "pre-wrap"
                         }}
                     >
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iste, numquam et expedita autem eligendi nobis architecto officia molestiae dolores cum iure qui harum odit ipsam magnam commodi aliquid, odio eius saepe itaque exercitationem maxime? Quasi omnis repellendus libero maiores animi quae nulla veniam est, laborum aspernatur ad veritatis reiciendis tempore.
+                        {post.content}
                     </Typography>
                 </CardContent>
                 <CardActions sx={{ mx: 1 }}>

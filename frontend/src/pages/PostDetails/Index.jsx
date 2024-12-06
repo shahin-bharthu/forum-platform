@@ -3,6 +3,7 @@ import { useLoaderData, useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid2';
 import ForumInfoCard from "../ForumDetails/Components/ForumInfoCard";
 import PostDetailsCard from "./Components/PostDetailsCard";
+import axios from "axios";
 // import { useState } from "react";
 // import { Box, Button, Typography } from "@mui/material";
 
@@ -14,6 +15,8 @@ export default function PostDetails() {
     // const isPrivate = !(forumDetails.isPublic)
     // const isBlur = (isPrivate && !isSubbed)
     // const navigate=useNavigate();
+
+    const { topic, forum, user, forum_creator } = useLoaderData()
     const forumCreatedBy = 'test'
     const postLength = 2
     const forumDetails = {
@@ -31,23 +34,30 @@ export default function PostDetails() {
     }
     return (
         <>
-            {/* <Grid container spacing={3} direction="column" sx={{ px: 2, width: '80%', mt: 10, alignSelf: 'start' }}> */}
-            {/* <Grid size={12} sx={{ borderRadius: 2 }}>
-                    {/* <ForumHeaderCard forum={forumDetails} setIsSubbed={setIsSubbed} /> */}
-            {/* <h1>he</h1> */}
-            {/* </Grid> */}
             <Grid size={12} container spacing={3} sx={{ px: 3, width: '100%', mt: 10, alignSelf: 'start' }}>
                 <Grid size={{ xs: 12, sm: 7, md: 9 }}
                     sx={{ position: 'relative' }}
                 >
-                    <PostDetailsCard/>
+                    <PostDetailsCard post={topic} user={user}/>
                 </Grid>
                 <Grid size={{ xs: 0,sm:5, md: 3 }}>
-                    <ForumInfoCard creator={forumCreatedBy} forum={forumDetails} postLength={postLength} />
+                    <ForumInfoCard creator={forum_creator} forum={forum} postLength={postLength} />
                 </Grid>
             </Grid>
-            {/* </Grid> */}
         </>
     );
 }
 
+
+export const postDetailsLoader = async ({params}) => {
+    const {id} = params;
+    const postDetails = await axios.get(`http://localhost:8080/topic/${id}`, {withCredentials: true});
+    console.log(postDetails.data.data);
+    
+    return {
+        topic: postDetails.data.data.topic,
+        forum: postDetails.data.data.forum,
+        user: postDetails.data.data.user,
+        forum_creator: postDetails.data.data.forum_creator.username
+    };
+}

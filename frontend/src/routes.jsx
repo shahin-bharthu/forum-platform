@@ -17,7 +17,7 @@ import AllForums, { allForumLoader } from "./pages/AllForums/Index.jsx";
 import CreatePost, { topicDetailsLoader } from "./pages/CreatePost/Index.jsx";
 import IntroDivider, { forumDetailsLoader } from "./pages/ForumDetails/Index.jsx";
 import MyPosts from "./pages/MyPosts/Index.jsx";
-import PostDetails from "./pages/PostDetails/Index.jsx";
+import PostDetails, {postDetailsLoader} from "./pages/PostDetails/Index.jsx";
 
 const router = createBrowserRouter([
   {
@@ -91,7 +91,7 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="/post/my-posts" /> },
       { path: "my-posts", element: <MyPosts/>  },
       { path: "edit/:id", loader: topicDetailsLoader, element: <CreatePost isEdit={true}/> },
-      { path: ":id", element:<PostDetails/> }
+      { path: ":id", loader: postDetailsLoader, element:<PostDetails/> }
     ],
   },
 ]);
