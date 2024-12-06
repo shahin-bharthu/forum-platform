@@ -19,6 +19,10 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             defaultValue: true
         },
+        likes_count: {
+            type: Sequelize.BIGINT,
+            defaultValue: 0
+        },
         createdBy: {
             type: Sequelize.UUID,
             allowNull: false,

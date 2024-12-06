@@ -24,6 +24,10 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.BOOLEAN,
             defaultValue: true
         },
+        likes_count: {
+            type: Sequelize.BIGINT,
+            defaultValue: 0
+        },
         createdBy: {
             type: Sequelize.UUID,
             allowNull: false,

@@ -4,8 +4,8 @@ import { createComment, getCommentsByPostId, deleteComment, getReplies } from ".
 const router = Router();
 
 router.post('/', createComment);
+router.get('/replies/:parentId', getReplies)
 router.get('/:postId', getCommentsByPostId);
 router.delete('/:id', deleteComment);
-router.get('/:parentId', getReplies)
 
 export default router;
