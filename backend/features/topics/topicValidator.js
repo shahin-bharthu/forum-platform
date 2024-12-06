@@ -32,7 +32,7 @@ export const validateTopicUpdate = (req, res, next) => {
         
         body('content')
             .trim()  
-            .isLength({ min: 50, max: 1000})
+            .isLength({ min: 50})
             .withMessage('Please provide a description of minimum 50 characters'),
     ];
 };

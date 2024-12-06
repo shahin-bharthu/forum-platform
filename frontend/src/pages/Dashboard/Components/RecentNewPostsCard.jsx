@@ -14,6 +14,7 @@ import { Box, Button, Link } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
+import { formatDate } from '../../../../utils/timestamp';
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     '.MuiCardHeader-content': {
@@ -138,11 +139,7 @@ export default function MyPosts() {
                                 //     </IconButton>
                                 // }
                                 title={< Link href={`/forum/${topic.forum.forum_id}`} color="inherit" underline="hover">{topic.forum.name}</Link>}
-                                subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
-                                    month: 'long',
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                })}
+                                subheader={formatDate(topic.createdAt)}
                             />
                             <CardContent sx={{ py: 0, px: 3 }} >
                                 <Typography variant="h6" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>

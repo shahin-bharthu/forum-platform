@@ -6,6 +6,7 @@ import PositionedSnackbar from "../../components/SnackBar";
 import { ExpandMore as ExpandMoreIcon, MoreVert as MoreVertIcon, Edit as EditIcon, Archive as ArchiveIcon, DeleteRounded as DeleteRoundedIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
+import { formatDate } from "../../../utils/timestamp";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-content": {
@@ -309,11 +310,7 @@ export default function MyPosts() {
                 }
                 // title={topic.forumname}
                 title={<Link href={`/forum/${topic.forumids}`} color="inherit" underline="hover">{topic.forumname}</Link>}
-                subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
+                subheader={formatDate(topic.createdAt)}
               />
               <CardContent sx={{ py: 0, px: 3 }}>
                 <Typography

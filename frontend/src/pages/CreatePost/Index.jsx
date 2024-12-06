@@ -32,7 +32,7 @@ const CreatePost = ({isEdit}) => {
   }, []);
 
   const getSelectedForumFromList = (selectedForumFromList) => {
-    console.log(selectedForumFromList);
+    // console.log(selectedForumFromList);
     setSelectedForum(selectedForumFromList ?? forumId); 
   };
 
