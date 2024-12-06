@@ -16,12 +16,12 @@ export default function IntroDivider() {
     const navigate=useNavigate();
     return (
         <>
-            <Grid container spacing={3} direction="column" sx={{ px: 2, width: '80%', mt: 10, alignSelf: 'start' }}>
+            <Grid container spacing={3} direction="column" sx={{ px: 2, width:{ xs:'90%', sm:'95%',md:'80%'}, mt: 10, alignSelf: 'start' }}>
                 <Grid size={12} sx={{ borderRadius: 2 }}>
                     <ForumHeaderCard forum={forumDetails} setIsSubbed={setIsSubbed} />
                 </Grid>
                 <Grid size={12} container spacing={2}>
-                    <Grid size={{ xs: 12, md: 9 }}
+                    <Grid size={{ xs: 12,sm:7, md: 9 }}
                         sx={{position:'relative'}}
                     >
                         <ForumMainCard
@@ -57,7 +57,7 @@ export default function IntroDivider() {
                             </Box>
                         }
                     </Grid>
-                    <Grid size={{ xs: 0, md: 3 }}>
+                    <Grid size={{ xs: 0,sm:5, md: 3 }}>
                         <ForumInfoCard creator={forumCreatedBy} forum={forumDetails} postLength={postLength} />
                     </Grid>
                 </Grid>
@@ -82,8 +82,7 @@ export async function forumDetailsLoader({ request, params }) {
             withCredentials: true,
         }
         );
-
-
+        
         return {
             forumDetails: forumData,
             forumCreatedBy: forumCreatorData.data.user.username,

@@ -7,15 +7,15 @@ import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import ThumbUpAltRoundedIcon from '@mui/icons-material/ThumbUpAltRounded';
-import ThumbDownAltRoundedIcon from '@mui/icons-material/ThumbDownAltRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios';
 import { Avatar, Box } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import { useNavigate } from 'react-router-dom';
+import { formatDate } from '../../../../utils/timestamp';
+
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   '.MuiCardHeader-content': {
     display: 'flex',
@@ -58,7 +58,8 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
   const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', user: { username: 'username' }, }]);
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [userAvatar, setUserAvatar] = useState({})
-
+  const [isLiked,setIsLiked]=useState([{liked:false}])
+  const navigate=useNavigate()
   useEffect(() => {
     async function getForumTopics() {
       const forumTopics = await axios.get(`http://localhost:8080/forum/topics/${forum.forum_id}`, {
@@ -69,10 +70,11 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
       setForumTopics(forumTopicsData);
 
       let array = [];
-
+      let array2=[]
       for (let i = 0; i < forumTopicsData.length; i++) array.push({ isExpanded: false });
-
+      for (let i = 0; i < forumTopicsData.length; i++) array2.push({ liked: false });
       setExpanded(array);
+      setIsLiked(array2)
       setPostLength(forumTopicsData.length)
 
       await Promise.all(
@@ -112,6 +114,12 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
     setExpanded(array);
   };
 
+  const handleLike =(i)=>{
+    const array=[...isLiked]
+    array[i].liked=!array[i].liked
+    setIsLiked(array); 
+  }
+
   if (forumTopics.length === 0) {
     return (
       <>
@@ -141,23 +149,20 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
               //   </IconButton>
               // }
               title={topic.user.username}
-              subheader={new Date(topic.createdAt).toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-              })}
+              subheader={formatDate(topic.createdAt)}
             />
 
-            <CardContent sx={{ py: 0, px: 3 }}>
+            <CardContent sx={{ py: 0, px: 3 }} onClick={()=>navigate(`/post/${topic.id}`)}>
               <Typography variant="h6" sx={{ textAlign: 'left',wordBreak: 'break-word' }}>
                 {topic.title}
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
-              <IconButton >
-                <FavoriteBorderIcon />
+              <IconButton onClick={()=>handleLike(index)}>
+                {!isLiked[index].liked && <FavoriteBorderIcon />}
+                {isLiked[index].liked  && <FavoriteIcon color='error' />}
               </IconButton>
-              <IconButton >
+              <IconButton onClick={()=>navigate(`/post/${topic.id}`)} >
                 <ChatBubbleOutlineIcon />
               </IconButton>
               <ExpandMore
@@ -171,7 +176,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
               </ExpandMore>
             </CardActions>
             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
-              <CardContent sx={{ px: 3 }} >
+              <CardContent sx={{ px: 3 }} onClick={()=>navigate(`/post/${topic.id}`)}>
                 <Typography sx={{ marginBottom: 2, textAlign: 'left',wordBreak: 'break-word', whiteSpace: "pre-wrap" }}>{topic.content}</Typography>
               </CardContent>
             </Collapse>

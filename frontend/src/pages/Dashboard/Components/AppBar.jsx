@@ -108,14 +108,9 @@ function CombinedAppBar({ currentUser, profilePhoto, handleDrawerToggle }) {
         <p>Notifications</p>
       </MenuItem> */}
       <MenuItem onClick={handleEditProfile}>
-        <IconButton
-          size="large"
-          aria-controls="primary-search-account-menu"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
+        <Avatar src={profilePhoto}
+          sx={{ width: 30, height: 30, mx: 1 }} />
+        Hi, {currentUser}
       </MenuItem>
     </Menu>
   );
@@ -132,21 +127,21 @@ function CombinedAppBar({ currentUser, profilePhoto, handleDrawerToggle }) {
             onClick={handleDrawerToggle}
             sx={{ mr: 0, display: { xs: 'flex', md: 'none' } }}
           >
-          <MenuIcon />
+            <MenuIcon />
           </IconButton>
           <AutoStories sx={{ display: 'flex', mr: 2 }} />
           <Tooltip title="Go to Home Page" placement="right" arrow>
-          <Typography
-            variant="h6"
-            noWrap
-            component={Link}
-            to="dashboard"
-            sx={{ display: { xs: 'none', md: 'flex' }, mr: 2, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', textDecoration: 'none', color: 'inherit' }}
-          >
-            BookNook
-          </Typography>
+            <Typography
+              variant="h6"
+              noWrap
+              component={Link}
+              to="dashboard"
+              sx={{ display: { xs: 'none', md: 'flex' }, mr: 2, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', textDecoration: 'none', color: 'inherit' }}
+            >
+              BookNook
+            </Typography>
           </Tooltip>
-          
+
           <Box sx={{ flexGrow: 1 }} />
           {/* <Search>
             <SearchIconWrapper>
@@ -160,11 +155,11 @@ function CombinedAppBar({ currentUser, profilePhoto, handleDrawerToggle }) {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Tooltip title="Create Post" arrow>
-              <Button onClick={handleCreatePost} variant="contained" startIcon={<AddIcon />} sx={{borderRadius: 28}} disableElevation>
+              <Button onClick={handleCreatePost} variant="contained" startIcon={<AddIcon />} sx={{ borderRadius: 28 }} disableElevation>
                 Create
               </Button>
             </Tooltip>
-            
+
             {/* <Tooltip title="Notifications" arrow>
             <IconButton
               size="large"
@@ -177,19 +172,19 @@ function CombinedAppBar({ currentUser, profilePhoto, handleDrawerToggle }) {
             </IconButton>
             </Tooltip> */}
             <Tooltip title="Go to your profile" arrow>
-            <Button
-              variant="contained"
-              sx={{borderRadius: 28, pl: 1, pr: 2, mx: 1}}
-              size="medium"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              onClick={handleEditProfile}
-              disableElevation
+              <Button
+                variant="contained"
+                sx={{ borderRadius: 28, pl: 1, pr: 2, mx: 1 }}
+                size="medium"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                onClick={handleEditProfile}
+                disableElevation
               >
-            <Avatar src={profilePhoto}
-                    sx={{ width: 30, height: 30, mx: 1 }} />
-              Hi, {currentUser}
-            </Button>
+                <Avatar src={profilePhoto}
+                  sx={{ width: 30, height: 30, mx: 1 }} />
+                Hi, {currentUser}
+              </Button>
             </Tooltip>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
