@@ -15,7 +15,7 @@ const getCommentById = async (id) => {
 }
 
 const getCommentsByPostId = async (postId) => {
-    return await db.Comment.findAll({where: {[Op.and]: {topic_id: postId, parent_comment_id: null}}});
+    return await db.Comment.findAll({where: {[Op.and]: {topic_id: postId, parent_comment_id: null}}, include: 'user'});
 }
 
 const deleteComment = async (comment) => {

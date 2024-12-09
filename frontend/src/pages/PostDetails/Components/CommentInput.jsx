@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box, TextField, IconButton } from '@mui/material';
 import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
 
-const CommentInput = () => {
+const CommentInput = ({postId}) => {
 
     const [comment, setComment] = useState('');
 

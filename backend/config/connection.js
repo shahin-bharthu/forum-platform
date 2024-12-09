@@ -114,11 +114,11 @@ db.Topic.belongsTo(db.Forum, {
 
 db.User.hasMany(db.Comment, {
   as: 'comments',
-  foreignKey: 'user_id'
+  foreignKey: 'createdBy'
 });
 db.Comment.belongsTo(db.User, {
   as: 'user',
-  foreignKey: 'user_id'
+  foreignKey: 'createdBy'
 });
 db.Topic.hasMany(db.Comment, {
   as: 'comments',

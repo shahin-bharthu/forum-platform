@@ -1,9 +1,11 @@
-import { Avatar, Card, CardActions, CardContent, CardHeader, IconButton, styled, Typography } from "@mui/material"
+import { Avatar, Box, Card, CardActions, CardContent, CardHeader, IconButton, styled, Typography } from "@mui/material"
 import { red } from "@mui/material/colors";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { formatDate } from "../../../../utils/timestamp";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     ".MuiCardHeader-content": {
@@ -21,41 +23,61 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
         margin: 0
     }
 }));
-export default function ParentComments() {
+
+export default function ParentComments({postId}) {
     const [isLiked, setIsLiked] = useState(false)
+    const [comments, setComments] = useState([]);
 
     const handleLike = () => {
         setIsLiked((prev) => !prev)
     }
+
+    useEffect(() => {
+        async function getParentComments(postId) {
+            const parentComments = await axios.get(`http://localhost:8080/comment/${postId}`, {withCredentials: true})
+            setComments(parentComments.data.data);
+        }
+
+        getParentComments(postId)
+    }, []);
+    
+    console.log(comments);
+
     return (
-        <Card sx={{ boxShadow: 0 }}>
+        <>
+        {comments.length>0 ? 
+        
+        comments.map((comment) => 
+            <Card sx={{ boxShadow: 0 }}>
             <StyledCardHeader
-                sx={{ pb: 1 }}
-                avatar={
-                    <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                        R
-                    </Avatar>
-                }
-                // action={
-                //     <IconButton aria-label="settings">
-                //         <MoreVertIcon />
-                //     </IconButton>
-                // }
-                title="Shrimp and Chorizo Paella"
-                subheader="September 14, 2016"
+            sx={{ pb: 1 }}
+            avatar={
+                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                R
+                </Avatar>
+            }
+            title={comment.user.username}
+            subheader={formatDate(comment.createdAt)}
             />
             <CardContent sx={{ py: 0 }}>
-                <Typography variant="body2" sx={{ mx: 4, pl: 3, textAlign: 'left' }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta tempora maxime quasi facilis animi similique in consequuntur distinctio provident autem?</Typography>
+            <Typography variant="body2" sx={{ mx: 4, pl: 3, textAlign: 'left' }}>{comment.content}</Typography>
             </CardContent>
             <CardActions sx={{ mx: 1 }}>
-                <IconButton onClick={handleLike}>
-                    {!isLiked && <FavoriteBorderIcon fontSize="small"/>}
-                    {isLiked && <FavoriteIcon color="error" fontSize="small"/>}
-                </IconButton>
-                <IconButton >
-                    <ChatBubbleOutlineIcon fontSize="small"/>
-                </IconButton>
+            <IconButton onClick={handleLike}>
+            {!isLiked && <FavoriteBorderIcon fontSize="small"/>}
+            {isLiked && <FavoriteIcon color="error" fontSize="small"/>}
+            </IconButton>
+            <IconButton >
+            <ChatBubbleOutlineIcon fontSize="small"/>
+            </IconButton>
             </CardActions>
-        </Card>
+            </Card>
+        ) :
+        <Box sx={{m:2, height:'30vh', pt:5}}>
+        <Typography variant="subtitle">No comments yet</Typography>
+        <Typography variant="body2">Be the first one to comment</Typography>
+        </Box>
+    } 
+    </>
     )
 } 

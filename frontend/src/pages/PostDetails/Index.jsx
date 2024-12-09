@@ -52,7 +52,6 @@ export default function PostDetails() {
 export const postDetailsLoader = async ({params}) => {
     const {id} = params;
     const postDetails = await axios.get(`http://localhost:8080/topic/${id}`, {withCredentials: true});
-    console.log(postDetails.data.data);
     
     return {
         topic: postDetails.data.data.topic,

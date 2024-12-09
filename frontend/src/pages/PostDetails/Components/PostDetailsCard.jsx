@@ -7,6 +7,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { useState } from "react";
 import CommentInput from "./CommentInput";
 import ParentComments from "./ParentComments";
+import { formatDate } from "../../../../utils/timestamp";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     ".MuiCardHeader-content": {
@@ -49,7 +50,7 @@ export default function PostDetailsCard({post, user}) {
                     }
                     title={user.username}
                     // subheader={formatDate(topic.createdAt)}
-                    subheader='2m'
+                    subheader={formatDate(post.createdAt)}
                 />
                 <CardContent sx={{ py: 0, px: 3 }}>
                     <Typography
@@ -80,10 +81,10 @@ export default function PostDetailsCard({post, user}) {
                         <ChatBubbleOutlineIcon />
                     </IconButton>
                 </CardActions>
-                <CommentInput />
+                <CommentInput postId={post.id}/>
                 <CardContent>
                     <Typography variant="h6" sx={{textAlign:'left', mx:1}}>Comments</Typography>
-                    <ParentComments/>
+                    <ParentComments postId={post.id}/>
                 </CardContent>
             </Card>
         </Box>
