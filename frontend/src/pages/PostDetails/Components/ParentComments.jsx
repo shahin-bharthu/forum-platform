@@ -35,26 +35,64 @@ export default function ParentComments({postId}) {
     useEffect(() => {
         async function getParentComments(postId) {
             const parentComments = await axios.get(`http://localhost:8080/comment/${postId}`, {withCredentials: true})
-            setComments(parentComments.data.data);
+            const parentCommentsData = parentComments.data.data;
+            
+            const commentUserAvatars = await Promise.all(
+                parentCommentsData.map(async (comment) => {
+                    try {                    
+                        const avatarResponse = await axios.get(
+                            `http://localhost:8080/user/avatar/${comment.user.id}`,
+                            {
+                                withCredentials: true,
+                                responseType: "blob",
+                            }
+                        )
+
+                        if (avatarResponse.data) {
+                            const avatarBlob = avatarResponse.data                        
+                            return {
+                                commentId: comment.id,
+                                avatarUrl: URL.createObjectURL(avatarBlob)
+                            }
+                        }
+                    }
+                    catch (error) {
+                        console.error('Error fetching avatar', error)
+                        return {
+                            commentId: comment.id,
+                            avatarUrl: null
+                        }
+                    }
+                })
+            )            
+            
+            const enrichedCommentsData = parentCommentsData.map(comment => {
+                const commentInfo = commentUserAvatars.find(avatar => avatar.commentId == comment.id);
+                return {
+                    ...comment,
+                    avatarUrl: commentInfo?.avatarUrl
+                };
+            });
+
+            console.log(enrichedCommentsData);
+            
+            setComments(enrichedCommentsData);
         }
 
         getParentComments(postId)
     }, []);
     
-    console.log(comments);
+    // console.log(comments);
 
     return (
         <>
         {comments.length>0 ? 
-        
         comments.map((comment) => 
             <Card sx={{ boxShadow: 0 }}>
             <StyledCardHeader
             sx={{ pb: 1 }}
             avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                R
-                </Avatar>
+                <Avatar aria-label="recipe" src={comment.avatarUrl}></Avatar>
             }
             title={comment.user.username}
             subheader={formatDate(comment.createdAt)}

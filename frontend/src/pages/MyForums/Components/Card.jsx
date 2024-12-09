@@ -46,7 +46,7 @@ export default function MediaCard({
     });
 
     if (file.data) {
-      setBanner(file.data);
+      // setBanner(file.data);
       const reader = new FileReader();
       reader.onloadend = () => {
         setBannerUrl(reader.result);

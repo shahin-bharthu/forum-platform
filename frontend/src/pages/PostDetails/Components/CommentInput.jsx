@@ -1,27 +1,39 @@
 import { useState } from 'react';
 import { Box, TextField, IconButton } from '@mui/material';
 import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const CommentInput = ({postId}) => {
 
     const [comment, setComment] = useState('');
+    const navigate = useNavigate();
 
     const handleCommentChange = (event) => {
         setComment(event.target.value);
     };
 
-    const handleSendComment = () => {
+    const handleSendComment = async () => {
         if (comment) {
-            // TODO: Add logic to send comment
-            console.log('Sending comment:', comment);
-            // Optionally clear the comment after sending
+            const commentData = {
+                topic_id: postId, content: comment, parent_comment_id: null
+            }
+            const sendCommentResposne = await axios.post(`http://localhost:8080/comment`, 
+                                               commentData, 
+                                               {
+                                                "Content-Type": "application/json", 
+                                                withCredentials: true
+                                               }
+                                            );
             setComment('');
+            
         }
     };
 
     const handleCancelComment = () => {
         setComment(''); // Clear the text field
     };
+
     return (
         <Box
             sx={{

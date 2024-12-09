@@ -15,7 +15,7 @@ const getCommentById = async (id) => {
 }
 
 const getCommentsByPostId = async (postId) => {
-    return await db.Comment.findAll({where: {[Op.and]: {topic_id: postId, parent_comment_id: null}}, include: 'user'});
+    return await db.Comment.findAll({where: {[Op.and]: {topic_id: postId, parent_comment_id: null}}, include: 'user', order: [['createdAt', 'DESC']]});
 }
 
 const deleteComment = async (comment) => {
@@ -23,7 +23,7 @@ const deleteComment = async (comment) => {
 }
 
 const getReplies = async (parentId) => {
-    return await db.Comment.findAll({where: {parent_comment_id: parentId}});
+    return await db.Comment.findAll({where: {parent_comment_id: parentId}, order: [['createdAt']]});
 }
 
 export { createComment, getCommentById, getCommentsByPostId, deleteComment, getReplies }

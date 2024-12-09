@@ -16,7 +16,7 @@ export default (sequelize, Sequelize) => {
             references: { model: "comments", key: "id" }
         },
         content: {
-            type: Sequelize.STRING,
+            type: Sequelize.TEXT,
             defaultValue: true
         },
         likes_count: {

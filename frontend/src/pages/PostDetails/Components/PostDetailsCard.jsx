@@ -4,10 +4,11 @@ import { useNavigate } from "react-router-dom";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CommentInput from "./CommentInput";
 import ParentComments from "./ParentComments";
 import { formatDate } from "../../../../utils/timestamp";
+import axios from "axios";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     ".MuiCardHeader-content": {
@@ -27,19 +28,43 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
 }));
 
 export default function PostDetailsCard({post, user}) {
-    const navigate = useNavigate()
-    const [isLiked, setIsLiked] = useState(false)
+    const navigate = useNavigate();
+    const [isLiked, setIsLiked] = useState(false);
+    const [userAvatarUrl, setUserAvatarUrl] = useState();
 
     const handleLike = () => {
         setIsLiked((prev) => !prev)
-    }
+    };
+
+    const handleFileRead = async (id) => {
+        const file = await axios.get(`http://localhost:8080/user/avatar/${id}`, {
+          withCredentials: true,
+          responseType: "blob",
+        });
+    
+        if (file.data) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setUserAvatarUrl(reader.result);
+          };
+          reader.readAsDataURL(file.data);
+        }
+    };
+
+    useEffect(() => {
+        const fetchAvatar = async (id) => {
+            const data = await handleFileRead(id);
+          };
+      
+        fetchAvatar(user.id).catch(console.error);
+    }, []);
 
     return (
         <Box mb={2}>
             <Card>
                 <StyledCardHeader
                     avatar={
-                        <Avatar aria-label="Forum Banner" src='https://fps.cdnpk.net/images/home/subhome-ai.webp?w=649&h=649' />
+                        <Avatar aria-label="Forum Banner" src={userAvatarUrl} />
                     }
                     action={
                         <>
@@ -49,7 +74,6 @@ export default function PostDetailsCard({post, user}) {
                         </>
                     }
                     title={user.username}
-                    // subheader={formatDate(topic.createdAt)}
                     subheader={formatDate(post.createdAt)}
                 />
                 <CardContent sx={{ py: 0, px: 3 }}>
