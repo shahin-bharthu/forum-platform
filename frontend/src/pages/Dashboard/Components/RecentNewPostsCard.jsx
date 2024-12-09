@@ -15,6 +15,7 @@ import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../../utils/timestamp';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     '.MuiCardHeader-content': {
@@ -81,9 +82,9 @@ export default function MyPosts() {
                                 withCredentials: true,
                                 responseType: "blob",
                             }
-                        )                        
+                        )
 
-                        if (response.data) {                            
+                        if (response.data) {
                             const reader = new FileReader()
                             reader.onloadend = () => {
                                 setForumBanner(prev => ({
@@ -141,12 +142,15 @@ export default function MyPosts() {
                                 title={< Link href={`/forum/${topic.forum.forum_id}`} color="inherit" underline="hover">{topic.forum.name}</Link>}
                                 subheader={formatDate(topic.createdAt)}
                             />
-                            <CardContent sx={{ py: 0, px: 3 }} >
+                            <CardContent sx={{ py: 0, px: 3, cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
                                 <Typography variant="h6" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>
                                     {topic.title}
                                 </Typography>
                             </CardContent>
                             <CardActions disableSpacing>
+                                <IconButton onClick={() => navigate(`/post/${topic.id}`)} >
+                                    <ChatBubbleOutlineIcon />
+                                </IconButton>
                                 <ExpandMore
                                     expand={expanded[index].isExpanded}
                                     onClick={() => handleExpandClick(index)}
@@ -158,7 +162,7 @@ export default function MyPosts() {
                                 </ExpandMore>
                             </CardActions>
                             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
-                                <CardContent sx={{ px: 3 }}>
+                                <CardContent sx={{ px: 3, cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
                                     <Typography variant='body2' sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word', whiteSpace: "pre-wrap" }}>
                                         {topic.content}
                                     </Typography>
