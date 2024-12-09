@@ -3,10 +3,11 @@ import { Card, CardHeader, CardContent, CardActions, Collapse, IconButton, Typog
 import { styled, alpha } from "@mui/material/styles";
 import axios from "axios";
 import PositionedSnackbar from "../../components/SnackBar";
-import { ExpandMore as ExpandMoreIcon, MoreVert as MoreVertIcon, Edit as EditIcon, Archive as ArchiveIcon, DeleteRounded as DeleteRoundedIcon } from "@mui/icons-material";
+import { ExpandMore as ExpandMoreIcon, MoreVert as MoreVertIcon, Edit as EditIcon, Archive as ArchiveIcon, DeleteRounded as DeleteRoundedIcon, ChatBubbleOutlineOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import { formatDate } from "../../../utils/timestamp";
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-content": {
@@ -312,7 +313,7 @@ export default function MyPosts() {
                 title={<Link href={`/forum/${topic.forumids}`} color="inherit" underline="hover">{topic.forumname}</Link>}
                 subheader={formatDate(topic.createdAt)}
               />
-              <CardContent sx={{ py: 0, px: 3 }}>
+              <CardContent sx={{ py: 0, px: 3 , cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
                 <Typography
                   variant="h6"
                   sx={{ textAlign: "left", wordBreak: "break-word" }}
@@ -321,6 +322,9 @@ export default function MyPosts() {
                 </Typography>
               </CardContent>
               <CardActions disableSpacing>
+                <IconButton onClick={() => navigate(`/post/${topic.id}`)} >
+                  <ChatBubbleOutlineIcon />
+                </IconButton>
                 <ExpandMore
                   expand={expanded[index].isExpanded}
                   onClick={() => handleExpandClick(index)}
@@ -336,7 +340,7 @@ export default function MyPosts() {
                 timeout="auto"
                 unmountOnExit
               >
-                <CardContent sx={{ px: 3 }}>
+                <CardContent sx={{ px: 3 , cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
                   <Typography
                     variant="body2"
                     sx={{

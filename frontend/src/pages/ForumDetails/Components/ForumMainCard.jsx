@@ -152,7 +152,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
               subheader={formatDate(topic.createdAt)}
             />
 
-            <CardContent sx={{ py: 0, px: 3 }} onClick={()=>navigate(`/post/${topic.id}`)}>
+            <CardContent sx={{ py: 0, px: 3,cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
               <Typography variant="h6" sx={{ textAlign: 'left',wordBreak: 'break-word' }}>
                 {topic.title}
               </Typography>
@@ -176,7 +176,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
               </ExpandMore>
             </CardActions>
             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
-              <CardContent sx={{ px: 3 }} onClick={()=>navigate(`/post/${topic.id}`)}>
+              <CardContent sx={{ px: 3, cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
                 <Typography sx={{ marginBottom: 2, textAlign: 'left',wordBreak: 'break-word', whiteSpace: "pre-wrap" }}>{topic.content}</Typography>
               </CardContent>
             </Collapse>
