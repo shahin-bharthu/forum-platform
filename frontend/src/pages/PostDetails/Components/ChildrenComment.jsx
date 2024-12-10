@@ -34,8 +34,48 @@ export default function ChildrenComments({ parentId }) {
 
     useEffect(() => {
         async function getReplies(parentId) {
-            const replies = await axios.get(`http://localhost:8080/comment/replies/${parentId}`, { withCredentials: true })
-            setReplies(replies.data.data);
+            const commentReplies = await axios.get(`http://localhost:8080/comment/replies/${parentId}`, { withCredentials: true })
+            const repliesData = commentReplies.data.data
+
+            const repliesUserAvatars = await Promise.all(
+                repliesData.map(async (reply) => {
+                    try {
+                        const avatarResponse = await axios.get(
+                            `http://localhost:8080/user/avatar/${reply.user.id}`,
+                            {
+                                withCredentials: true,
+                                responseType: "blob",
+                            }
+                        )
+
+                        if (avatarResponse.data) {
+                            const avatarBlob = avatarResponse.data
+                            return {
+                                replyId: reply.id,
+                                avatarUrl: URL.createObjectURL(avatarBlob)
+                            }
+                        }
+                    }
+                    catch (error) {
+                        console.error('Error fetching avatar', error)
+                        return {
+                            commentId: comment.id,
+                            avatarUrl: null
+                        }
+                    }
+                })
+            )
+
+            const enrichedRepliesData = repliesData.map(reply => {
+                const replyInfo = repliesUserAvatars.find(avatar => avatar.replyId == reply.id);
+                return {
+                    ...reply,
+                    avatarUrl: replyInfo?.avatarUrl
+                };
+            });
+
+            console.log(enrichedRepliesData);
+            setReplies(enrichedRepliesData);
         }
 
         getReplies(parentId)
@@ -48,18 +88,16 @@ export default function ChildrenComments({ parentId }) {
                 <Card key={reply.id} sx={{
                     boxShadow: 0,
                     width: {
-                        xs:'80%',
-                        sm:'85%',
-                        md:'90%'
+                        xs: '80%',
+                        sm: '85%',
+                        md: '90%'
                     },
                     justifySelf: 'right'
                 }}>
                     <StyledCardHeader
                         sx={{ pb: 1 }}
                         avatar={
-                            <Avatar sx={{ bgcolor: blue[500] }} aria-label="recipe">
-                                C
-                            </Avatar>
+                            <Avatar aria-label="avatar" src={reply.avatarUrl}></Avatar>
                         }
                         title={reply.user.username}
                         subheader={formatDate(reply.createdAt)}
