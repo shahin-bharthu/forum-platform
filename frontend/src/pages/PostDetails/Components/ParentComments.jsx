@@ -1,5 +1,4 @@
-import { Avatar, Box, Card, CardActionArea, CardActions, CardContent, CardHeader, IconButton, styled, Typography } from "@mui/material"
-import { red } from "@mui/material/colors";
+import { Avatar, Box, Card, CardActionArea, CardActions, CardContent, CardHeader, IconButton, Link, styled, Typography } from "@mui/material"
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -25,11 +24,11 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     }
 }));
 
-export default function ParentComments({ postId }) {
+export default function ParentComments({ postId , refreshKey }) {
     const [isLiked, setIsLiked] = useState(false)
     const [comments, setComments] = useState([]);
     const [showReplies, setShowReplies] = useState({});
-
+    
     const handleClick = (commentId) => {
         setShowReplies(prev => ({
             ...prev,
@@ -41,6 +40,7 @@ export default function ParentComments({ postId }) {
         setIsLiked((prev) => !prev)
     }
 
+    
     useEffect(() => {
         async function getParentComments(postId) {
             const parentComments = await axios.get(`http://localhost:8080/comment/${postId}`, {withCredentials: true})
@@ -82,14 +82,12 @@ export default function ParentComments({ postId }) {
                     avatarUrl: commentInfo?.avatarUrl
                 };
             });
-
-            console.log(enrichedCommentsData);
             
             setComments(enrichedCommentsData);
         }
 
         getParentComments(postId)
-    }, []);
+    }, [postId,refreshKey ]);
     
     // console.log(comments);
 
@@ -117,6 +115,7 @@ export default function ParentComments({ postId }) {
             <IconButton >
             <ChatBubbleOutlineIcon fontSize="small"/>
             </IconButton>
+            <Link  color="inherit" underline="hover">Reply</Link>
             </CardActions>
             {showReplies[comment.id] && (
                             <ChildrenComments parentId={comment.id} />

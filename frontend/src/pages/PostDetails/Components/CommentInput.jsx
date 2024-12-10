@@ -4,10 +4,9 @@ import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const CommentInput = ({postId}) => {
+const CommentInput = ({postId, onCommentadded}) => {
 
     const [comment, setComment] = useState('');
-    const navigate = useNavigate();
 
     const handleCommentChange = (event) => {
         setComment(event.target.value);
@@ -26,7 +25,7 @@ const CommentInput = ({postId}) => {
                                                }
                                             );
             setComment('');
-            
+            onCommentadded()
         }
     };
 
