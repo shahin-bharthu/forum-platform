@@ -101,7 +101,7 @@ export default function ParentComments({ postId }) {
             <StyledCardHeader
             sx={{ pb: 1 }}
             avatar={
-                <Avatar aria-label="recipe" src={comment.avatarUrl}></Avatar>
+                <Avatar aria-label="avatar" src={comment.avatarUrl}></Avatar>
             }
             title={comment.user.username}
             subheader={formatDate(comment.createdAt)}
