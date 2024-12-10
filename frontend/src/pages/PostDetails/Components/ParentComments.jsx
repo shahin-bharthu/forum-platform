@@ -10,12 +10,13 @@ import ChildrenComments from "./ChildrenComment";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     ".MuiCardHeader-content": {
-        display: "flex",
+        display: "flex",    
         alignItems: "center",
         gap: theme.spacing(2),
     },
     ".MuiCardHeader-title": {
         margin: 0,
+        fontWeight: 500
     },
     ".MuiCardHeader-subheader": {
         margin: 0,
@@ -43,12 +44,12 @@ export default function ParentComments({ postId }) {
 
     useEffect(() => {
         async function getParentComments(postId) {
-            const parentComments = await axios.get(`http://localhost:8080/comment/${postId}`, {withCredentials: true})
+            const parentComments = await axios.get(`http://localhost:8080/comment/${postId}`, { withCredentials: true })
             const parentCommentsData = parentComments.data.data;
-            
+
             const commentUserAvatars = await Promise.all(
                 parentCommentsData.map(async (comment) => {
-                    try {                    
+                    try {
                         const avatarResponse = await axios.get(
                             `http://localhost:8080/user/avatar/${comment.user.id}`,
                             {
@@ -57,111 +58,125 @@ export default function ParentComments({ postId }) {
                             }
                         )
 
+                        const replies = await axios.get(
+                            `http://localhost:8080/comment/replies/${comment.id}`,
+                            {
+                                withCredentials: true,
+                            }
+                        )
+
                         if (avatarResponse.data) {
-                            const avatarBlob = avatarResponse.data                        
+                            const avatarBlob = avatarResponse.data
+                            const repliesLength = replies.data.data.length;
+
                             return {
+                                hasReplies: repliesLength > 0,
                                 commentId: comment.id,
                                 avatarUrl: URL.createObjectURL(avatarBlob)
                             }
                         }
                     }
                     catch (error) {
-                        console.error('Error fetching avatar', error)
+                        console.error('Error fetching avatar or replies', error)
                         return {
+                            hasReplies: false,
                             commentId: comment.id,
                             avatarUrl: null
                         }
                     }
                 })
-            )            
-            
+            )
+
             const enrichedCommentsData = parentCommentsData.map(comment => {
                 const commentInfo = commentUserAvatars.find(avatar => avatar.commentId == comment.id);
                 return {
                     ...comment,
-                    avatarUrl: commentInfo?.avatarUrl
+                    avatarUrl: commentInfo?.avatarUrl,
+                    hasReplies: commentInfo?.hasReplies
                 };
             });
 
-            console.log(enrichedCommentsData);
-            
+            // console.log(enrichedCommentsData);
+
             setComments(enrichedCommentsData);
         }
 
         getParentComments(postId)
     }, []);
-    
+
     // console.log(comments);
 
     return (
         <>
-        {comments.length>0 ? 
-        comments.map((comment) => 
-            <Card key={comment.id} sx={{ boxShadow: 0 }}>
-            <StyledCardHeader
-            sx={{ pb: 1 }}
-            avatar={
-                <Avatar aria-label="avatar" src={comment.avatarUrl}></Avatar>
-            }
-            title={comment.user.username}
-            subheader={formatDate(comment.createdAt)}
-            />
-            <CardContent sx={{ py: 0 }}>
-            <Typography variant="body2" sx={{ mx: 4, pl: 3, textAlign: 'left' }}>{comment.content}</Typography>
-            </CardContent>
-            <CardActions sx={{ mx: 1 }}>
-            <IconButton onClick={handleLike}>
-                {!isLiked && <FavoriteBorderIcon fontSize="small"/>}
-                {isLiked && <FavoriteIcon color="error" fontSize="small"/>}
-            </IconButton>
-            <IconButton >
-            <ChatBubbleOutlineIcon fontSize="small"/>
-            </IconButton>
-            </CardActions>
-            {showReplies[comment.id] && (
-                            <ChildrenComments parentId={comment.id} />
-                        )}
-                        <CardActionArea
-                            disableRipple
-                            sx={{
-                                width: {
-                                    xs: '100%',
-                                    sm: '80%',
-                                    md: '60%',
-                                    lg: '40%',
-                                    xl: '20%'
-                                },
-                                py: 1,
-                                mx: 2,
-                                boxShadow: 'none',
-                                border: 'none',
-                                '&:hover': {
-                                    backgroundColor: 'transparent',
-                                    textDecoration: 'underline',
+            {comments.length > 0 ?
+                comments.map((comment) =>
+                    <Card key={comment.id} sx={{ boxShadow: 0 }}>
+                        <StyledCardHeader
+                            sx={{ pb: 1,  }}
+                            avatar={
+                                <Avatar aria-label="avatar" src={comment.avatarUrl} sx={{width: 30, height: 30}}></Avatar>
+                            }
+                            title={comment.user.username}
+                            subheader={formatDate(comment.createdAt)}
+                        />
+                        <CardContent sx={{ py: 0 }}>
+                            <Typography variant="body2" sx={{ mx: 4, pl: 3, textAlign: 'left' }}>{comment.content}</Typography>
+                        </CardContent>
+                        <CardActions sx={{ mx: 1 }}>
+                            <IconButton onClick={handleLike}>
+                                {!isLiked && <FavoriteBorderIcon fontSize="small" />}
+                                {isLiked && <FavoriteIcon color="error" fontSize="small" />}
+                            </IconButton>
+                            <IconButton >
+                                <ChatBubbleOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </CardActions>
+                        {comment.hasReplies ? <>
+                            {showReplies[comment.id] && (
+                                <ChildrenComments parentId={comment.id} />
+                            )}
+                            <CardActionArea
+                                disableRipple
+                                sx={{
+                                    width: {
+                                        xs: '100%',
+                                        sm: '80%',
+                                        md: '60%',
+                                        lg: '40%',
+                                        xl: '20%'
+                                    },
+                                    py: 1,
+                                    mx: 2,
                                     boxShadow: 'none',
-                                    opacity: 1,
-                                    '@media (hover: hover)': {
+                                    border: 'none',
+                                    '&:hover': {
                                         backgroundColor: 'transparent',
-                                    }
-                                },
-                                '&.Mui-focusVisible': {
-                                    backgroundColor: 'transparent',
-                                },
-                                cursor: 'pointer',
-                                padding: 0,
-                                outline: 'none',
-                            }}
-                            onClick={() => handleClick(comment.id)}
-                        >
-                            {showReplies[comment.id] ? 'Hide replies' : 'View replies'}
-                        </CardActionArea>
-            </Card>
-        ) :
-        <Box sx={{m:2, height:'30vh', pt:5}}>
-        <Typography variant="subtitle">No comments yet</Typography>
-        <Typography variant="body2">Be the first one to comment</Typography>
-        </Box>
-    } 
-    </>
+                                        textDecoration: 'underline',
+                                        boxShadow: 'none',
+                                        opacity: 1,
+                                        '@media (hover: hover)': {
+                                            backgroundColor: 'transparent',
+                                        }
+                                    },
+                                    '&.Mui-focusVisible': {
+                                        backgroundColor: 'transparent',
+                                    },
+                                    cursor: 'pointer',
+                                    padding: 0,
+                                    outline: 'none',
+                                }}
+                                onClick={() => handleClick(comment.id)}
+                            >
+                                {showReplies[comment.id] ? 'Hide replies' : 'View replies'}
+                            </CardActionArea>
+                        </> : null }
+                    </Card>
+                ) :
+                <Box sx={{ m: 2, height: '30vh', pt: 5 }}>
+                    <Typography variant="subtitle">No comments yet</Typography>
+                    <Typography variant="body2">Be the first one to comment</Typography>
+                </Box>
+            }
+        </>
     )
 } 

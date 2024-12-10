@@ -64,7 +64,7 @@ export default function PostDetailsCard({post, user}) {
             <Card>
                 <StyledCardHeader
                     avatar={
-                        <Avatar aria-label="Forum Banner" src={userAvatarUrl} />
+                        <Avatar aria-label="Forum Banner" src={userAvatarUrl} sx={{width: 30, height: 30}}/>
                     }
                     action={
                         <>

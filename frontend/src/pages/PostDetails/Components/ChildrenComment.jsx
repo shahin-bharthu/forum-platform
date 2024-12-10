@@ -74,7 +74,6 @@ export default function ChildrenComments({ parentId }) {
                 };
             });
 
-            console.log(enrichedRepliesData);
             setReplies(enrichedRepliesData);
         }
 
@@ -97,7 +96,7 @@ export default function ChildrenComments({ parentId }) {
                     <StyledCardHeader
                         sx={{ pb: 1 }}
                         avatar={
-                            <Avatar aria-label="avatar" src={reply.avatarUrl}></Avatar>
+                            <Avatar aria-label="avatar" src={reply.avatarUrl} sx={{width: 30, height: 30}}></Avatar>
                         }
                         title={reply.user.username}
                         subheader={formatDate(reply.createdAt)}

@@ -26,7 +26,7 @@ export default function ForumInfoCard({
     <Card sx={{ mb: 2 }}>
       <CardContent>
         <Typography
-          variant="h5"
+          variant="h6"
           fontWeight="fontWeightMedium"
           component="div"
           sx={{ textAlign: "left" }}
@@ -34,7 +34,7 @@ export default function ForumInfoCard({
           {forum.name}
         </Typography>
         <Typography
-          fontWeight="fontWeightMedium"
+          fontWeight={450}
           sx={{ color: "text.secondary", mb: 1.5, textAlign: "left" }}
         >
           {forum.purpose}

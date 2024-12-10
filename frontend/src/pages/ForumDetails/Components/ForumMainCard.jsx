@@ -139,7 +139,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
           <Card>
             <StyledCardHeader
               avatar={
-                <Avatar aria-label="user avatar" src={userAvatar[topic.createdBy]} >
+                <Avatar aria-label="user avatar" src={userAvatar[topic.createdBy]} sx={{width: 35, height: 35}}>
                   {topic.username?.[0]?.toUpperCase()}
                 </Avatar>
               }
@@ -153,17 +153,17 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
             />
 
             <CardContent sx={{ py: 0, px: 3,cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
-              <Typography variant="h6" sx={{ textAlign: 'left',wordBreak: 'break-word' }}>
+              <Typography variant="body1" sx={{ textAlign: 'left',wordBreak: 'break-word', }}>
                 {topic.title}
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
               <IconButton onClick={()=>handleLike(index)}>
-                {!isLiked[index].liked && <FavoriteBorderIcon />}
-                {isLiked[index].liked  && <FavoriteIcon color='error' />}
+                {!isLiked[index].liked && <FavoriteBorderIcon fontSize='small'/>}
+                {isLiked[index].liked  && <FavoriteIcon fontSize='small' color='error' />}
               </IconButton>
               <IconButton onClick={()=>navigate(`/post/${topic.id}`)} >
-                <ChatBubbleOutlineIcon />
+                <ChatBubbleOutlineIcon fontSize='small' />
               </IconButton>
               <ExpandMore
                 expand={expanded[index].isExpanded}

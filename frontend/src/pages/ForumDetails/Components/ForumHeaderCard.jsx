@@ -134,7 +134,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
               src={bannerUrl}
               sx={{ width: 60, height: 60, border: 2, borderColor: 'primary.main' }}
             />
-            <Typography variant="h4" component="div" >
+            <Typography variant="h5" component="div" >
               {forum.name}
             </Typography>
           </Stack>
