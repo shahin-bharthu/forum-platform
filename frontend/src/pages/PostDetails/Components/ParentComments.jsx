@@ -26,11 +26,11 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     }
 }));
 
-export default function ParentComments({ postId }) {
+export default function ParentComments({ postId , refreshKey }) {
     const [isLiked, setIsLiked] = useState(false)
     const [comments, setComments] = useState([]);
     const [showReplies, setShowReplies] = useState({});
-    const [replyInput, setReplyInput] = useState([{id: null, showInput: false}]);
+    const [replyInput, setReplyInput] = useState();
 
     const handleClick = (commentId) => {
         setShowReplies(prev => ({
@@ -100,12 +100,14 @@ export default function ParentComments({ postId }) {
                     hasReplies: commentInfo?.hasReplies
                 };
             });
-
+            
             setComments(enrichedCommentsData);
         }
 
         getParentComments(postId)
-    }, []);
+    }, [postId,refreshKey ]);
+    
+    // console.log(comments);
 
     return (
         <>

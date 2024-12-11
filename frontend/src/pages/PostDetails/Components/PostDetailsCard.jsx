@@ -31,10 +31,15 @@ export default function PostDetailsCard({post, user, forum}) {
     const navigate = useNavigate();
     const [isLiked, setIsLiked] = useState(false);
     const [userAvatarUrl, setUserAvatarUrl] = useState();
+    const [refreshpage,setRefreshpage]=useState(false)
 
     const handleLike = () => {
         setIsLiked((prev) => !prev)
     };
+
+    const handleRefresh=()=>{
+        setRefreshpage((prev)=>!prev)
+    }
 
     const handleFileRead = async (id) => {
         const file = await axios.get(`http://localhost:8080/user/avatar/${id}`, {
@@ -105,10 +110,10 @@ export default function PostDetailsCard({post, user, forum}) {
                         <ChatBubbleOutlineIcon />
                     </IconButton>
                 </CardActions>
-                {forum.isActive ? <CommentInput postId={post.id} parentCommentId={null}/> : null}
+                {forum.isActive ? <CommentInput postId={post.id} parentCommentId={null} onCommentadded={handleRefresh}/> : null}
                 <CardContent>
                     <Typography variant="h6" sx={{textAlign:'left', mx:1}}>Comments</Typography>
-                    <ParentComments postId={post.id}/>
+                    <ParentComments postId={post.id} refreshKey={refreshpage}/>
                 </CardContent>
             </Card>
         </Box>

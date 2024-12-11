@@ -1,5 +1,4 @@
 import { Avatar, Box, Card, CardActions, CardContent, CardHeader, IconButton, styled, Typography } from "@mui/material"
-import { blue } from "@mui/material/colors";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
