@@ -38,7 +38,7 @@ export default function PostDetails() {
                 <Grid size={{ xs: 12, sm: 7, md: 9 }}
                     sx={{ position: 'relative' }}
                 >
-                    <PostDetailsCard post={topic} user={user}/>
+                    <PostDetailsCard post={topic} user={user} forum={forum}/>
                 </Grid>
                 <Grid size={{ xs: 0,sm:5, md: 3 }}>
                     <ForumInfoCard creator={forum_creator} forum={forum} postLength={postLength} />

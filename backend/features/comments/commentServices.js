@@ -1,8 +1,16 @@
 import * as commentRepository from './commentRepository.js';
+import * as topicRepository from '../topics/topicRepository.js';
 import { CustomError } from "../../util/customError.js";
 
 const createComment = async (topic_id, content, parent_comment_id, createdBy) => {
-    return await commentRepository.createComment(topic_id, content, parent_comment_id, createdBy);
+    const {forum} = await topicRepository.getTopicById(topic_id);
+
+    if (forum.isActive) {
+        return await commentRepository.createComment(topic_id, content, parent_comment_id, createdBy);
+    }
+    else {
+        throw new CustomError("Cannot add comments to the post of an archived forum", 403);
+    }
 }
 
 const getCommentsByPostId = async (postId) => {

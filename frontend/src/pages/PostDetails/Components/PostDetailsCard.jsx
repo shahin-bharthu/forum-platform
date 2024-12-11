@@ -27,7 +27,7 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     }
 }));
 
-export default function PostDetailsCard({post, user}) {
+export default function PostDetailsCard({post, user, forum}) {
     const navigate = useNavigate();
     const [isLiked, setIsLiked] = useState(false);
     const [userAvatarUrl, setUserAvatarUrl] = useState();
@@ -105,7 +105,7 @@ export default function PostDetailsCard({post, user}) {
                         <ChatBubbleOutlineIcon />
                     </IconButton>
                 </CardActions>
-                <CommentInput postId={post.id}/>
+                {forum.isActive ? <CommentInput postId={post.id} parentCommentId={null}/> : null}
                 <CardContent>
                     <Typography variant="h6" sx={{textAlign:'left', mx:1}}>Comments</Typography>
                     <ParentComments postId={post.id}/>

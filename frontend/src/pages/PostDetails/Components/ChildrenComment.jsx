@@ -111,9 +111,9 @@ export default function ChildrenComments({ parentId }) {
                             {!isLiked && <FavoriteBorderIcon fontSize="small" />}
                             {isLiked && <FavoriteIcon color="error" fontSize="small" />}
                         </IconButton>
-                        <IconButton >
+                        {/* <IconButton >
                             <ChatBubbleOutlineIcon fontSize="small" />
-                        </IconButton>
+                        </IconButton> */}
                     </CardActions>
                 </Card >
 

@@ -21,7 +21,7 @@ export default function Dashboard() {
                     <Typography fontWeight='fontWeightMedium' variant="body2" sx={{ m: 1, textAlign: "left", color: 'text.secondary' }}>
                         RECENT NEW FORUMS
                     </Typography>
-                    {empty && <p>No recent forums</p>}
+                    {empty && <Typography sx={{textAlign: 'left', ml: 1}}>No recent forums</Typography>}
                     {!empty && <RecentNewForumsCard recentForumData={recentForumData}/>}
                 </Grid>
             </Grid>

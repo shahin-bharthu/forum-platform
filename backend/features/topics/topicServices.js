@@ -2,8 +2,7 @@ import { CustomError } from "../../util/customError.js";
 import * as topicRepository from "./topicRepository.js";
 
 const createTopic = async (topicData) => {
-    const topic = await topicRepository.createTopic(topicData);
-    return topic
+    return await topicRepository.createTopic(topicData);
 }
 
 const getTopics = async () => {

@@ -4,7 +4,7 @@ import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const CommentInput = ({postId}) => {
+const CommentInput = ({ postId, parentCommentId, username }) => {
 
     const [comment, setComment] = useState('');
     const navigate = useNavigate();
@@ -16,17 +16,17 @@ const CommentInput = ({postId}) => {
     const handleSendComment = async () => {
         if (comment) {
             const commentData = {
-                topic_id: postId, content: comment, parent_comment_id: null
+                topic_id: postId, content: comment, parent_comment_id: parentCommentId
             }
-            const sendCommentResposne = await axios.post(`http://localhost:8080/comment`, 
-                                               commentData, 
-                                               {
-                                                "Content-Type": "application/json", 
-                                                withCredentials: true
-                                               }
-                                            );
+            const sendCommentResposne = await axios.post(`http://localhost:8080/comment`,
+                commentData,
+                {
+                    "Content-Type": "application/json",
+                    withCredentials: true
+                }
+            );
             setComment('');
-            
+
         }
     };
 
@@ -36,24 +36,33 @@ const CommentInput = ({postId}) => {
 
     return (
         <Box
-            sx={{
-                my: 2,
-                mx: 3,
-                display: 'flex',
-                alignItems: 'center',
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                padding: '8px',
-                gap: '8px',
-                backgroundColor: '#f9f9f9',
-            }}
+            sx={parentCommentId ?
+                {
+                    my: 2,
+                    mx: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderBottom: '1px solid #ccc'
+                }
+                :
+                {
+                    my: 2,
+                    mx: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    padding: '8px',
+                    gap: '8px',
+                    backgroundColor: '#f9f9f9',
+                }}
         >
 
             <TextField
                 fullWidth
                 multiline
                 variant="standard"
-                placeholder="Share your thoughts..."
+                placeholder={parentCommentId ? `Replying to ${username}` : "Share your thoughts..."}
                 value={comment}
                 onChange={handleCommentChange}
                 slotProps={{
@@ -86,6 +95,7 @@ const CommentInput = ({postId}) => {
             >
                 <SendIcon fontSize="small" />
             </IconButton>
+
         </Box>
     );
 };

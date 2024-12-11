@@ -1,5 +1,4 @@
 import { Avatar, Box, Card, CardActionArea, CardActions, CardContent, CardHeader, IconButton, styled, Typography } from "@mui/material"
-import { red } from "@mui/material/colors";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -7,6 +6,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { formatDate } from "../../../../utils/timestamp";
 import ChildrenComments from "./ChildrenComment";
+import CommentInput from "./CommentInput";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     ".MuiCardHeader-content": {
@@ -30,6 +30,7 @@ export default function ParentComments({ postId }) {
     const [isLiked, setIsLiked] = useState(false)
     const [comments, setComments] = useState([]);
     const [showReplies, setShowReplies] = useState({});
+    const [replyInput, setReplyInput] = useState([{id: null, showInput: false}]);
 
     const handleClick = (commentId) => {
         setShowReplies(prev => ({
@@ -41,6 +42,10 @@ export default function ParentComments({ postId }) {
     const handleLike = () => {
         setIsLiked((prev) => !prev)
     }
+
+    const handleAddReply = (event, commentId) => {
+        setReplyInput(prev => prev === commentId ? null : commentId); 
+    };
 
     useEffect(() => {
         async function getParentComments(postId) {
@@ -96,15 +101,11 @@ export default function ParentComments({ postId }) {
                 };
             });
 
-            // console.log(enrichedCommentsData);
-
             setComments(enrichedCommentsData);
         }
 
         getParentComments(postId)
     }, []);
-
-    // console.log(comments);
 
     return (
         <>
@@ -112,7 +113,7 @@ export default function ParentComments({ postId }) {
                 comments.map((comment) =>
                     <Card key={comment.id} sx={{ boxShadow: 0 }}>
                         <StyledCardHeader
-                            sx={{ pb: 1,  }}
+                            sx={{ pb: 1 }}
                             avatar={
                                 <Avatar aria-label="avatar" src={comment.avatarUrl} sx={{width: 30, height: 30}}></Avatar>
                             }
@@ -120,21 +121,20 @@ export default function ParentComments({ postId }) {
                             subheader={formatDate(comment.createdAt)}
                         />
                         <CardContent sx={{ py: 0 }}>
-                            <Typography variant="body2" sx={{ mx: 4, pl: 3, textAlign: 'left' }}>{comment.content}</Typography>
+                            <Typography variant="body2" sx={{ mx: 4, pl: 1.75, textAlign: 'left' , wordBreak: "break-word" }}>{comment.content}</Typography>
                         </CardContent>
-                        <CardActions sx={{ mx: 1 }}>
-                            <IconButton onClick={handleLike}>
+                        <CardActions sx={{ mx: 5.5 }}>
+                            {/* <IconButton onClick={handleLike}>
                                 {!isLiked && <FavoriteBorderIcon fontSize="small" />}
                                 {isLiked && <FavoriteIcon color="error" fontSize="small" />}
-                            </IconButton>
-                            <IconButton >
+                            </IconButton> */}
+                            <IconButton onClick={(event) => handleAddReply(event, comment.id)}>
                                 <ChatBubbleOutlineIcon fontSize="small" />
                             </IconButton>
+                            {replyInput === comment.id && <CommentInput postId={postId} parentCommentId={comment.id} username={comment.user.username}></CommentInput>}
                         </CardActions>
                         {comment.hasReplies ? <>
-                            {showReplies[comment.id] && (
-                                <ChildrenComments parentId={comment.id} />
-                            )}
+                            
                             <CardActionArea
                                 disableRipple
                                 sx={{
@@ -169,12 +169,15 @@ export default function ParentComments({ postId }) {
                             >
                                 {showReplies[comment.id] ? 'Hide replies' : 'View replies'}
                             </CardActionArea>
+                            {showReplies[comment.id] && (
+                                <ChildrenComments parentId={comment.id} />
+                            )}
                         </> : null }
                     </Card>
                 ) :
                 <Box sx={{ m: 2, height: '30vh', pt: 5 }}>
                     <Typography variant="subtitle">No comments yet</Typography>
-                    <Typography variant="body2">Be the first one to comment</Typography>
+                    {/* <Typography variant="body2">Be the first one to comment</Typography> */}
                 </Box>
             }
         </>
