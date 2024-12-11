@@ -23,7 +23,7 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     }
 }));
 
-export default function ChildrenComments({ parentId }) {
+export default function ChildrenComments({ parentId, childRefreshKey }) {
     const [isLiked, setIsLiked] = useState(false)
     const [replies, setReplies] = useState([]);
 
@@ -75,9 +75,8 @@ export default function ChildrenComments({ parentId }) {
 
             setReplies(enrichedRepliesData);
         }
-
         getReplies(parentId)
-    }, []);
+    }, [parentId, childRefreshKey]);
 
     return (
         <>
@@ -101,7 +100,7 @@ export default function ChildrenComments({ parentId }) {
                         subheader={formatDate(reply.createdAt)}
                     />
                     <CardContent sx={{ py: 0 }}>
-                        <Typography variant="body2" sx={{ mx: 4, pl: 3, textAlign: 'left' }}>
+                        <Typography variant="body2" sx={{ mx: 4, pl: 1.75, textAlign: 'left' }}>
                             {reply.content}
                         </Typography>
                     </CardContent>
@@ -110,12 +109,8 @@ export default function ChildrenComments({ parentId }) {
                             {!isLiked && <FavoriteBorderIcon fontSize="small" />}
                             {isLiked && <FavoriteIcon color="error" fontSize="small" />}
                         </IconButton>
-                        {/* <IconButton >
-                            <ChatBubbleOutlineIcon fontSize="small" />
-                        </IconButton> */}
                     </CardActions>
                 </Card >
-
             ) : null
             }
         </>

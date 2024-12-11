@@ -31,6 +31,7 @@ export default function ParentComments({ postId , refreshKey }) {
     const [comments, setComments] = useState([]);
     const [showReplies, setShowReplies] = useState({});
     const [replyInput, setReplyInput] = useState();
+    const [refreshpage,setRefreshpage]=useState(false)
 
     const handleClick = (commentId) => {
         setShowReplies(prev => ({
@@ -43,9 +44,17 @@ export default function ParentComments({ postId , refreshKey }) {
         setIsLiked((prev) => !prev)
     }
 
+    const handleRefresh=()=>{
+        setRefreshpage((prev)=>!prev)
+    }
+
     const handleAddReply = (event, commentId) => {
         setReplyInput(prev => prev === commentId ? null : commentId); 
     };
+
+    const handleHideReplyInput = () => {
+        setReplyInput(null); 
+    }
 
     useEffect(() => {
         async function getParentComments(postId) {
@@ -105,10 +114,8 @@ export default function ParentComments({ postId , refreshKey }) {
         }
 
         getParentComments(postId)
-    }, [postId,refreshKey ]);
+    }, [postId, refreshKey, refreshpage]);
     
-    // console.log(comments);
-
     return (
         <>
             {comments.length > 0 ?
@@ -126,17 +133,16 @@ export default function ParentComments({ postId , refreshKey }) {
                             <Typography variant="body2" sx={{ mx: 4, pl: 1.75, textAlign: 'left' , wordBreak: "break-word" }}>{comment.content}</Typography>
                         </CardContent>
                         <CardActions sx={{ mx: 5.5 }}>
-                            {/* <IconButton onClick={handleLike}>
+                            <IconButton onClick={handleLike}>
                                 {!isLiked && <FavoriteBorderIcon fontSize="small" />}
                                 {isLiked && <FavoriteIcon color="error" fontSize="small" />}
-                            </IconButton> */}
+                            </IconButton>
                             <IconButton onClick={(event) => handleAddReply(event, comment.id)}>
                                 <ChatBubbleOutlineIcon fontSize="small" />
                             </IconButton>
-                            {replyInput === comment.id && <CommentInput postId={postId} parentCommentId={comment.id} username={comment.user.username}></CommentInput>}
                         </CardActions>
+                            {replyInput === comment.id && <CommentInput postId={postId} parentCommentId={comment.id} username={comment.user.username} onCommentadded={handleRefresh} onReplySend={handleHideReplyInput}></CommentInput>}
                         {comment.hasReplies ? <>
-                            
                             <CardActionArea
                                 disableRipple
                                 sx={{
@@ -147,22 +153,22 @@ export default function ParentComments({ postId , refreshKey }) {
                                         lg: '40%',
                                         xl: '20%'
                                     },
-                                    py: 1,
-                                    mx: 2,
+                                    // py: 1,
+                                    // mx: 2,
                                     boxShadow: 'none',
                                     border: 'none',
-                                    '&:hover': {
-                                        backgroundColor: 'transparent',
-                                        textDecoration: 'underline',
-                                        boxShadow: 'none',
-                                        opacity: 1,
-                                        '@media (hover: hover)': {
-                                            backgroundColor: 'transparent',
-                                        }
-                                    },
-                                    '&.Mui-focusVisible': {
-                                        backgroundColor: 'transparent',
-                                    },
+                                    // '&:hover': {
+                                    //     backgroundColor: 'transparent',
+                                    //     textDecoration: 'underline',
+                                    //     boxShadow: 'none',
+                                    //     opacity: 1,
+                                    //     '@media (hover: hover)': {
+                                    //         backgroundColor: 'transparent',
+                                    //     }
+                                    // },
+                                    // '&.Mui-focusVisible': {
+                                    //     backgroundColor: 'transparent',
+                                    // },
                                     cursor: 'pointer',
                                     padding: 0,
                                     outline: 'none',
@@ -172,7 +178,7 @@ export default function ParentComments({ postId , refreshKey }) {
                                 {showReplies[comment.id] ? 'Hide replies' : 'View replies'}
                             </CardActionArea>
                             {showReplies[comment.id] && (
-                                <ChildrenComments parentId={comment.id} />
+                                <ChildrenComments parentId={comment.id} childRefreshKey={refreshpage}/>
                             )}
                         </> : null }
                     </Card>

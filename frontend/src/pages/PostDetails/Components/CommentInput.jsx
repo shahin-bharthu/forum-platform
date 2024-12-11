@@ -4,7 +4,7 @@ import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const CommentInput = ({ postId, parentCommentId, username, onCommentadded }) => {
+const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onReplySend }) => {
 
     const [comment, setComment] = useState('');
 
@@ -25,7 +25,8 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded }) => 
                 }
             );
             setComment('');
-            onCommentadded()
+            onCommentadded();
+            onReplySend();
         }
     };
 
@@ -37,11 +38,14 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded }) => 
         <Box
             sx={parentCommentId ?
                 {
-                    my: 2,
-                    mx: 3,
+                    mb: 2,
+                    ml:6,
+                    mr:1,
                     display: 'flex',
                     alignItems: 'center',
-                    borderBottom: '1px solid #ccc'
+                    // borderBottom: '1px solid #ccc',
+                    // gap: '8px',
+                    width:'92%'
                 }
                 :
                 {
@@ -60,7 +64,8 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded }) => 
             <TextField
                 fullWidth
                 multiline
-                variant="standard"
+                autoFocus={parentCommentId}
+                variant={parentCommentId? "outlined" : "standard"}
                 placeholder={parentCommentId ? `Replying to ${username}` : "Share your thoughts..."}
                 value={comment}
                 onChange={handleCommentChange}
@@ -69,6 +74,7 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded }) => 
                         disableUnderline: true,
                     }
                 }}
+                size={parentCommentId ?  'small' : false}
                 sx={{
                     flex: 1,
                     backgroundColor: '#fff',
