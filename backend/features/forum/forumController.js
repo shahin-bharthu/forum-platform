@@ -1,7 +1,4 @@
-import os from 'os';
 import { Op, where } from "sequelize";
-import { promises as fs } from 'fs';
-import path from 'path';
 import { validationResult } from "express-validator";
 import * as forumServices from "./forumServices.js";
 import { db } from "../../config/connection.js";
@@ -195,35 +192,10 @@ const updateForumBanner = asyncErrorHandler(async (req,res,next) => {
 });
 
 
-//for linux
 const getForumBanner = asyncErrorHandler(async (req, res, next) => {
     const forumId = req.params.id;
-    const forum = await db.Forum.findByPk(forumId);
-    
-    const osType = os.type();
-    const pathDelimiter = osType === 'Linux' ? '/' : '\\';
-    const logoPath = forum.logo.split(pathDelimiter);
-    const fileName = logoPath.pop(); 
-    
-    if (!fileName) {
-      return res.status(404).json({
-        status: 'failed',
-        message: 'Banner not found',
-      });
-    } else {
-      const basePath = import.meta.url.replace(osType === 'Linux' ? 'file://' : 'file:///', '');
-      const filePath = path.join(basePath, '../../../forumLogos');
-      
-      try {
-        await fs.access(filePath); 
-        res.sendFile(fileName, {root: filePath});
-      } catch (err) {
-        return res.status(404).json({
-          status: 'failed',
-          message: 'Banner not found',
-        });
-      }
-    }
+    const avatarPath = await forumServices.getForumBanner(forumId);
+    return res.sendFile(avatarPath);
 });
 
 
@@ -237,7 +209,6 @@ const getTopicByForumId = asyncErrorHandler(async (req, res, next) => {
 const getRecentForums = asyncErrorHandler(async (req,res,next) => {
     const userId = req.user.id;
     const forums = await forumServices.getRecentForums(userId)
-
     return res.status(200).json({message: 'Fetched recent forums', data: forums})
 })
 

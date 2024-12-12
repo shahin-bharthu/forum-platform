@@ -27,20 +27,16 @@ const getForums = async () => {
 }
 
 const updateForum = async (id, forum) => {
-    const forumToBeUpdated = await db.Forum.findByPk(id);
-     if (!forumToBeUpdated) {
-            throw new CustomError('Forum not found', 404);
-        }
-        await forumToBeUpdated.update({
-            purpose: forum.purpose,
-            isPublic: forum.isPublic,
-            isActive: forum.isActive
-        });
+  await forumToBeUpdated.update({
+    purpose: forum.purpose,
+    isPublic: forum.isPublic,
+    isActive: forum.isActive,
+  });
 
-        await forumToBeUpdated.save();
+  await forumToBeUpdated.save();
 
-        return forumToBeUpdated;
-}
+  return forumToBeUpdated;
+};
 
 const getForumById = async (id) => {
     return await db.Forum.findByPk(id);
@@ -102,9 +98,7 @@ const getTopicByForumId = async (forumId) => {
     return topics
 }
 
-const getIsSubscribed = async (user_id, forum_id) => {
-    const isCreator = await db.Forum.findOne({where: {id: forum_id, createdBy: user_id}});
-    
+const getIsSubscribed = async (user_id, forum_id) => {    
     const existingMembership = await db.UserMembership.findOne({
         where: {
             user_id,            
@@ -112,7 +106,7 @@ const getIsSubscribed = async (user_id, forum_id) => {
         },
     });
 
-    if (existingMembership || isCreator) {
+    if (existingMembership) {
         return true;
     }
     else {

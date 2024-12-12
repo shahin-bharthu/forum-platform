@@ -4,9 +4,9 @@ import { CustomError } from "../../util/customError.js";
 
 const createComment = async (topic_id, content, parent_comment_id, createdBy) => {
     const {forum} = await topicRepository.getTopicById(topic_id);
-
+    const comment_content = content.trim();
     if (forum.isActive) {
-        return await commentRepository.createComment(topic_id, content, parent_comment_id, createdBy);
+        return await commentRepository.createComment(topic_id, comment_content, parent_comment_id, createdBy);
     }
     else {
         throw new CustomError("Cannot add comments to the post of an archived forum", 403);

@@ -1,39 +1,41 @@
-import os from 'os';
-import path from 'path';
-import { promises as fs } from 'fs';
 import { CustomError } from '../../util/customError.js';
 import * as userRepository from './userRepository.js';
+import { getImage } from '../../util/getImage.js';
 
 const updateUserDetails = async (id, userData) => {
+    const user = await userRepository.getUserById(id);
+
+    if (!user) {
+        throw new CustomError("User not found", 404);
+    }
+
     return await userRepository.updateUser(id, userData);
 }
 
-const updateUserAvatar = async (id, userData) => {
-    return await userRepository.updateUserAvatar(id, userData);
+const updateUserAvatar = async (id, {avatar}) => {
+    const user = await userRepository.getUserById(id);
+
+    if (!user) {
+        throw new CustomError("User not found", 404);
+    }
+
+    return await userRepository.updateUserAvatar(user, {avatar});
 }
 
 const getUserDetails = async (id) => {
-    return await userRepository.getUserById(id);
-}
-
-//for windows
-const getAvatarById = async (id) => {
-    const osType = os.type();
-
     const user = await userRepository.getUserById(id);
 
-    const pathDelimiter = osType === 'Linux' ? '/' : '\\';
-    const avatarPath = user.avatar.split(pathDelimiter);
-    const fileName = avatarPath.pop(); 
-
-    if (!fileName) {
-        throw new CustomError("Avatar not found", 404);
-    } else {
-        const basePath = import.meta.url.replace(osType === 'Linux' ? 'file://' : 'file:///', '');
-        const filePath = path.join(basePath, '../../../avatars');
-        await fs.access(filePath);
-        const avatarPath = path.join(filePath, fileName)
-        return { avatarPath }
-      }
+    if (!user) {
+        throw new CustomError("User not found", 404);
+    }
+    return user;
 }
+
+const getAvatarById = async (id) => {
+    const user = await userRepository.getUserById(id);
+
+    const avatarPath = await getImage(user.avatar, "user");
+    return avatarPath;
+}
+
 export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatarById}

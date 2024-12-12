@@ -34,7 +34,11 @@ export default (sequelize, Sequelize) => {
         subscriber_count: {
             type: Sequelize.BIGINT,
             defaultValue: 1
-          },        
+          },
+        posts_count: {
+            type: Sequelize.BIGINT,
+            defaultValue: 1
+        },        
         createdBy: {
             type: Sequelize.UUID,
             allowNull: false,

@@ -3,11 +3,11 @@ import crypto from 'crypto';
 import { db } from '../../config/connection.js';
 import { encryptPassword } from '../../lib/encryptPassword.js';
 
-const createUser = async (userData) => {
-    const hashedPassword = await encryptPassword(userData.password);
+const createUser = async ({ username, password, email }) => {
+    const hashedPassword = await encryptPassword(password);
     const user = await db.User.create({
-        username: userData.username,
-        email: userData.email,
+        username,
+        email,
         password: hashedPassword,
     });
     return user;
@@ -19,7 +19,7 @@ const findUserByEmail = async (email) => {
 
 const getUserPassword = async (email) => {
     const user = await db.User.findOne({ where: { email } });
-    return user?.password; //  optional chaining to avoid errors if user not found
+    return user?.password; 
 };
 
 const findUserByUsername = async (username) => {

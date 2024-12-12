@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import * as userService from './userService.js';
 import { asyncErrorHandler } from '../../util/asyncErrorHandler.js';
 import os from 'os';
+import { getImage } from '../../util/getImage.js';
 
 const getUserDetails = asyncErrorHandler(async (req,res,next) => {
     const id = req.params.id;
@@ -30,7 +31,6 @@ const updateUserDetails = asyncErrorHandler(async (req,res,next) => {
 
 const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.params;
-    const {email} =  req.body;
     const avatar = req.file?.path ?? "";
     const user = await userService.updateUserAvatar(id, {avatar});
     return res.status(200).json({message: 'Your avatar has been updated!', user: user})
@@ -38,36 +38,14 @@ const updateUserAvatar = asyncErrorHandler(async (req,res,next) => {
 
 
 const getAvatar = asyncErrorHandler(async (req, res, next) => {
-  const osType = os.type();
-  const pathDelimiter = osType === 'Linux' ? '/' : '\\';
-  const avatarPath = req.user.avatar.split(pathDelimiter);
-  const fileName = avatarPath.pop(); 
-
-  if (!fileName) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Avatar not found',
-    });
-  }
-
-  const basePath = import.meta.url.replace(osType === 'Linux' ? 'file://' : 'file:///', '');
-  const filePath = path.join(basePath, '../../../avatars');
-
-  try {
-    await fs.access(filePath);
-    res.sendFile(fileName, { root: filePath });
-  } catch (err) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Avatar not found',
-    });
-  }
+  const avatarPath = await getImage(req.user.avatar, "user");
+  res.sendFile(avatarPath);
 });
 
 
 const getAvatarById = asyncErrorHandler (async (req,res,next) => {
   const {id} = req.params;
-  const {avatarPath} = await userService.getAvatarById(id);
+  const avatarPath = await userService.getAvatarById(id);
   return res.sendFile(avatarPath)
 })
 

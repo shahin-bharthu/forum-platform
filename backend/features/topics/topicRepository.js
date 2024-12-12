@@ -1,6 +1,7 @@
 import { Op, where } from "sequelize";
 import { db } from "../../config/connection.js";
 import { CustomError } from "../../util/customError.js";
+import { getIsSubscribed } from "../forum/forumRepository.js";
 
 const createTopic = async (topicData) => {
     const forumExists = await db.Forum.findByPk(topicData.forum_id);
@@ -11,6 +12,11 @@ const createTopic = async (topicData) => {
 
     if (!forumExists.isActive) {
         throw new CustomError('Cannot create a post in an archived forum', 405);
+    }
+
+    const subscribedResult = await getIsSubscribed(topicData.createdBy, topicData.forum_id);    
+    if (!subscribedResult) {
+        throw new CustomError('Subscribe first to create a post in this forum', 405);
     }
     
     const topic = await db.Topic.create({

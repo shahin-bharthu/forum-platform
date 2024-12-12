@@ -6,11 +6,6 @@ const getUserById = async (id) => {
 }
 
 const updateUser = async (id, {firstname, lastname, gender, dob, country }) => {    
-        const user = await db.User.findByPk(id);
-        
-        if (!user) {
-            throw new Error('User not found');
-        }
         await user.update({
             firstname,
             lastname,
@@ -24,11 +19,7 @@ const updateUser = async (id, {firstname, lastname, gender, dob, country }) => {
         return user;
 };
 
-const updateUserAvatar = async (id, { avatar }) => {
-    const user = await db.User.findByPk(id);
-    if (!user) {
-        throw new Error('User not found');
-    }
+const updateUserAvatar = async (user, { avatar }) => {
     const oldAvatarPath = user.avatar;
     await user.update({
         avatar,

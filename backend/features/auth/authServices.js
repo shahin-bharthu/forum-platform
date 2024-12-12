@@ -5,8 +5,7 @@ import * as authRepository from "./authRepository.js";
 import verificationMailBody from "../../util/verificationMailBody.js";
 import {CustomError} from "../../util/customError.js"
 
-const userSignUp = async (userData) => {
-    const { username, email } = userData;
+const userSignUp = async ({ username, password, email }) => {
     
     const emailExists = await authRepository.findUserByEmail(email);
     if (emailExists) {
@@ -18,7 +17,7 @@ const userSignUp = async (userData) => {
         throw new Error('Username already taken');
     }
     
-    const user = await authRepository.createUser(userData);
+    const user = await authRepository.createUser({ username, password, email });
         
     const token = await authRepository.createVerificationToken(user.id);
     

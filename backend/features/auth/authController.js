@@ -12,9 +12,7 @@ const userSignUp = asyncErrorHandler(async (req,res,next) => {
 
     const { username, password, email } = req.body;
 
-    const userData = { username, password, email };
-
-    const user = await authServices.userSignUp(userData);
+    const user = await authServices.userSignUp({ username, password, email });
 
     return res.status(201).json({ message: "We've sent you a verification link on the email you entered!" });
 })

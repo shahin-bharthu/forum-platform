@@ -1,6 +1,7 @@
 import { CustomError } from "../../util/customError.js";
 import * as forumRepository from "./forumRepository.js";
 import { db } from "../../config/connection.js";
+import { getImage } from "../../util/getImage.js";
 
 const createForum = async (forumData) => {
     const forum_id = forumData.name.replace(/\s+/g, '_').toLowerCase();
@@ -12,7 +13,7 @@ const createForum = async (forumData) => {
         throw new CustomError("A forum with this name already exists. Please try another name.", 400);
     }
 
-    const forum = await forumRepository.createForum(forumData);
+    return await forumRepository.createForum(forumData);
 }
 
 const getForums = async () => {
@@ -33,19 +34,26 @@ const updateForum = async (id, userId, forum) => {
 }
 
 const getForumById = async (id) => {
-    return await forumRepository.getForumById(id);
+    const forum = await forumRepository.getForumById(id);
+    if (!forum) {
+        throw new CustomError(`Forum with forum-id ${id} not found`, 404);
+    }
+    return forum;
 }
 
 const getForumByForumId = async (id) => {
-    return await forumRepository.getForumByForumId(id);
+    const forum = await forumRepository.getForumByForumId(id);
+    if (!forum) {
+        throw new CustomError(`Forum with forum-id ${id} not found`, 404);
+    }
+    return forum;
 }
 
 const getForumsByCreator = async (id) => {
     const userForums = await forumRepository.getForumsByCreator(id);
+
     const publicUserForums = userForums.filter(userForum => userForum.isPublic === true && userForum.isActive === true)
-    
     const privateUserForums = userForums.filter(userForum => userForum.isPublic === false && userForum.isActive === true)
-    
     const archivedUserForums = userForums.filter(userForum => userForum.isActive === false)
     
     return {publicUserForums, privateUserForums, archivedUserForums};
@@ -85,6 +93,16 @@ const getRecentForums = async (id) => {
     return forumsToSubscribe.slice(0,5);
 }
 
+const getForumBanner = async (id) => {
+    const forum = await forumRepository.getForumById(id);
+    if (!forum) {
+        throw new CustomError('Forum not found', 404);
+    }
+
+    const bannerPath = await getImage(forum.logo, "forum");
+    return bannerPath;
+}
+
 export {
   getForums,
   createForum,
@@ -96,5 +114,6 @@ export {
   getForumById,
   getTopicByForumId,
   getIsSubscribed,
-  getRecentForums
+  getRecentForums, 
+  getForumBanner
 };
