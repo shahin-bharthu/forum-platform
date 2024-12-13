@@ -26,7 +26,7 @@ const getForums = async () => {
     return forums;
 }
 
-const updateForum = async (id, forum) => {
+const updateForum = async (forumToBeUpdated, forum) => {
   await forumToBeUpdated.update({
     purpose: forum.purpose,
     isPublic: forum.isPublic,

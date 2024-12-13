@@ -5,7 +5,7 @@ const getUserById = async (id) => {
     return await db.User.findByPk(id);
 }
 
-const updateUser = async (id, {firstname, lastname, gender, dob, country }) => {    
+const updateUser = async (user, {firstname, lastname, gender, dob, country }) => {    
         await user.update({
             firstname,
             lastname,

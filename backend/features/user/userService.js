@@ -9,7 +9,7 @@ const updateUserDetails = async (id, userData) => {
         throw new CustomError("User not found", 404);
     }
 
-    return await userRepository.updateUser(id, userData);
+    return await userRepository.updateUser(user, userData);
 }
 
 const updateUserAvatar = async (id, {avatar}) => {
