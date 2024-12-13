@@ -30,7 +30,7 @@ const updateForum = async (id, userId, forum) => {
     if (forumExists.createdBy !== userId) {
         throw new CustomError("You are not authorized to edit this forum", 403);
     }
-    return await forumRepository.updateForum(id, forum);
+    return await forumRepository.updateForum(forumExists, forum);
 }
 
 const getForumById = async (id) => {
