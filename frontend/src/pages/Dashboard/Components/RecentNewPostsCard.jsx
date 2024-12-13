@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -10,14 +10,15 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios';
-import { Box, Button, Link } from '@mui/material';
+import { Box, Button, Link, Skeleton } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../../utils/timestamp';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import TopicSkeleton from '../../../components/PostsSkeleton';
 
-const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
+const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
     '.MuiCardHeader-content': {
         display: 'flex',
         alignItems: 'center',
@@ -29,8 +30,9 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     '.MuiCardHeader-subheader': {
         margin: 0,
     }
-}));
-const ExpandMore = styled((props) => {
+})));
+
+const ExpandMore = memo(styled((props) => {
     const { expand, ...other } = props;
     return <IconButton {...other} />;
 })(({ theme }) => ({
@@ -52,64 +54,104 @@ const ExpandMore = styled((props) => {
             },
         },
     ],
-}));
+})));
 
 export default function MyPosts() {
     const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', forum: { name: 'username', id: null } }]);
     const [expanded, setExpanded] = useState([{ isExpanded: false }]);
     const [forumBanner, setForumBanner] = useState({})
+    const [isLoading, setIsLoading] = useState(true);
+
     const navigate = useNavigate()
-    useEffect(() => {
-        async function getForumTopics() {
+
+    const fetchForumBanners = useCallback(async (topics) => {
+        const bannerPromises = topics.map(async (topic) => {
+            try {
+                const response = await axios.get(
+                    `http://localhost:8080/forum/banner/${topic.forum_id}`,
+                    {
+                        withCredentials: true,
+                        responseType: "blob",
+                    }
+                );
+
+                if (response.data) {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            resolve({
+                                forumId: topic.forum_id,
+                                bannerUrl: reader.result
+                            });
+                        };
+                        reader.readAsDataURL(response.data);
+                    });
+                }
+                return null;
+            }
+            catch (error) {
+                console.error('Error fetching banner for forum: ', error);
+                return null;
+            }
+        });
+
+        const banners = await Promise.all(bannerPromises);
+
+        const bannerMap = banners.reduce((acc, banner) => {
+            if (banner) {
+                acc[banner.forumId] = banner.bannerUrl;
+            }
+            return acc;
+        }, {});
+
+        setForumBanner(bannerMap);
+    }, []);
+
+    const fetchForumTopics = useCallback(async () => {
+        try {
+            setIsLoading(true);
             const myTopics = await axios.get(`http://localhost:8080/topic/recent-topics`, {
                 withCredentials: true,
             });
-            const myTopicsData = myTopics.data.data;
+            const myTopicsData = myTopics.data.data || [];
+
             setForumTopics(myTopicsData);
 
-            let array = [];
+            // Initialize expanded state
+            setExpanded(myTopicsData.map(() => ({ isExpanded: false })));
 
-            for (let i = 0; i < myTopicsData.length; i++) array.push({ isExpanded: false });
-
-            setExpanded(array);
-
-            await Promise.all(
-                myTopicsData.map(async (topic) => {
-                    try {
-                        const response = await axios.get(
-                            `http://localhost:8080/forum/banner/${topic.forum_id}`,
-                            {
-                                withCredentials: true,
-                                responseType: "blob",
-                            }
-                        )
-
-                        if (response.data) {
-                            const reader = new FileReader()
-                            reader.onloadend = () => {
-                                setForumBanner(prev => ({
-                                    ...prev, [topic.forum_id]: reader.result
-                                }))
-                            }
-                            reader.readAsDataURL(response.data)
-                        }
-                    }
-                    catch (error) {
-                        console.error('Error fetching banner for forum: ', error);
-                    }
-                })
-            )
+            // Fetch forum banners
+            await fetchForumBanners(myTopicsData);
+        } catch (error) {
+            console.error('Error fetching forum topics:', error);
+            setForumTopics([]);
+        } finally {
+            setIsLoading(false);
         }
+    }, [fetchForumBanners]);
 
-
-        getForumTopics();
-    }, []);
+    useEffect(() => {
+        fetchForumTopics();
+    }, [fetchForumTopics]);
 
     const handleExpandClick = (i) => {
         const array = [...expanded];
         array[i].isExpanded = !array[i].isExpanded;
         setExpanded(array);
     };
+
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <Grid size={12} sx={{ width: '100%' }}>
+                {[1, 2, 3].map((_, index) => (
+                    <TopicSkeleton key={index}/>
+                ))}
+            </Grid>
+        );
+    }
+
 
     if (forumTopics.length === 0) {
         return (
@@ -142,7 +184,7 @@ export default function MyPosts() {
                                 title={< Link href={`/forum/${topic.forum.forum_id}`} color="inherit" underline="hover">{topic.forum.name}</Link>}
                                 subheader={formatDate(topic.createdAt)}
                             />
-                            <CardContent sx={{ py: 0, px: 3, cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
+                            <CardContent sx={{ py: 0, px: 3, cursor: 'pointer' }} onClick={() => navigate(`/post/${topic.id}`)}>
                                 <Typography variant="h6" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>
                                     {topic.title}
                                 </Typography>
@@ -162,7 +204,7 @@ export default function MyPosts() {
                                 </ExpandMore>
                             </CardActions>
                             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
-                                <CardContent sx={{ px: 3, cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
+                                <CardContent sx={{ px: 3, cursor: 'pointer' }} onClick={() => navigate(`/post/${topic.id}`)}>
                                     <Typography variant='body2' sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word', whiteSpace: "pre-wrap" }}>
                                         {topic.content}
                                     </Typography>

@@ -1,18 +1,30 @@
 import { useEffect, useState } from 'react';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { Avatar, Stack, Tooltip } from '@mui/material';
+import { 
+  Card, 
+  CardActions, 
+  CardContent, 
+  CardMedia, 
+  Button, 
+  Typography, 
+  Avatar, 
+  Stack, 
+  Tooltip, 
+  useMediaQuery, 
+  useTheme,
+  Box
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import PositionedSnackbar from '../../../components/SnackBar';
 
 export default function ForumHeaderCard({ forum, setIsSubbed }) {
-  const navigate = useNavigate()
+  
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+
   const [subscribed, setSubscribed] = useState(false);
   const [message, setMessage] = useState();
   const [banner, setBanner] = useState();
@@ -116,31 +128,68 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
 
 
   return (
-    <Card sx={{ width: '100%' }}>
+    <Card sx={{ width: '100%', display: 'flex',flexDirection: 'column' }}>
       <CardMedia
         component="img"
         alt="Forum Header"
-        height="100"
+        height={isMobile ? "80" : "100"}
         image="https://cdn.textures4photoshop.com/tex/thumbs/300/webp/blue-sky-gradient-thumb17.webp"
       />
+
       {message && (
         <PositionedSnackbar message={message} />
       )}
-      <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between', width: '100%' }}>
-        <CardContent>
-          <Stack spacing={2} direction="row" sx={{ alignItems: 'center' }}>
+
+      <Box 
+        sx={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          justifyContent: 'space-between',
+          alignItems: isMobile ? 'center' : 'center',
+          width: '100%',
+          padding: theme.spacing(1),
+          gap: theme.spacing(0.5)
+        }}
+      >
+        <CardContent
+           sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            padding: isMobile ? '8px !important' : undefined ,
+            p: isMobile?0:1.5
+          }}
+        >
+          <Stack spacing={2} direction="row" sx={{ alignItems: 'center', flexDirection: isMobile ? 'column' : 'row',textAlign: isMobile ? 'center' : 'left' }}>
             <Avatar
               alt="Forum Logo"
               src={bannerUrl}
-              sx={{ width: 60, height: 60, border: 2, borderColor: 'primary.main' }}
+              sx={{ 
+                width: isMobile ? 45 : 60, 
+                height: isMobile ? 45 : 60, 
+                border: 2, 
+                borderColor: 'primary.main' 
+              }}
             />
-            <Typography variant="h5" component="div" >
+            <Typography 
+              variant={isMobile ? "h6" : "h5"} 
+              component="div"
+              sx={{ 
+                margin: isMobile ? '0 !important' : undefined 
+              }}
+            >
               {forum.name}
             </Typography>
           </Stack>
         </CardContent>
-        <CardActions sx={{ pr: 4 }}>
-          {subscribed && <Tooltip title="Create Post" arrow>
+        <CardActions sx={{ 
+            display: 'flex', 
+            gap: theme.spacing(1),
+            padding: isMobile ? '8px !important' : undefined,
+            pr: isMobile ? undefined : 4 
+          }}>
+
+          {subscribed && 
+          <Tooltip title="Create Post" arrow>
             <Button
               disabled = {forum.isActive? false : true}
               onClick={()=>navigate('/user/create-post', { state: { forumName: forum.name, forumId: forum.id } })}
@@ -167,7 +216,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
             </Button>
           </Tooltip>
         </CardActions>
-      </Stack>
+      </Box>
     </Card>
   );
 }

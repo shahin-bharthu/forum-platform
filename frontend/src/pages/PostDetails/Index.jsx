@@ -35,12 +35,12 @@ export default function PostDetails() {
     return (
         <>
             <Grid size={12} container spacing={3} sx={{ px: 3, width: '100%', mt: 10, alignSelf: 'start' }}>
-                <Grid size={{ xs: 12, sm: 7, md: 9 }}
+                <Grid size={{ xs: 12,sm:7, md: 8, lg:9, xl:9  }}
                     sx={{ position: 'relative' }}
                 >
                     <PostDetailsCard post={topic} user={user} forum={forum}/>
                 </Grid>
-                <Grid size={{ xs: 0,sm:5, md: 3 }}>
+                <Grid size={{ xs: 0,sm:5, md: 4, lg:3, xl:3}}>
                     <ForumInfoCard creator={forum_creator} forum={forum} postLength={postLength} />
                 </Grid>
             </Grid>

@@ -1,15 +1,26 @@
-import { useState, useEffect } from "react";
-import { Card, CardHeader, CardContent, CardActions, Collapse, IconButton, Typography, Box, Grid2 as Grid, Avatar, Menu, MenuItem, Link } from "@mui/material";
+import React, { useState, useEffect, useCallback, memo } from "react";
+import {
+  Card, CardHeader, CardContent, CardActions, Collapse,
+  IconButton, Typography, Box, Grid2 as Grid, Avatar, Menu,
+  MenuItem, Link, Skeleton
+} from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 import axios from "axios";
 import PositionedSnackbar from "../../components/SnackBar";
-import { ExpandMore as ExpandMoreIcon, MoreVert as MoreVertIcon, Edit as EditIcon, Archive as ArchiveIcon, DeleteRounded as DeleteRoundedIcon, ChatBubbleOutlineOutlined } from "@mui/icons-material";
+import {
+  ExpandMore as ExpandMoreIcon,
+  MoreVert as MoreVertIcon,
+  Edit as EditIcon,
+  Archive as ArchiveIcon,
+  DeleteRounded as DeleteRoundedIcon,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import { formatDate } from "../../../utils/timestamp";
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import TopicSkeleton from "../../components/PostsSkeleton";
 
-const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
+const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-content": {
     display: "flex",
     alignItems: "center",
@@ -21,9 +32,9 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-subheader": {
     margin: 0,
   },
-}));
+})));
 
-const StyledMenu = styled((props) => (
+const StyledMenu = memo(styled((props) => (
   <Menu
     elevation={0}
     anchorOrigin={{
@@ -64,8 +75,9 @@ const StyledMenu = styled((props) => (
       color: theme.palette.grey[300],
     }),
   },
-}));
-const ExpandMore = styled((props) => {
+})));
+
+const ExpandMore = memo(styled((props) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
 })(({ theme }) => ({
@@ -87,7 +99,7 @@ const ExpandMore = styled((props) => {
       },
     },
   ],
-}));
+})));
 
 export default function MyPosts() {
   const [forumTopics, setForumTopics] = useState([
@@ -99,22 +111,25 @@ export default function MyPosts() {
   const [menuAnchor, setMenuAnchor] = useState(null);  // Track the anchor element for the menu
   const [activeIndex, setActiveIndex] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
 
   const navigate = useNavigate()
-  useEffect(() => {
-    async function getForumTopics() {
-      const myTopics = await axios.get(
-        `http://localhost:8080/topic/my-topics`,
-        {
-          withCredentials: true,
-        }
+
+  const getForumTopics = useCallback(async () => {
+    try {
+      setLoading(true);
+      const myTopics = await axios.get(`http://localhost:8080/topic/my-topics`, { withCredentials: true });
+      const myTopicsData = myTopics.data.data;
+
+      const forumsList = await Promise.all(
+        myTopicsData.map(forumTopic =>
+          axios.get(`http://localhost:8080/forum/${forumTopic.forum_id}`, { withCredentials: true })
+        )
       );
 
-      const myTopicsData = myTopics.data.data;
-      const forumsList = await Promise.all(myTopicsData.map(forumTopic => axios.get(`http://localhost:8080/forum/${forumTopic.forum_id}`, { withCredentials: true })))
-      const forumNames = forumsList.map(creator => creator.data.data.name)
-      const forumIds = forumsList.map(creator => creator.data.data.forum_id)
-
+      const forumNames = forumsList.map(creator => creator.data.data.name);
+      const forumIds = forumsList.map(creator => creator.data.data.forum_id);
 
       const updatedForumTopics = myTopicsData.map((forumTopic, index) => ({
         ...forumTopic,
@@ -123,31 +138,22 @@ export default function MyPosts() {
       }));
 
       setForumTopics(updatedForumTopics);
-
-      let array = [];
-
-      for (let i = 0; i < updatedForumTopics.length; i++)
-        array.push({ isExpanded: false });
-
-      setExpanded(array);
+      setExpanded(updatedForumTopics.map(() => ({ isExpanded: false })));
 
       await Promise.all(
-        myTopicsData.map(async (topic) => {
+        updatedForumTopics.map(async (topic) => {
           try {
             const response = await axios.get(
               `http://localhost:8080/forum/banner/${topic.forum_id}`,
-              {
-                withCredentials: true,
-                responseType: "blob",
-              }
+              { withCredentials: true, responseType: "blob" }
             );
 
             if (response.data) {
               const reader = new FileReader();
               reader.onloadend = () => {
-                setForumBanner((prev) => ({
+                setForumBanner(prev => ({
                   ...prev,
-                  [topic.forum_id]: reader.result,
+                  [topic.forum_id]: reader.result
                 }));
               };
               reader.readAsDataURL(response.data);
@@ -157,20 +163,28 @@ export default function MyPosts() {
           }
         })
       );
-    }
 
-    getForumTopics();
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching topics:", error);
+      setLoading(false);
+    }
   }, []);
 
-  const handleMenuClick = (event, index) => {
+  useEffect(() => {
+    getForumTopics();
+  }, [getForumTopics]);
+
+
+  const handleMenuClick = useCallback((event, index) => {
     setMenuAnchor(event.currentTarget);
     setActiveIndex(index);
-  };
+  }, []);
 
-  const handleCloseMenu = () => {
+  const handleCloseMenu = useCallback(() => {
     setMenuAnchor(null);
     setActiveIndex(null);
-  };
+  }, []);
 
   const handleDeleteTopic = async () => {
     if (activeIndex !== null) {
@@ -245,6 +259,16 @@ export default function MyPosts() {
     </Dialog>
   )
 
+  if (loading) {
+    return (
+      <Grid size={12} sx={{ width: "100%", px: 3, mt: 10 }}>
+        {[1, 2, 3].map((_, index) => (
+          <TopicSkeleton key={index}/>
+        ))}
+      </Grid>
+    );
+  }
+
   if (forumTopics.length === 0) {
     return (
       <>
@@ -313,7 +337,7 @@ export default function MyPosts() {
                 title={<Link href={`/forum/${topic.forumids}`} color="inherit" underline="hover">{topic.forumname}</Link>}
                 subheader={formatDate(topic.createdAt)}
               />
-              <CardContent sx={{ py: 0, px: 3 , cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
+              <CardContent sx={{ py: 0, px: 3, cursor: 'pointer' }} onClick={() => navigate(`/post/${topic.id}`)}>
                 <Typography
                   variant="h6"
                   sx={{ textAlign: "left", wordBreak: "break-word" }}
@@ -340,7 +364,7 @@ export default function MyPosts() {
                 timeout="auto"
                 unmountOnExit
               >
-                <CardContent sx={{ px: 3 , cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
+                <CardContent sx={{ px: 3, cursor: 'pointer' }} onClick={() => navigate(`/post/${topic.id}`)}>
                   <Typography
                     variant="body2"
                     sx={{

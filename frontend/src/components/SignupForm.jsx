@@ -7,6 +7,7 @@ import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
 import axios from 'axios';
 import { z } from 'zod';
+import PositionedSnackbar from "./SnackBar";
 
 const SignupForm = () => {
   const usernameInput = useRef();
@@ -137,10 +138,11 @@ const SignupForm = () => {
       <AuthFormHeader authHeading='Sign Up' authPara='sign in' />
       <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
         {successMessage && (
-          <div className={classes["success-message"]}>{successMessage}</div>
+          <PositionedSnackbar message={successMessage} isSuccess={true}/>
         )}
+        
         {errorMessage && (
-          <div className={classes["error-message"]}>{errorMessage}</div>
+          <PositionedSnackbar message={errorMessage} isError={true} />
         )}
         {errors.username && <p className={classes["error-message"]}>{errors.username}</p>}
         <InputField

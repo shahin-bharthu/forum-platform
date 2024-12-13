@@ -21,13 +21,14 @@ export default function IntroDivider() {
                     <ForumHeaderCard forum={forumDetails} setIsSubbed={setIsSubbed} />
                 </Grid>
                 <Grid size={12} container spacing={2}>
-                    <Grid size={{ xs: 12,sm:7, md: 9 }}
+                    <Grid size={{ xs: 12,sm:7, md: 8, lg:9, xl:9 }}
                         sx={{position:'relative'}}
                     >
                         <ForumMainCard
                             forum={forumDetails}
                             setPostLength={setPostLength}
                             isSubbed={isSubbed}
+                            isBlur={isBlur}
                             style={isBlur ? {
                                 opacity: 0.5,
                                 pointerEvents: 'none',
@@ -57,7 +58,7 @@ export default function IntroDivider() {
                             </Box>
                         }
                     </Grid>
-                    <Grid size={{ xs: 0,sm:5, md: 3 }}>
+                    <Grid size={{ xs: 0,sm:5, md: 4, lg:3, xl:3}}>
                         <ForumInfoCard creator={forumCreatedBy} forum={forumDetails} postLength={postLength} />
                     </Grid>
                 </Grid>

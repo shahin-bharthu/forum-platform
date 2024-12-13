@@ -2,11 +2,16 @@ import axios from "axios";
 import Grid from '@mui/material/Grid2';
 import RecentNewPostsCard from "./Components/RecentNewPostsCard";
 import RecentNewForumsCard from "./Components/RecentNewForumsCard";
-import { Typography } from "@mui/material";
-import { useLoaderData } from "react-router-dom";
+import { Typography, CircularProgress, Box } from "@mui/material";
+import { useLoaderData, useNavigation } from "react-router-dom";
 
 export default function Dashboard() {
     const { recentForumData, currentUser, empty } = useLoaderData()
+
+    const navigation = useNavigation();
+
+    const isLoading = navigation.state === "loading";
+    
     return (
         <>
             <Grid container spacing={{xs:1,md:5}} size={12} direction="row" sx={{ width: '100%', px: 0, mx: 3, alignSelf: 'start' }}>
@@ -22,7 +27,7 @@ export default function Dashboard() {
                         RECENT NEW FORUMS
                     </Typography>
                     {empty && <Typography sx={{textAlign: 'left', ml: 1}}>No recent forums</Typography>}
-                    {!empty && <RecentNewForumsCard recentForumData={recentForumData}/>}
+                    {!empty && <RecentNewForumsCard recentForumData={recentForumData} isLoading={isLoading}/>}
                 </Grid>
             </Grid>
         </>

@@ -120,11 +120,8 @@ const LoginForm = () => {
         className={classes["auth-form"]}
         noValidate
       >
-        {/* {message && (
-          <div>{message}</div>
-        )} */}
         {errorMessage && (
-          <div className={classes["error-message"]}>{errorMessage}</div>
+          <PositionedSnackbar message={errorMessage} isError={true}/>
         )}
         {errors.email && (
           <p className={classes["error-message"]}>{errors.email}</p>

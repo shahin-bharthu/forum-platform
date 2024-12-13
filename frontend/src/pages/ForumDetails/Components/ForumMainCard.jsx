@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -9,14 +9,15 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios';
-import { Avatar, Box } from '@mui/material';
+import { Avatar, Box, CircularProgress, Grid2 as Grid } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../../utils/timestamp';
+import TopicSkeleton from '../../../components/PostsSkeleton';
 
-const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
+const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
   '.MuiCardHeader-content': {
     display: 'flex',
     alignItems: 'center',
@@ -28,9 +29,9 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
   '.MuiCardHeader-subheader': {
     margin: 0,
   }
-}));
+})));
 
-const ExpandMore = styled((props) => {
+const ExpandMore = memo(styled((props) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
 })(({ theme }) => ({
@@ -52,86 +53,120 @@ const ExpandMore = styled((props) => {
       },
     },
   ],
-}));
+})));
+
 
 export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
   const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', user: { username: 'username' }, }]);
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [userAvatar, setUserAvatar] = useState({})
-  const [isLiked,setIsLiked]=useState([{liked:false}])
-  const navigate=useNavigate()
-  useEffect(() => {
-    async function getForumTopics() {
-      const forumTopics = await axios.get(`http://localhost:8080/forum/topics/${forum.forum_id}`, {
-        withCredentials: true,
-      });
-      const forumTopicsData = forumTopics.data.data;
+  const [isLiked, setIsLiked] = useState([{ liked: false }])
+  const [isLoading, setIsLoading] = useState(true);
+
+  const navigate = useNavigate()
+
+  const fetchForumTopics = useCallback(async () => {
+    try {
+      const forumTopicsResponse = await axios.get(
+        `http://localhost:8080/forum/topics/${forum.forum_id}`,
+        { withCredentials: true }
+      );
+      const forumTopicsData = forumTopicsResponse.data.data;
+
+      // Initialize state arrays
+      const expandedState = forumTopicsData.map(() => ({ isExpanded: false }));
+      const likedState = forumTopicsData.map(() => ({ liked: false }));
 
       setForumTopics(forumTopicsData);
+      setExpanded(expandedState);
+      setIsLiked(likedState);
+      setPostLength(forumTopicsData.length);
 
-      let array = [];
-      let array2=[]
-      for (let i = 0; i < forumTopicsData.length; i++) array.push({ isExpanded: false });
-      for (let i = 0; i < forumTopicsData.length; i++) array2.push({ liked: false });
-      setExpanded(array);
-      setIsLiked(array2)
-      setPostLength(forumTopicsData.length)
-
-      await Promise.all(
-        forumTopicsData.map(async (topic) => {
-          try {
-            const response = await axios.get(
-              `http://localhost:8080/user/avatar/${topic.createdBy}`,
-              {
-                withCredentials: true,
-                responseType: "blob",
-              }
-            )
-
-            if (response.data) {
-              const reader = new FileReader()
-              reader.onloadend = () => {
-                setUserAvatar(prev => ({
-                  ...prev, [topic.createdBy]: reader.result
-                }))
-              }
-              reader.readAsDataURL(response.data)
+      // Fetch user avatars
+      const avatarPromises = forumTopicsData.map(async (topic) => {
+        try {
+          const response = await axios.get(
+            `http://localhost:8080/user/avatar/${topic.createdBy}`,
+            {
+              withCredentials: true,
+              responseType: "blob",
             }
-          }
-          catch (error) {
-            console.error('Error fetching banner for forum: ', error);
-          }
-        })
-      )
-    }
+          );
 
-    getForumTopics();
+          if (response.data) {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                resolve({ [topic.createdBy]: reader.result });
+              };
+              reader.readAsDataURL(response.data);
+            });
+          }
+          return null;
+        } catch (error) {
+          console.error('Error fetching avatar:', error);
+          return null;
+        }
+      });
+
+      const avatarResults = await Promise.all(avatarPromises);
+      const avatarMap = avatarResults.reduce((acc, result) =>
+        result ? { ...acc, ...result } : acc,
+        {});
+
+      setUserAvatar(avatarMap);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching forum topics:', error);
+      setIsLoading(false);
+    }
+  }, [forum.forum_id, setPostLength]);
+
+  // Fetch topics on component mount
+  useEffect(() => {
+    fetchForumTopics();
+  }, [fetchForumTopics]);
+
+  // Memoized click handlers
+  const handleExpandClick = useCallback((index) => {
+    setExpanded(prev => {
+      const newExpanded = [...prev];
+      newExpanded[index].isExpanded = !newExpanded[index].isExpanded;
+      return newExpanded;
+    });
   }, []);
 
-  const handleExpandClick = (i) => {
-    const array = [...expanded];
-    array[i].isExpanded = !array[i].isExpanded;
-    setExpanded(array);
-  };
+  const handleLike = useCallback((index) => {
+    setIsLiked(prev => {
+      const newLiked = [...prev];
+      newLiked[index].liked = !newLiked[index].liked;
+      return newLiked;
+    });
+  }, []);
 
-  const handleLike =(i)=>{
-    const array=[...isLiked]
-    array[i].liked=!array[i].liked
-    setIsLiked(array); 
+  if (isLoading && !isBlur) {
+    return (
+      <Grid size={12} sx={{ width: '100%' }}>
+        {[1, 2, 3].map((_, index) => (
+          <TopicSkeleton key={index} />
+        ))}
+      </Grid>
+    );
   }
+
 
   if (forumTopics.length === 0) {
     return (
       <>
         <Box mb={2} sx={style}>
-            <Typography variant="h5" component="div" sx={{ textAlign: "center", py: 5 }}>
-              No Posts Yet!
-            </Typography>
+          <Typography variant="h5" component="div" sx={{ textAlign: "center", py: 5 }}>
+            No Posts Yet!
+          </Typography>
         </Box>
       </>
     )
   }
- 
+
   return (
     <>
       {forumTopics.map((topic, index) =>
@@ -139,7 +174,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
           <Card>
             <StyledCardHeader
               avatar={
-                <Avatar aria-label="user avatar" src={userAvatar[topic.createdBy]} sx={{width: 35, height: 35}}>
+                <Avatar aria-label="user avatar" src={userAvatar[topic.createdBy]} sx={{ width: 35, height: 35 }}>
                   {topic.username?.[0]?.toUpperCase()}
                 </Avatar>
               }
@@ -152,17 +187,17 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
               subheader={formatDate(topic.createdAt)}
             />
 
-            <CardContent sx={{ py: 0, px: 3,cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
-              <Typography variant="body1" sx={{ textAlign: 'left',wordBreak: 'break-word', }}>
+            <CardContent sx={{ py: 0, px: 3, cursor: 'pointer' }} onClick={() => navigate(`/post/${topic.id}`)}>
+              <Typography variant="body1" sx={{ textAlign: 'left', wordBreak: 'break-word', }}>
                 {topic.title}
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
-              <IconButton onClick={()=>handleLike(index)}>
-                {!isLiked[index].liked && <FavoriteBorderIcon fontSize='small'/>}
-                {isLiked[index].liked  && <FavoriteIcon fontSize='small' color='error' />}
+              <IconButton onClick={() => handleLike(index)}>
+                {!isLiked[index].liked && <FavoriteBorderIcon fontSize='small' />}
+                {isLiked[index].liked && <FavoriteIcon fontSize='small' color='error' />}
               </IconButton>
-              <IconButton onClick={()=>navigate(`/post/${topic.id}`)} >
+              <IconButton onClick={() => navigate(`/post/${topic.id}`)} >
                 <ChatBubbleOutlineIcon fontSize='small' />
               </IconButton>
               <ExpandMore
@@ -176,8 +211,8 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
               </ExpandMore>
             </CardActions>
             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
-              <CardContent sx={{ px: 3, cursor:'pointer' }} onClick={()=>navigate(`/post/${topic.id}`)}>
-                <Typography sx={{ marginBottom: 2, textAlign: 'left',wordBreak: 'break-word', whiteSpace: "pre-wrap" }}>{topic.content}</Typography>
+              <CardContent sx={{ px: 3, cursor: 'pointer' }} onClick={() => navigate(`/post/${topic.id}`)}>
+                <Typography sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word', whiteSpace: "pre-wrap" }}>{topic.content}</Typography>
               </CardContent>
             </Collapse>
           </Card>

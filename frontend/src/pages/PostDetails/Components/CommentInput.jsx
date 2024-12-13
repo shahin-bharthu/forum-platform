@@ -1,51 +1,58 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Box, TextField, IconButton } from '@mui/material';
 import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import PositionedSnackbar from '../../../components/SnackBar';
 
 const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onReplySend }) => {
-
     const [comment, setComment] = useState('');
+    const [message, setMessage] = useState();
 
-    const handleCommentChange = (event) => {
+    const handleCommentChange = useCallback((event) => {
         setComment(event.target.value);
-    };
+    }, []);
 
-    const handleSendComment = async () => {
-        if (comment) {
+    const handleSendComment = useCallback(async () => {
+        try {
             const commentData = {
-                topic_id: postId, content: comment, parent_comment_id: parentCommentId
-            }
-            const sendCommentResposne = await axios.post(`http://localhost:8080/comment`,
-                commentData,
-                {
-                    "Content-Type": "application/json",
-                    withCredentials: true
-                }
-            );
+                topic_id: postId,
+                content: comment.trim(),
+                parent_comment_id: parentCommentId
+            };
+
+            await axios.post('http://localhost:8080/comment', commentData, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                withCredentials: true
+            });
+
+            // Reset and trigger callbacks
             setComment('');
-            onCommentadded();
-            onReplySend();
+            onCommentadded?.();
+            onReplySend?.();
+        } catch (error) {
+            console.error('Comment submission failed:', error);
+            setMessage(error.response?.data?.message || 'Failed to post comment. Please try again.')
+            setTimeout(() => {
+                setMessage(null);
+            }, 1500);
         }
-    };
+    }, [postId, parentCommentId, comment, onCommentadded, onReplySend]);
 
-    const handleCancelComment = () => {
-        setComment(''); // Clear the text field
-    };
-
+    const handleCancelComment = useCallback(() => {
+        setComment('');
+    }, []);
     return (
         <Box
             sx={parentCommentId ?
                 {
                     mb: 2,
-                    ml:6,
-                    mr:1,
+                    ml: 6,
+                    mr: 1,
                     display: 'flex',
                     alignItems: 'center',
-                    // borderBottom: '1px solid #ccc',
-                    // gap: '8px',
-                    width:'92%'
+                    width: '92%'
                 }
                 :
                 {
@@ -60,12 +67,14 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onRep
                     backgroundColor: '#f9f9f9',
                 }}
         >
-
+            {message && (
+                <PositionedSnackbar message={message} isError={true} />
+            )}{message}
             <TextField
                 fullWidth
                 multiline
                 autoFocus={parentCommentId}
-                variant={parentCommentId? "outlined" : "standard"}
+                variant={parentCommentId ? "outlined" : "standard"}
                 placeholder={parentCommentId ? `Replying to ${username}` : "Share your thoughts..."}
                 value={comment}
                 onChange={handleCommentChange}
@@ -74,7 +83,7 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onRep
                         disableUnderline: true,
                     }
                 }}
-                size={parentCommentId ?  'small' : false}
+                size={parentCommentId ? 'small' : ''}
                 sx={{
                     flex: 1,
                     backgroundColor: '#fff',
