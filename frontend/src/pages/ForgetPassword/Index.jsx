@@ -2,14 +2,14 @@ import classes from "../../components/AuthForm.module.css";
 import { useRef, useState } from "react";
 import InputField from "../../components/TextInputField";
 import CustomButton from "../../components/Button";
-import Dashboard from "../Dashboard/Index.jsx";
 import axios from "axios";
 import { z } from "zod";
 import Button from "@mui/material/Button";
 import LockPersonOutlinedIcon from '@mui/icons-material/LockPersonOutlined';
 import Avatar from "@mui/material/Avatar";
-import {blue } from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
 import { Navigate, useRouteLoaderData } from "react-router-dom";
+import PositionedSnackbar from "../../components/SnackBar.jsx";
 
 const Index = () => {
   const token = useRouteLoaderData('root');
@@ -44,7 +44,7 @@ const Index = () => {
       return true;
     } catch (error) {
       console.log("ERROR IN VALIDATEFORM: ", error);
-      
+
       if (error instanceof z.ZodError) {
         const newErrors = {};
         error.errors.forEach((err) => {
@@ -72,9 +72,9 @@ const Index = () => {
     event.preventDefault();
 
     const enteredEmail = emailInput.current.value.trim();
-    const formData={email:enteredEmail}
-    
-    if (!validateForm( formData )) {      
+    const formData = { email: enteredEmail }
+
+    if (!validateForm(formData)) {
       return;
     }
     setErrorMessage("");
@@ -87,7 +87,7 @@ const Index = () => {
         withCredentials: true
       })
       setSuccessMessage(response.data.message);
-      
+
       // setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
@@ -98,44 +98,47 @@ const Index = () => {
     }
   }
 
-  return ( 
+  return (
 
     <div className={classes["auth-page"]}>
       {token && <Navigate to="/user/dashboard" />}
-      {!token && 
-      <>
-      <Avatar sx={{ bgcolor: blue[600] }}>
-        <LockPersonOutlinedIcon  sx={{ fontSize: 25 }}/>
-      </Avatar>
-      <h3 className={classes["heading"]}>Forgot Password</h3>
-      <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
-        {successMessage && (
-          <div className={classes["success-message"]}>{successMessage}</div>
-        )}
-        {errorMessage && (
-          <div className={classes["error-message"]}>{errorMessage}</div>
-        )}
-        {errors.email && <p className={classes["error-message"]}>{errors.email}</p>}
-        <InputField
-          label="Email"
-          type="email"
-          name="email"
-          placeholder="Enter your email"
-          reference={emailInput}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
-        />
-        <p>We’ll send a link to reset password to the email if it matches an existing account.</p>
-        <CustomButton
-          type="submit"
-          label={isSubmitting ? "Email Sent" : "Send Mail"}
-          disabled={isSubmitting}
-        />
-        <Button href="login/201" disableElevation>
-          Back
-        </Button>
-      </form>
-      </> }
+      {!token &&
+        <>
+          <Avatar sx={{ bgcolor: blue[600] }}>
+            <LockPersonOutlinedIcon sx={{ fontSize: 25 }} />
+          </Avatar>
+          <h3 className={classes["heading"]}>Forgot Password</h3>
+          <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
+
+            {successMessage && (
+              <PositionedSnackbar message={successMessage} isSuccess={true} />
+            )}
+            {errorMessage && (
+              <PositionedSnackbar message={errorMessage} isError={true} />
+            )}
+
+            <InputField
+              label="Email"
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              reference={emailInput}
+              onChange={handleInputChange}
+              onFocus={handleInputFocus}
+              help={errors.email}
+              error={errors.email ? true : false}
+            />
+            <p>We’ll send a link to reset password to the email if it matches an existing account.</p>
+            <CustomButton
+              type="submit"
+              label={isSubmitting ? "Email Sent" : "Send Mail"}
+              disabled={isSubmitting}
+            />
+            <Button href="login/201" disableElevation>
+              Back
+            </Button>
+          </form>
+        </>}
     </div>
   );
 };

@@ -1,0 +1,31 @@
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import userReducer from "./slices/userSlice";
+
+
+const persistConfig = {
+    key: "root",
+    storage,
+};
+
+const rootReducer = combineReducers({
+    auth: userReducer,
+    dashboard: dashboardReducer,
+    loading: loadingReducer,
+});
+
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+export const store = configureStore({
+    reducer: persistedReducer,
+    devTools: import.meta.env.MODE !== "production",
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
+            },
+        }),
+});
+
+export const persistor = persistStore(store);

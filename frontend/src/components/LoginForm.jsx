@@ -14,11 +14,12 @@ const LoginForm = () => {
   const emailInput = useRef();
   const passwordInput = useRef();
   const navigate = useNavigate();
-  const {message} = useLoaderData()
+  const { message } = useLoaderData()
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (message === null) {
@@ -99,15 +100,19 @@ const LoginForm = () => {
       );
 
       if (response.status === 200) {
-        navigate("/user/dashboard", { replace: true });
+        setSuccessMessage("Logging you in")
+        setTimeout(() => {
+          navigate("/user/dashboard", { replace: true });
+        }, 1000);
       }
+
 
       setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
       setErrorMessage(
         error.response.data.message ||
-          "An error occurred. Please try again later."
+        "An error occurred. Please try again later."
       );
     }
   }
@@ -120,13 +125,13 @@ const LoginForm = () => {
         className={classes["auth-form"]}
         noValidate
       >
+        {successMessage && (
+          <PositionedSnackbar message={successMessage} isSuccess={true}/>
+        )}
         {errorMessage && (
-          <PositionedSnackbar message={errorMessage} isError={true}/>
+          <PositionedSnackbar message={errorMessage} isError={true} />
         )}
-        {errors.email && (
-          <p className={classes["error-message"]}>{errors.email}</p>
-        )}
-        {message && <PositionedSnackbar message={message}/>}
+        {message && <PositionedSnackbar message={message} />}
         <InputField
           label="Email"
           type="email"
@@ -135,10 +140,9 @@ const LoginForm = () => {
           reference={emailInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          help={errors.email}
+          error={errors.email ? true:false}
         />
-        {errors.password && (
-          <p className={classes["error-message"]}>{errors.password}</p>
-        )}
         <PasswordInputField
           label="Password"
           type="password"
@@ -147,6 +151,8 @@ const LoginForm = () => {
           reference={passwordInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          help={errors.password}
+          error={errors.password ? true: false}
         />
         <p className={classes["forgot-password"]}>
           <Link
@@ -177,19 +183,19 @@ export async function loader({ request, params }) {
   const status = params.status;
   switch (status) {
     case "100":
-      return {message: "No user found for this verification. Please sign up."};
+      return { message: "No user found for this verification. Please sign up." };
     case "101":
-      return {message: "User is already verified. Please log in."};
+      return { message: "User is already verified. Please log in." };
     case "102":
-      return {message: "Invalid verification link. Please request a new one."};
+      return { message: "Invalid verification link. Please request a new one." };
     case "103":
-      return {message: "The verification link has expired. Please request a new one."};
+      return { message: "The verification link has expired. Please request a new one." };
     case "104":
-      return {message: "Couldn't update user's verification status. Please try again later."};
+      return { message: "Couldn't update user's verification status. Please try again later." };
     case "201":
-      return {message: null};
+      return { message: null };
     case "200":
-      return {message: "User verified successfully"};
+      return { message: "User verified successfully" };
     default:
       throw redirect("/login/201");
   }

@@ -15,8 +15,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import { Divider } from "@mui/material";
 import PositionedSnackbar from "../../../components/SnackBar.jsx";
+import { date, z } from "zod";
 
 export default function SettingsCard(props) {
   const genderSelect = [
@@ -41,6 +41,8 @@ export default function SettingsCard(props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [edit, setEdit] = useState(true);
   const [updateMessage, setUpdateMessage] = useState("");
+  const [errors, setErrors] = useState({});
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,8 +57,84 @@ export default function SettingsCard(props) {
     });
   }, [props]);
 
+  const userInfoSchema = z.object({
+    firstname: z
+      .string()
+      .min(1, "Field cannot be empty")
+      .max(50, "Cannot exceed 50 Characters")
+      .regex(/^[A-Za-z]+$/, "Should contain only alphabets"),
+    lastname: z
+      .string()
+      .min(1, "Field cannot be empty")
+      .max(50, "Cannot exceed 50 Characters")
+      .regex(/^[A-Z a-z]+$/, "Should contain only alphabets"),
+    dob: z
+      .string()
+      .refine((date) => {
+        const inputDate = new Date(date)
+        const today = new Date()
+        const minAge = new Date(
+          today.getFullYear() - 18,
+          today.getMonth(),
+          today.getDate()
+        )
+
+        return inputDate <= minAge
+      }
+        , { message: "You must be above 18 years of age" }),
+    gender: z
+      .enum(["male", "female", "other", "pnts"], "Gender must be from the selected list"),
+    email: z
+      .string()
+      .email("Invlaid email address"),
+    country: z
+      .string()
+      .refine((val) => countries.some(country => country.value === val), { 
+        message: "Invalid selection" 
+      })
+  });
+
+  const validateForm = (formData) => {
+
+    const trimmedFormData = {
+      ...formData,
+      firstname: formData.firstname.trim(),
+      lastname: formData.lastname.trim()
+    };
+
+    try {
+      userInfoSchema.parse(trimmedFormData);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors = {};
+        error.errors.forEach(err => {
+          newErrors[err.path[0]] = err.message;
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
+
+  // const changeField = (event) => {
+  //   setUser({ ...user, [event.target.name]: event.target.value });
+  // };
+
   const changeField = (event) => {
-    setUser({ ...user, [event.target.name]: event.target.value });
+    const { name, value } = event.target;
+    
+    // Trim firstname and lastname
+    const processedValue = 
+      name === 'firstname' || name === 'lastname' 
+        ? value.trim() 
+        : value;
+    
+    setUser({ 
+      ...user, 
+      [name]: processedValue 
+    });
   };
 
   const handleUpdateClick = (event) => {
@@ -74,6 +152,12 @@ export default function SettingsCard(props) {
         ...user,
         dob: dayjs(user.dob).format("YYYY-MM-DD"), // Format DOB as 'YYYY-MM-DD'
       };
+
+      if (!validateForm(formattedUser)) {
+        console.log("validation error");
+        handleDialogClose()
+        return;
+      }
 
       const response = await axios.put(
         "http://localhost:8080/user/update",
@@ -133,6 +217,8 @@ export default function SettingsCard(props) {
                   title="First Name"
                   dis={!edit}
                   req={true}
+                  help={errors.firstname}
+                  error={errors.firstname? true:false}
                 />
               </Grid>
 
@@ -146,6 +232,8 @@ export default function SettingsCard(props) {
                   title="Last Name"
                   dis={!edit}
                   req={true}
+                  help={errors.lastname}
+                  error={errors.lastname? true:false}
                 />
               </Grid>
 
@@ -158,6 +246,8 @@ export default function SettingsCard(props) {
                     setUser({ ...user, dob: newValue });
                   }}
                   dis={!edit}
+                  help={errors.dob}
+                  error={errors.dob? true:false}
                 />
               </Grid>
 
@@ -177,6 +267,7 @@ export default function SettingsCard(props) {
                       {option.label}
                     </MenuItem>
                   ))}
+                  help={errors.gender}
                 />
               </Grid>
 
@@ -191,6 +282,7 @@ export default function SettingsCard(props) {
                   title="Email Address"
                   dis={true} // Email is not editable
                   req={true}
+                  help={errors.email}
                 />
               </Grid>
 
@@ -210,6 +302,7 @@ export default function SettingsCard(props) {
                       {option.label}
                     </MenuItem>
                   ))}
+                  help={errors.country}
                 />
               </Grid>
 

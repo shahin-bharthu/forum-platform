@@ -144,7 +144,7 @@ const SignupForm = () => {
         {errorMessage && (
           <PositionedSnackbar message={errorMessage} isError={true} />
         )}
-        {errors.username && <p className={classes["error-message"]}>{errors.username}</p>}
+
         <InputField
           label="Username"
           type="text"
@@ -153,8 +153,10 @@ const SignupForm = () => {
           reference={usernameInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          help={errors.username}
+          error={errors.username ? true:false}
         />
-        {errors.email && <p className={classes["error-message"]}>{errors.email}</p>}
+
         <InputField
           label="Email"
           type="email"
@@ -163,8 +165,10 @@ const SignupForm = () => {
           reference={emailInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          help={errors.email}
+          error={errors.email ? true:false}
         />
-        {errors.password && <p className={classes["error-message"]}>{errors.password}</p>}
+
         <PasswordInputField
           label="Password"
           type="password"
@@ -173,6 +177,8 @@ const SignupForm = () => {
           reference={passwordInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          help={errors.password}
+          error={errors.password ? true: false}
         />
         <CustomButton
           type="submit"

@@ -40,7 +40,7 @@ const userLogin = async ({ email, password }) => {
 
     const isPasswordValid = await verifyPassword(password, user.password);
     if (!isPasswordValid) {
-        throw new Error('Incorrect password');
+        throw new Error('Incorrect Credentials');
     }
 
     if (!user.isVerified) {
