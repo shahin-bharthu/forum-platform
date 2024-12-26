@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  Card,
   Typography,
   Avatar,
   Badge,
@@ -9,13 +8,13 @@ import {
   Modal,
   IconButton,
   Stack,
-  Divider,
 } from "@mui/material";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../../../utils/axiosInstance";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -40,7 +39,7 @@ const ForumBannerUpload = ({ forumId }) => {
 
   useEffect(() => {
     const fetchAvatar = async () => {
-      const data = await handleFileRead();
+      await handleFileRead();
     };
 
     fetchAvatar().catch(console.error);
@@ -75,21 +74,17 @@ const ForumBannerUpload = ({ forumId }) => {
 
       const formData = new FormData();
       formData.append("banner", selectedFile);
-      // formData.append("email", userEmail);
+      console.log(selectedFile);
+      
+      console.log(formData);
 
       try {
-        const response = await axios.put(
-          `http://localhost:8080/forum/banner/${forumId}`,
-          formData,
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await axiosInstance.put(`/forum/banner/${forumId}`,formData);
         handleClose();
         setUpdateMessage(response.data.message);
-        setTimeout(() => {
-          window.location.reload(); // Reload the page to reflect the changes
-        }, 1500);
+        // setTimeout(() => {
+        //   window.location.reload(); // Reload the page to reflect the changes
+        // }, 1500);
       } catch (error) {
         setUpdateMessage(error.response.data.message);
         setTimeout(() => {
@@ -101,10 +96,11 @@ const ForumBannerUpload = ({ forumId }) => {
   );
 
   const handleFileRead = async () => {
-    const file = await axios.get(`http://localhost:8080/forum/banner/${forumId}`, {
-      withCredentials: true,
+    const file = await axiosInstance.get(`/forum/banner/${forumId}`, 
+      {
       responseType: "blob",
-    });
+      }
+    );
 
     if (file.data) {
       setBanner(file.data);

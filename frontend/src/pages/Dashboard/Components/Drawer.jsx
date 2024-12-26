@@ -12,6 +12,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import PositionedSnackbar from '../../../components/SnackBar';
+import axiosInstance from '../../../../utils/axiosInstance';
 
 const drawerWidth = 200;
 
@@ -37,18 +38,10 @@ export default function ClippedDrawer() {
 
     async function getCurrentUser() {
       try {
-      const currentUser = await axios.get('http://localhost:8080/user', {
-        withCredentials: true
-      });
+      const currentUser = await axiosInstance.get('/user');
       setCurrentUser(currentUser.data.user.username)
 
-      const response = await axios.get(
-          `http://localhost:8080/user/avatar/${currentUser.data.user.id}`,
-          {
-              withCredentials: true,
-              responseType: "blob",
-          }
-      )
+      const response = await axiosInstance.get(`/user/avatar/${currentUser.data.user.id}`,{responseType: "blob",})
       
       if (response.data) {
           const reader = new FileReader()
@@ -73,16 +66,15 @@ export default function ClippedDrawer() {
   const handleLogout = useCallback(async () => {
     try {
       deleteCookie();
-      const response = await axios.post("http://localhost:8080/auth/logout", {
+      await axios.post("http://localhost:8080/auth/logout", {
         "Content-Type": "application/json",
         withCredentials: true
       });
-      // console.log(response);
       setDialogOpen(false);
       setSuccess("Logging you out")
       setTimeout(() => {
         setSuccess("")
-        navigate('/login/201', {replace:true});
+        navigate('/login/201', {replace: true});
       }, 1500);
     } catch (error) {
       console.error("couldn't log user out", error);
@@ -114,7 +106,7 @@ export default function ClippedDrawer() {
           Are you sure you want to log out?
         </DialogTitle>
         <DialogContentText>
-          You'll need to sign back in to continue participating in discussions.
+          You&apos;ll need to sign back in to continue participating in discussions.
         </DialogContentText>
       </DialogContent>
       <DialogActions>

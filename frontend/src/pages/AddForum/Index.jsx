@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import classes from "../../components/AuthForm.module.css";
 import { useRef, useState } from "react";
 import TextInputField from "./Components/TextInput.jsx";
@@ -10,6 +11,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { Card, Stack } from "@mui/material";
 import ForumBannerUpload from "./Components/BannerUpload.jsx";
+import axiosInstance from "../../../utils/axiosInstance.js";
 
 const Index = ({isEdit}) => {
   const forumData = useLoaderData();
@@ -36,6 +38,7 @@ const Index = ({isEdit}) => {
   };
 
   const handleSwitchToggle = (event) => { 
+    // eslint-disable-next-line no-unused-vars
     setIsPublic(prevState => event.target.checked);
   };
 
@@ -53,10 +56,7 @@ const Index = ({isEdit}) => {
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post("http://localhost:8080/forum", formData, {
-        "Content-Type": "application/json",
-        withCredentials: true
-      });
+      const response = await axiosInstance.post("/forum", formData);
       setSuccessMessage(response.data.message);
       setIsSubmitting(false);
       setTimeout(() => {
@@ -84,10 +84,7 @@ const Index = ({isEdit}) => {
 
     try {
       setIsSubmitting(true);
-      const response = await axios.patch(`http://localhost:8080/forum/${id}`, formData, {
-        "Content-Type": "application/json",
-        withCredentials: true
-      });
+      const response = await axiosInstance.patch(`/forum/${id}`, formData);
       
       setSuccessMessage(response.data.message);
       setIsSubmitting(false);
