@@ -12,7 +12,6 @@ import {
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../../utils/axiosInstance";
 
@@ -80,10 +79,13 @@ const ForumBannerUpload = ({ forumId }) => {
 
       try {
         const response = await axiosInstance.put(`/forum/banner/${forumId}`,formData);
+        console.log("FORUM BANNER UPLOAD RES: ",response);
+        
         handleClose();
         setUpdateMessage(response.data.message);
         // setTimeout(() => {
-        //   window.location.reload(); // Reload the page to reflect the changes
+        //   // window.location.reload(); // Reload the page to reflect the changes
+        //   setUpdateMessage();
         // }, 1500);
       } catch (error) {
         setUpdateMessage(error.response.data.message);
@@ -228,13 +230,13 @@ const ForumBannerUpload = ({ forumId }) => {
             </Stack>
           </form>
 
-          {updateMessage && (
-            <Typography variant="body2" color="info" sx={{ mt: 2 }}>
-              {updateMessage}
-            </Typography>
-          )}
         </Box>
       </Modal>
+          {updateMessage && (
+            // <Typography variant="body2" color="info" sx={{ mt: 2 }}>
+              {updateMessage}
+            // </Typography>
+          )}
     </div>
   );
 };

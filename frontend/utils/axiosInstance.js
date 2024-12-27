@@ -3,7 +3,7 @@ import { getAuthToken } from './auth.js';
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:8080', 
-  headers: { 'Content-Type': 'application/json' },
+  // headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 });
 
@@ -27,7 +27,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     function (response) {
       // Do something with the response data
-      console.log('Response:', response);
+      // console.log('Response:', response);
       return response;
     },
     function (error) {
