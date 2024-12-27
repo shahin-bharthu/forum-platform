@@ -118,7 +118,7 @@ const ForumBannerUpload = ({ forumId }) => {
 
   return (
     <div>
-      {/* PROFILE PHOTO */}
+      {/* FORUM BANNER */}
       <Badge
         overlap="circular"
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -154,11 +154,7 @@ const ForumBannerUpload = ({ forumId }) => {
         Upload Banner
       </Button> */}
 
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="upload-modal-title"
-      >
+      <Modal open={open} onClose={handleClose} aria-labelledby="upload-modal-title">
         <Box
           sx={{
             position: "absolute",
@@ -232,13 +228,13 @@ const ForumBannerUpload = ({ forumId }) => {
             </Stack>
           </form>
 
-          {updateMessage && (
-            <Typography variant="body2" color="info" sx={{ mt: 2 }}>
-              {updateMessage}
-            </Typography>
-          )}
         </Box>
       </Modal>
+      {updateMessage && (
+        <Typography variant="body2" color="info" sx={{ mt: 2 }}>
+          {updateMessage}
+        </Typography>
+      )}
     </div>
   );
 };
