@@ -8,14 +8,14 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import axios from 'axios';
-import { Avatar, Box, CircularProgress, Grid2 as Grid } from '@mui/material';
+import { Avatar, Box, Grid2 as Grid } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../../utils/timestamp';
 import TopicSkeleton from '../../../components/PostsSkeleton';
+import axiosInstance from '../../../../utils/axiosInstance';
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
   '.MuiCardHeader-content': {
@@ -67,10 +67,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
 
   const fetchForumTopics = useCallback(async () => {
     try {
-      const forumTopicsResponse = await axios.get(
-        `http://localhost:8080/forum/topics/${forum.forum_id}`,
-        { withCredentials: true }
-      );
+      const forumTopicsResponse = await axiosInstance.get(`/forum/topics/${forum.forum_id}`);
       const forumTopicsData = forumTopicsResponse.data.data;
 
       // Initialize state arrays
@@ -85,10 +82,9 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
       // Fetch user avatars
       const avatarPromises = forumTopicsData.map(async (topic) => {
         try {
-          const response = await axios.get(
-            `http://localhost:8080/user/avatar/${topic.createdBy}`,
+          const response = await axiosInstance.get(
+            `/user/avatar/${topic.createdBy}`,
             {
-              withCredentials: true,
               responseType: "blob",
             }
           );

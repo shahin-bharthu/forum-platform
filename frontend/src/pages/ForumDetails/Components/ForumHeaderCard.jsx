@@ -15,11 +15,10 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import PositionedSnackbar from '../../../components/SnackBar';
+import axiosInstance from '../../../../utils/axiosInstance.js';
 
 export default function ForumHeaderCard({ forum, setIsSubbed }) {
-  
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -27,16 +26,15 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
 
   const [subscribed, setSubscribed] = useState(false);
   const [message, setMessage] = useState();
-  const [banner, setBanner] = useState();
   const [bannerUrl, setBannerUrl] = useState();
   
   useEffect(() => {
     async function isSubscribed(forum) {
-      const isUserSubscribed = await axios.get(`http://localhost:8080/forum/is-subscribed/${forum.id}`, {
+      const isUserSubscribed = await axiosInstance.get(`/forum/is-subscribed/${forum.id}`, {
         withCredentials: true,
       });
       setSubscribed(isUserSubscribed.data.isSubscribed);
-      setIsSubbed(isUserSubscribed.data.isSubscribed)
+      setIsSubbed(isUserSubscribed.data.isSubscribed);
     }
 
     const fetchAvatar = async () => {
@@ -48,13 +46,10 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
   }, []);
 
   const handleFileRead = async () => {
-    const file = await axios.get(`http://localhost:8080/forum/banner/${forum.id}`, {
-      withCredentials: true,
-      responseType: "blob",
-    });
+    const file = await axiosInstance.get(`/forum/banner/${forum.id}`, {responseType: "blob"});
 
     if (file.data) {
-      setBanner(file.data);
+      // setBanner(file.data);
       const reader = new FileReader();
       reader.onloadend = () => {
         setBannerUrl(reader.result);
@@ -67,14 +62,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
   const handleSubscribe = async (event, forumId) => {
     event.preventDefault();
     try {
-      const response = await axios.post(
-        `http://localhost:8080/forum/subscribe/${forumId}`,
-        null,
-        {
-          "Content-Type": "application/json",
-          withCredentials: true,
-        }
-      );
+      const response = await axiosInstance.post(`/forum/subscribe/${forumId}`, null);
 
       setMessage(`Subscribed to ${response.data.data.name}`);
 
@@ -99,14 +87,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
   const handleUnSubscribe = async (event, forumId) => {
     event.preventDefault();
     try {
-      const response = await axios.post(
-        `http://localhost:8080/forum/unsubscribe/${forumId}`,
-        null,
-        {
-          "Content-Type": "application/json",
-          withCredentials: true,
-        }
-      );
+      const response = await axiosInstance.post(`/forum/unsubscribe/${forumId}`, null);
 
       setMessage(`Unsubscribed from ${response.data.data.name}`);
 

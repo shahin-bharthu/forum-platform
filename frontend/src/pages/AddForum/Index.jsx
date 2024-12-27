@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import TextInputField from "./Components/TextInput.jsx";
 import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import CustomButton from "../../components/Button";
-import axios from "axios";
 import Button from "@mui/material/Button";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -165,8 +164,7 @@ export default Index;
 export async function forumDetailsLoader({params}) {
   const forum_id = params.forum_id
   if (forum_id) {
-    const response = await axios.get(`http://localhost:8080/forum/forum-id/${forum_id}`, {withCredentials: true});  
-    
+    const response = await axiosInstance.get(`/forum/forum-id/${forum_id}`);  
     return response.data.data
   }
   else {

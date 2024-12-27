@@ -3,12 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import CustomButton from "../../components/Button";
 import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import TextInputField from "./Components/TextInput.jsx";
-import axios from "axios";
 import Button from "@mui/material/Button";
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import SelectList from "./Components/SelectList.jsx";
 import Stack from '@mui/material/Stack';
 import { Card } from "@mui/material";
+import axiosInstance from "../../../utils/axiosInstance.js";
 
 const CreatePost = ({isEdit}) => {
   const topicData = useLoaderData();
@@ -59,14 +59,17 @@ const CreatePost = ({isEdit}) => {
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post("http://localhost:8080/topic", formData, {
+      const response = await axiosInstance.post("http://localhost:8080/topic", formData, {
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true
       });
+      
       setSuccessMessage(response.data.message);
-      navigate(-1); 
+      setTimeout(() => {
+        navigate(`/post/${response.data.data.id}`); 
+      }, 1500);
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error:", error);
@@ -90,7 +93,7 @@ const CreatePost = ({isEdit}) => {
     try {
       setIsSubmitting(true);
       
-      const response = await axios.patch(`http://localhost:8080/topic/${id}`, formData, {
+      const response = await axiosInstance.patch(`http://localhost:8080/topic/${id}`, formData, {
         "Content-Type": "application/json",
         withCredentials: true
       });
@@ -155,10 +158,10 @@ const CreatePost = ({isEdit}) => {
 
 export default CreatePost;
 
-export const topicDetailsLoader = async ({request, params}) => {
+export const topicDetailsLoader = async ({params}) => {
   const topicId = params.id
   if (topicId) {
-    const response = await axios.get(`http://localhost:8080/topic/${topicId}`, {withCredentials: true});    
+    const response = await axiosInstance.get(`http://localhost:8080/topic/${topicId}`, {withCredentials: true});    
     return response.data.data;
   }
   else {

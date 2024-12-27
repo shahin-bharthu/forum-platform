@@ -33,7 +33,6 @@ const ForumBannerUpload = ({ forumId }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [updateMessage, setUpdateMessage] = useState("");
   const [bannerUrl, setBannerUrl] = useState(null);
-  const [banner, setBanner] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,14 +78,13 @@ const ForumBannerUpload = ({ forumId }) => {
 
       try {
         const response = await axiosInstance.put(`/forum/banner/${forumId}`,formData);
-        console.log("FORUM BANNER UPLOAD RES: ",response);
         
         handleClose();
         setUpdateMessage(response.data.message);
-        // setTimeout(() => {
-        //   // window.location.reload(); // Reload the page to reflect the changes
-        //   setUpdateMessage();
-        // }, 1500);
+        setTimeout(() => {
+          setUpdateMessage();
+          window.location.reload();
+        }, 1500);
       } catch (error) {
         setUpdateMessage(error.response.data.message);
         setTimeout(() => {
@@ -105,7 +103,6 @@ const ForumBannerUpload = ({ forumId }) => {
     );
 
     if (file.data) {
-      setBanner(file.data);
       const reader = new FileReader();
       reader.onloadend = () => {
         setBannerUrl(reader.result);
@@ -143,14 +140,6 @@ const ForumBannerUpload = ({ forumId }) => {
           }
         ></Avatar>
       </Badge>
-
-      {/* <Button
-        variant="outlined"
-        onClick={handleOpen}
-        startIcon={<CloudUploadIcon />}
-      >
-        Upload Banner
-      </Button> */}
 
       <Modal
         open={open}
@@ -233,9 +222,9 @@ const ForumBannerUpload = ({ forumId }) => {
         </Box>
       </Modal>
           {updateMessage && (
-            // <Typography variant="body2" color="info" sx={{ mt: 2 }}>
+            <Typography variant="body2" color="info" sx={{ mt: 2 }}>
               {updateMessage}
-            // </Typography>
+            </Typography>
           )}
     </div>
   );

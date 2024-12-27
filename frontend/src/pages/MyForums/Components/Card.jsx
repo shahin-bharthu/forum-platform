@@ -7,18 +7,17 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { IconButton, Stack, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import InfoIcon from '@mui/icons-material/Info';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
-import axios from 'axios';
+import axiosInstance from '../../../../utils/axiosInstance';
 
 export default function MediaCard({
   id,
   name,
   purpose,
-  logo,
   canSubscribe,
   onSubscribe,
   onViewDetails,
@@ -28,7 +27,6 @@ export default function MediaCard({
   onArchive
   }) {
   const token = useRouteLoaderData("user");
-  const [banner, setBanner] = useState();
   const [bannerUrl, setBannerUrl] = useState();
 
   useEffect(() => {
@@ -40,10 +38,7 @@ export default function MediaCard({
   }, []);
 
   const handleFileRead = async () => {
-    const file = await axios.get(`http://localhost:8080/forum/banner/${id}`, {
-      withCredentials: true,
-      responseType: "blob",
-    });
+    const file = await axiosInstance.get(`/forum/banner/${id}`, {responseType: "blob"});
 
     if (file.data) {
       // setBanner(file.data);

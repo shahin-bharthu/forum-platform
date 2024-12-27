@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import {
   Card, CardHeader, CardContent, CardActions, Collapse,
   IconButton, Typography, Box, Grid2 as Grid, Avatar, Menu,
-  MenuItem, Link, Skeleton
+  MenuItem, Link
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
-import axios from "axios";
 import PositionedSnackbar from "../../components/SnackBar";
 import {
   ExpandMore as ExpandMoreIcon,
@@ -19,6 +18,7 @@ import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, B
 import { formatDate } from "../../../utils/timestamp";
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import TopicSkeleton from "../../components/PostsSkeleton";
+import axiosInstance from "../../../utils/axiosInstance.js";
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-content": {
@@ -119,14 +119,10 @@ export default function MyPosts() {
   const getForumTopics = useCallback(async () => {
     try {
       setLoading(true);
-      const myTopics = await axios.get(`http://localhost:8080/topic/my-topics`, { withCredentials: true });
+      const myTopics = await axiosInstance.get(`/topic/my-topics`);
       const myTopicsData = myTopics.data.data;
 
-      const forumsList = await Promise.all(
-        myTopicsData.map(forumTopic =>
-          axios.get(`http://localhost:8080/forum/${forumTopic.forum_id}`, { withCredentials: true })
-        )
-      );
+      const forumsList = await Promise.all(myTopicsData.map(forumTopic => axiosInstance.get(`/forum/${forumTopic.forum_id}`)));
 
       const forumNames = forumsList.map(creator => creator.data.data.name);
       const forumIds = forumsList.map(creator => creator.data.data.forum_id);
@@ -143,9 +139,9 @@ export default function MyPosts() {
       await Promise.all(
         updatedForumTopics.map(async (topic) => {
           try {
-            const response = await axios.get(
-              `http://localhost:8080/forum/banner/${topic.forum_id}`,
-              { withCredentials: true, responseType: "blob" }
+            const response = await axiosInstance.get(
+              `/forum/banner/${topic.forum_id}`,
+              { responseType: "blob" }
             );
 
             if (response.data) {
@@ -189,12 +185,7 @@ export default function MyPosts() {
   const handleDeleteTopic = async () => {
     if (activeIndex !== null) {
       try {
-        const response = await axios.delete(`http://localhost:8080/topic/${activeIndex}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true
-        });
+        const response = await axiosInstance.delete(`/topic/${activeIndex}`);
 
         setMessage('Post deleted');
         setTimeout(() => {

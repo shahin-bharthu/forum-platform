@@ -6,7 +6,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import menuList from '../../../../utils/sidebarlist';
 import { useNavigate, useLocation } from 'react-router-dom';
 import deleteCookie from '../../../../utils/deleteCookie';
-import axios from 'axios';
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -66,10 +65,7 @@ export default function ClippedDrawer() {
   const handleLogout = useCallback(async () => {
     try {
       deleteCookie();
-      await axios.post("http://localhost:8080/auth/logout", {
-        "Content-Type": "application/json",
-        withCredentials: true
-      });
+      await axiosInstance.post('/auth/logout');
       setDialogOpen(false);
       setSuccess("Logging you out")
       setTimeout(() => {
