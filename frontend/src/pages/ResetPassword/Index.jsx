@@ -8,6 +8,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import {blue } from "@mui/material/colors";
 import LockResetOutlinedIcon from '@mui/icons-material/LockResetOutlined';
+import PositionedSnackbar from "../../components/SnackBar";
 
 const Index = () => {
     const passwordInput = useRef();
@@ -17,6 +18,7 @@ const Index = () => {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [message, setMessage] = useState("");
     const [errors, setErrors] = useState({});
 
 
@@ -113,9 +115,13 @@ const Index = () => {
                 "Content-Type": "application/json",
                 withCredentials: true
             })
-            console.log(response);
             
-            navigate("/login/201", { replace: true });
+            if (response.status == 200) {
+                setMessage("Your password has been reset! Login again to continue")
+                setTimeout(() => {
+                    navigate("/login/201", { replace: true });
+                }, 3000);
+            }
         }
         catch (error) {
             setIsSubmitting(false);
@@ -126,6 +132,7 @@ const Index = () => {
 
     return (
         <div className={classes["auth-page"]}>
+            {message && <PositionedSnackbar message={message}></PositionedSnackbar>}
             <Avatar sx={{ bgcolor: blue[600] }}>
                 <LockResetOutlinedIcon sx={{ fontSize: 30 }}  />
             </Avatar>

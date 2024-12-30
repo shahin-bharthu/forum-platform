@@ -1,12 +1,12 @@
-import axios from "axios";
 import Grid from '@mui/material/Grid2';
 import RecentNewPostsCard from "./Components/RecentNewPostsCard";
 import RecentNewForumsCard from "./Components/RecentNewForumsCard";
-import { Typography, CircularProgress, Box } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useLoaderData, useNavigation } from "react-router-dom";
+import axiosInstance from "../../../utils/axiosInstance";
 
 export default function Dashboard() {
-    const { recentForumData, currentUser, empty } = useLoaderData()
+    const { recentForumData, empty } = useLoaderData()
 
     const navigation = useNavigation();
 
@@ -36,18 +36,15 @@ export default function Dashboard() {
 
 export async function dashboardLoader() {
     try {
-        const recentForums = await axios.get('http://localhost:8080/forum/recent-forums', {
-            withCredentials: true
-        });
+        const recentForums = await axiosInstance.get('/forum/recent-forums');
         const recentForumData = recentForums.data.data || [];      
 
         const forumAvatar = await Promise.all(
             recentForumData.map(async (forum) => {
                 try {                    
-                    const avatarResponse = await axios.get(
+                    const avatarResponse = await axiosInstance.get(
                         `http://localhost:8080/forum/banner/${forum.id}`,
                         {
-                            withCredentials: true,
                             responseType: "blob",
                         }
                     )

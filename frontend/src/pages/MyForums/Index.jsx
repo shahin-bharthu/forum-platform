@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid2';
 import MediaCard from './Components/Card';
-import axios from 'axios';
 import { useLoaderData, useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
@@ -13,6 +12,7 @@ import Tab from '@mui/material/Tab';
 import PublicIcon from '@mui/icons-material/Public';
 import VpnLockIcon from '@mui/icons-material/VpnLock';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import axiosInstance from '../../../utils/axiosInstance.js';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -100,9 +100,7 @@ export default function MyForum() {
 
   const handleArchiveForum = async (event, id, archiving) => {
     event.preventDefault();
-    const response = await axios.patch(`http://localhost:8080/forum/archive/${id}`, null, {
-      withCredentials: true
-    })
+    const response = await axiosInstance.patch(`/forum/archive/${id}`, null)
 
     if (archiving) {
       setMessage(`Archived forum ${response.data.data.name}`);
@@ -275,9 +273,7 @@ export default function MyForum() {
 
 export async function forumLoader() {
   try {
-    const response = await axios.get('http://localhost:8080/forum/my-forums', {
-      withCredentials: true
-    });
+    const response = await axiosInstance.get('/forum/my-forums');
     const publicForums = response.data.publicUserForums || [];
     const privateForums = response.data.privateUserForums || [];
     const archivedForums = response.data.archivedUserForums || [];

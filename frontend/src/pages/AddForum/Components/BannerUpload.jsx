@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  Card,
   Typography,
   Avatar,
   Badge,
@@ -9,13 +8,12 @@ import {
   Modal,
   IconButton,
   Stack,
-  Divider,
 } from "@mui/material";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../../../utils/axiosInstance";
 import PositionedSnackbar from "../../../components/SnackBar";
 
 const VisuallyHiddenInput = styled("input")({
@@ -36,7 +34,6 @@ const ForumBannerUpload = ({ forumId }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [updateMessage, setUpdateMessage] = useState("");
   const [bannerUrl, setBannerUrl] = useState(null);
-  const [banner, setBanner] = useState(null);
   const [refresh,setRefresh] = useState(false) // used to reload the profile image compoent instead of window.location.reload() to avoid change of any other inputs
   
   const navigate = useNavigate();
@@ -78,16 +75,13 @@ const ForumBannerUpload = ({ forumId }) => {
 
       const formData = new FormData();
       formData.append("banner", selectedFile);
-      // formData.append("email", userEmail);
+      console.log(selectedFile);
+      
+      console.log(formData);
 
       try {
-        const response = await axios.put(
-          `http://localhost:8080/forum/banner/${forumId}`,
-          formData,
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await axiosInstance.put(`/forum/banner/${forumId}`,formData);
+        
         handleClose();
         setUpdateMessage(response.data.message);
         setTimeout(() => {
@@ -105,13 +99,13 @@ const ForumBannerUpload = ({ forumId }) => {
   );
 
   const handleFileRead = async () => {
-    const file = await axios.get(`http://localhost:8080/forum/banner/${forumId}`, {
-      withCredentials: true,
+    const file = await axiosInstance.get(`/forum/banner/${forumId}`, 
+      {
       responseType: "blob",
-    });
+      }
+    );
 
     if (file.data) {
-      setBanner(file.data);
       const reader = new FileReader();
       reader.onloadend = () => {
         setBannerUrl(reader.result);
@@ -149,14 +143,6 @@ const ForumBannerUpload = ({ forumId }) => {
           }
         ></Avatar>
       </Badge>
-
-      {/* <Button
-        variant="outlined"
-        onClick={handleOpen}
-        startIcon={<CloudUploadIcon />}
-      >
-        Upload Banner
-      </Button> */}
 
       <Modal
         open={open}

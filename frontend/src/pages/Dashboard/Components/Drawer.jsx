@@ -6,7 +6,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import menuList from '../../../../utils/sidebarlist';
 import { useNavigate, useLocation } from 'react-router-dom';
 import deleteCookie from '../../../../utils/deleteCookie';
-import axios from 'axios';
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -14,6 +13,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import PositionedSnackbar from '../../../components/SnackBar';
 import { useDispatch } from 'react-redux';
 import { setUserProfile } from '../../../store/userSlice';
+import axiosInstance from '../../../../utils/axiosInstance';
 
 const drawerWidth = 200;
 
@@ -41,23 +41,13 @@ export default function ClippedDrawer() {
 
     async function getCurrentUser() {
       try {
-        const currentUser = await axios.get('http://localhost:8080/user', {
-          withCredentials: true
-        });
-        // setCurrentUser(currentUser.data.user.username)
+      const currentUser = await axiosInstance.get('/user');
 
-        const response = await axios.get(
-          `http://localhost:8080/user/avatar/${currentUser.data.user.id}`,
-          {
-            withCredentials: true,
-            responseType: "blob",
-          }
-        )
-
-        if (response.data) {
+      const response = await axiosInstance.get(`/user/avatar/${currentUser.data.user.id}`,{responseType: "blob",})
+      
+      if (response.data) {
           const reader = new FileReader()
           reader.onloadend = () => {
-            // setProfilePhoto(reader.result)
             dispatch(setUserProfile({
               userName:currentUser.data.user.username,
               profilePhoto:reader.result
@@ -81,11 +71,7 @@ export default function ClippedDrawer() {
   const handleLogout = useCallback(async () => {
     try {
       deleteCookie();
-      const response = await axios.post("http://localhost:8080/auth/logout", {
-        "Content-Type": "application/json",
-        withCredentials: true
-      });
-      // console.log(response);
+      await axiosInstance.post('/auth/logout');
       setDialogOpen(false);
       setSuccess("Logging you out")
       setTimeout(() => {
@@ -122,7 +108,7 @@ export default function ClippedDrawer() {
           Are you sure you want to log out?
         </DialogTitle>
         <DialogContentText>
-          You'll need to sign back in to continue participating in discussions.
+          You&apos;ll need to sign back in to continue participating in discussions.
         </DialogContentText>
       </DialogContent>
       <DialogActions>

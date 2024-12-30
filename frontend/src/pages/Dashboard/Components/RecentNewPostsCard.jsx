@@ -8,15 +8,14 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import axios from 'axios';
-import { Box, Button, Link, Skeleton } from '@mui/material';
+import { Box, Button, Link } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../../utils/timestamp';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import TopicSkeleton from '../../../components/PostsSkeleton';
+import axiosInstance from '../../../../utils/axiosInstance.js';
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
     '.MuiCardHeader-content': {
@@ -67,13 +66,7 @@ export default function MyPosts() {
     const fetchForumBanners = useCallback(async (topics) => {
         const bannerPromises = topics.map(async (topic) => {
             try {
-                const response = await axios.get(
-                    `http://localhost:8080/forum/banner/${topic.forum_id}`,
-                    {
-                        withCredentials: true,
-                        responseType: "blob",
-                    }
-                );
+                const response = await axiosInstance.get(`/forum/banner/${topic.forum_id}`,{responseType: "blob"});
 
                 if (response.data) {
                     return new Promise((resolve) => {
@@ -110,9 +103,7 @@ export default function MyPosts() {
     const fetchForumTopics = useCallback(async () => {
         try {
             setIsLoading(true);
-            const myTopics = await axios.get(`http://localhost:8080/topic/recent-topics`, {
-                withCredentials: true,
-            });
+            const myTopics = await axiosInstance.get(`/topic/recent-topics`);
             const myTopicsData = myTopics.data.data || [];
 
             setForumTopics(myTopicsData);
@@ -176,11 +167,6 @@ export default function MyPosts() {
                                         </Avatar>
                                     </Link>
                                 }
-                                // action={
-                                //     <IconButton aria-label="settings">
-                                //         <MoreVertIcon />
-                                //     </IconButton>
-                                // }
                                 title={< Link href={`/forum/${topic.forum.forum_id}`} color="inherit" underline="hover">{topic.forum.name}</Link>}
                                 subheader={formatDate(topic.createdAt)}
                             />

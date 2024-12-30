@@ -3,6 +3,7 @@ import { Box, TextField, IconButton } from '@mui/material';
 import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import axios from 'axios';
 import PositionedSnackbar from '../../../components/SnackBar';
+import axiosInstance from '../../../../utils/axiosInstance';
 
 const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onReplySend }) => {
     const [comment, setComment] = useState('');
@@ -20,12 +21,7 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onRep
                 parent_comment_id: parentCommentId
             };
 
-            await axios.post('http://localhost:8080/comment', commentData, {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                withCredentials: true
-            });
+            await axiosInstance.post('http://localhost:8080/comment', commentData);
 
             // Reset and trigger callbacks
             setComment('');

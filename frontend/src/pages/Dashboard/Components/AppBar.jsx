@@ -1,50 +1,10 @@
 import { useState, useCallback, memo } from 'react';
-import { styled, alpha } from '@mui/material/styles';
-import { AppBar, Box, Toolbar, IconButton, Typography, InputBase, Badge, MenuItem, Menu, Fab, Chip, Avatar } from '@mui/material';
-import { Menu as MenuIcon, Search as SearchIcon, AccountCircle, Notifications as NotificationsIcon, Add as AddIcon, MoreVert as MoreIcon, Adb as AdbIcon, AutoStories } from '@mui/icons-material';
-import { Link, useNavigate, useRouteLoaderData } from 'react-router-dom';
+import { AppBar, Box, Toolbar, IconButton, Typography, MenuItem, Menu, Avatar } from '@mui/material';
+import { Menu as MenuIcon, Add as AddIcon, MoreVert as MoreIcon, AutoStories } from '@mui/icons-material';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { useSelector } from 'react-redux';
-
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(2),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '40ch',
-    },
-  },
-}));
 
 function CombinedAppBar({ handleDrawerToggle }) {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);

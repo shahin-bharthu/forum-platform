@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../../../utils/axiosInstance.js';
+
 const useForumNames = () => {
     const [forums, setForums] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -9,19 +10,15 @@ const useForumNames = () => {
         const fetchForumNames = async () => {
             try {
                 setIsLoading(true);
-                const userForumResponse = await axios.get('http://localhost:8080/forum/my-forums', {
-                    withCredentials: true
-                });
+                const userForumResponse = await axiosInstance.get('http://localhost:8080/forum/my-forums');
                 const userPublicForumData = userForumResponse.data.publicUserForums
                 const userPrivateForumData = userForumResponse.data.privateUserForums
 
-                const subbedForumResponse = await axios.get('http://localhost:8080/forum/subscribed-forums', {
-                    withCredentials: true
-                });
+                const subbedForumResponse = await axiosInstance.get('http://localhost:8080/forum/subscribed-forums');
 
                 const subbedForumData=subbedForumResponse.data.data
                 setForums([...userPublicForumData,...userPrivateForumData, ...subbedForumData])
-
+                
                 setError(null);
             } catch (error) {
                 console.error('Error fetching forums:', error);

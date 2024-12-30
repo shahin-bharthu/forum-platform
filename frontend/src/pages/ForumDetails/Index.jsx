@@ -6,6 +6,7 @@ import ForumInfoCard from "./Components/ForumInfoCard";
 import ForumMainCard from "./Components/ForumMainCard";
 import { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
+import axiosInstance from "../../../utils/axiosInstance";
 
 export default function IntroDivider() {
     const { forumDetails, forumCreatedBy } = useLoaderData();
@@ -13,7 +14,7 @@ export default function IntroDivider() {
     const [isSubbed, setIsSubbed] = useState()
     const isPrivate = !(forumDetails.isPublic)
     const isBlur = (isPrivate && !isSubbed)
-    const navigate=useNavigate();
+    const navigate = useNavigate();
     return (
         <>
             <Grid container spacing={3} direction="column" sx={{ px: 2, width:{ xs:'90%', sm:'95%',md:'80%'}, mt: 10, alignSelf: 'start' }}>
@@ -68,26 +69,18 @@ export default function IntroDivider() {
 }
 
 
-export async function forumDetailsLoader({ request, params }) {
+export async function forumDetailsLoader({ params }) {
     const forum_id = params.forum_id;
-
     try {
-        const response = await axios.get(`http://localhost:8080/forum/forum-id/${forum_id}`, {
-            withCredentials: true,
-        });
+        const response = await axiosInstance.get(`/forum/forum-id/${forum_id}`);
         const forumData = response.data.data;
 
         const forumCreatorId = forumData.createdBy;
-        const forumCreatorData = await axios.get(
-            `http://localhost:8080/user/${forumCreatorId}`, {
-            withCredentials: true,
-        }
-        );
+        const forumCreatorData = await axiosInstance.get(`/user/${forumCreatorId}`);
         
         return {
             forumDetails: forumData,
             forumCreatedBy: forumCreatorData.data.user.username,
-            // empty: !response.data.data || response.data.data.length === 0,
         };
     } catch (error) {
         console.log(error.message);
