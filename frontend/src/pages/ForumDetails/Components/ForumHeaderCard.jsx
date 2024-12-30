@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
-import { 
-  Card, 
-  CardActions, 
-  CardContent, 
-  CardMedia, 
-  Button, 
-  Typography, 
-  Avatar, 
-  Stack, 
-  Tooltip, 
-  useMediaQuery, 
+import {
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Button,
+  Typography,
+  Avatar,
+  Stack,
+  Tooltip,
+  useMediaQuery,
   useTheme,
-  Box
+  Box,
+  tooltipClasses,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +20,7 @@ import axios from 'axios';
 import PositionedSnackbar from '../../../components/SnackBar';
 
 export default function ForumHeaderCard({ forum, setIsSubbed }) {
-  
+
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -29,7 +30,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
   const [message, setMessage] = useState();
   const [banner, setBanner] = useState();
   const [bannerUrl, setBannerUrl] = useState();
-  
+
   useEffect(() => {
     async function isSubscribed(forum) {
       const isUserSubscribed = await axios.get(`http://localhost:8080/forum/is-subscribed/${forum.id}`, {
@@ -128,7 +129,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
 
 
   return (
-    <Card sx={{ width: '100%', display: 'flex',flexDirection: 'column' }}>
+    <Card sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
       <CardMedia
         component="img"
         alt="Forum Header"
@@ -140,7 +141,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
         <PositionedSnackbar message={message} />
       )}
 
-      <Box 
+      <Box
         sx={{
           display: 'flex',
           flexDirection: isMobile ? 'column' : 'row',
@@ -152,65 +153,96 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
         }}
       >
         <CardContent
-           sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            padding: isMobile ? '8px !important' : undefined ,
-            p: isMobile?0:1.5
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: isMobile ? '8px !important' : undefined,
+            p: isMobile ? 0 : 1.5,
+            width: '60%'
           }}
         >
-          <Stack spacing={2} direction="row" sx={{ alignItems: 'center', flexDirection: isMobile ? 'column' : 'row',textAlign: isMobile ? 'center' : 'left' }}>
+          <Stack
+            spacing={2}
+            direction="row"
+            sx={{
+              alignItems: 'center',
+              flexDirection: isMobile ? 'column' : 'row',
+              textAlign: isMobile ? 'center' : 'left',
+              width: "100%"
+
+            }}
+          >
             <Avatar
               alt="Forum Logo"
               src={bannerUrl}
-              sx={{ 
-                width: isMobile ? 45 : 60, 
-                height: isMobile ? 45 : 60, 
-                border: 2, 
-                borderColor: 'primary.main' 
+              sx={{
+                width: isMobile ? 45 : 60,
+                height: isMobile ? 45 : 60,
+                border: 2,
+                borderColor: 'primary.main'
               }}
             />
-            <Typography 
-              variant={isMobile ? "h6" : "h5"} 
-              component="div"
-              sx={{ 
-                margin: isMobile ? '0 !important' : undefined 
+            <Tooltip
+              title={forum.name}
+              placement="bottom-start"
+              slotProps={{
+                popper: {
+                  sx: {
+                    [`&.${tooltipClasses.popper}[data-popper-placement*="bottom"] .${tooltipClasses.tooltip}`]:
+                    {
+                      marginTop: '0px',
+                    }
+                  },
+                },
               }}
+              arrow
             >
-              {forum.name}
-            </Typography>
+              <Typography
+                variant={isMobile ? "h6" : "h5"}
+                component="div"
+                sx={{
+                  margin: isMobile ? '0 !important' : undefined,
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  width: '100%'
+                }}
+              >
+                {forum.name}
+              </Typography>
+            </Tooltip>
           </Stack>
         </CardContent>
-        <CardActions sx={{ 
-            display: 'flex', 
-            gap: theme.spacing(1),
-            padding: isMobile ? '8px !important' : undefined,
-            pr: isMobile ? undefined : 4 
-          }}>
+        <CardActions sx={{
+          display: 'flex',
+          gap: theme.spacing(1),
+          padding: isMobile ? '8px !important' : undefined,
+          pr: isMobile ? undefined : 4,
+        }}>
 
-          {subscribed && 
-          <Tooltip title="Create Post" arrow>
-            <Button
-              disabled = {forum.isActive? false : true}
-              onClick={()=>navigate('/user/create-post', { state: { forumName: forum.name, forumId: forum.id } })}
-              variant="outlined"
-              startIcon={<AddIcon />}
-              sx={{ borderRadius: 28, border: 2 }}
-              disableElevation
-              size="small"
-            >
-              Create
-            </Button>
-          </Tooltip>}
+          {subscribed &&
+            <Tooltip title="Create Post" arrow>
+              <Button
+                disabled={forum.isActive ? false : true}
+                onClick={() => navigate('/user/create-post', { state: { forumName: forum.name, forumId: forum.id } })}
+                variant="outlined"
+                startIcon={<AddIcon />}
+                sx={{ borderRadius: 28, border: 2 }}
+                disableElevation
+                size="small"
+              >
+                Create
+              </Button>
+            </Tooltip>}
 
           <Tooltip title={subscribed ? "Unsubscribe" : "Subscribe"} arrow>
             <Button
-              disabled = {forum.isActive? false : true}
+              disabled={forum.isActive ? false : true}
               size="small"
-              variant={subscribed? 'outlined': 'contained'}
+              variant={subscribed ? 'outlined' : 'contained'}
               sx={{ borderRadius: 28, border: 2 }}
               disableElevation
-              onClick={subscribed? (event) => handleUnSubscribe(event, forum.forum_id) : (event) => handleSubscribe(event, forum.forum_id)}
+              onClick={subscribed ? (event) => handleUnSubscribe(event, forum.forum_id) : (event) => handleSubscribe(event, forum.forum_id)}
             >
               {subscribed ? 'Subscribed' : 'Subscribe'}
             </Button>

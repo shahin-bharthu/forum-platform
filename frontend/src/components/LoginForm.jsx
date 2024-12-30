@@ -103,9 +103,9 @@ const LoginForm = () => {
         setSuccessMessage("Logging you in")
         setTimeout(() => {
           navigate("/user/dashboard", { replace: true });
+          setSuccessMessage("")
         }, 1000);
       }
-
 
       setIsSubmitting(false);
     } catch (error) {

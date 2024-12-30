@@ -12,6 +12,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import PositionedSnackbar from '../../../components/SnackBar';
+import { useDispatch } from 'react-redux';
+import { setUserProfile } from '../../../store/userSlice';
 
 const drawerWidth = 200;
 
@@ -19,14 +21,16 @@ export default function ClippedDrawer() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState("Your Username");
-  const [profilePhoto, setProfilePhoto] = useState();
-  const [success,setSuccess] = useState("");
+  // const [currentUser, setCurrentUser] = useState("Your Username");
+  // const [profilePhoto, setProfilePhoto] = useState();
+  const [success, setSuccess] = useState("");
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -37,34 +41,38 @@ export default function ClippedDrawer() {
 
     async function getCurrentUser() {
       try {
-      const currentUser = await axios.get('http://localhost:8080/user', {
-        withCredentials: true
-      });
-      setCurrentUser(currentUser.data.user.username)
+        const currentUser = await axios.get('http://localhost:8080/user', {
+          withCredentials: true
+        });
+        // setCurrentUser(currentUser.data.user.username)
 
-      const response = await axios.get(
+        const response = await axios.get(
           `http://localhost:8080/user/avatar/${currentUser.data.user.id}`,
           {
-              withCredentials: true,
-              responseType: "blob",
+            withCredentials: true,
+            responseType: "blob",
           }
-      )
-      
-      if (response.data) {
+        )
+
+        if (response.data) {
           const reader = new FileReader()
           reader.onloadend = () => {
-            setProfilePhoto(reader.result)          
+            // setProfilePhoto(reader.result)
+            dispatch(setUserProfile({
+              userName:currentUser.data.user.username,
+              profilePhoto:reader.result
+            }))
           }
           reader.readAsDataURL(response.data)
+        }
       }
-    }
-    catch (error) {
-      console.error('Error fetching username or profile photo: ', error);
-    }
+      catch (error) {
+        console.error('Error fetching username or profile photo: ', error);
+      }
     }
 
     getCurrentUser();
-  }, [location.pathname]);
+  }, [location.pathname,dispatch]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -82,7 +90,7 @@ export default function ClippedDrawer() {
       setSuccess("Logging you out")
       setTimeout(() => {
         setSuccess("")
-        navigate('/login/201', {replace:true});
+        navigate('/login/201', { replace: true });
       }, 1500);
     } catch (error) {
       console.error("couldn't log user out", error);
@@ -110,7 +118,7 @@ export default function ClippedDrawer() {
   const logoutDialog = (
     <Dialog open={dialogOpen} onClose={handleDialogClose}>
       <DialogContent>
-        <DialogTitle sx={{px:0}}>
+        <DialogTitle sx={{ px: 0 }}>
           Are you sure you want to log out?
         </DialogTitle>
         <DialogContentText>
@@ -159,10 +167,10 @@ export default function ClippedDrawer() {
 
   return (
     <>
-    {success && (<PositionedSnackbar message={success} />)}
+      {success && (<PositionedSnackbar message={success} />)}
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <CombinedAppBar currentUser={currentUser} profilePhoto={profilePhoto} handleDrawerToggle={handleDrawerToggle} />
+        <CombinedAppBar handleDrawerToggle={handleDrawerToggle} />
         {/* Drawer for small screens */}
         {isSmallScreen ? (
           <Drawer

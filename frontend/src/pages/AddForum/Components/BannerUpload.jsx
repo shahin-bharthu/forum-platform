@@ -16,6 +16,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import PositionedSnackbar from "../../../components/SnackBar";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -36,15 +37,17 @@ const ForumBannerUpload = ({ forumId }) => {
   const [updateMessage, setUpdateMessage] = useState("");
   const [bannerUrl, setBannerUrl] = useState(null);
   const [banner, setBanner] = useState(null);
+  const [refresh,setRefresh] = useState(false) // used to reload the profile image compoent instead of window.location.reload() to avoid change of any other inputs
+  
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAvatar = async () => {
-      const data = await handleFileRead();
+      await handleFileRead();
     };
 
     fetchAvatar().catch(console.error);
-  }, []);
+  }, [refresh]);
 
   // Handle opening and closing the modal
   const handleOpen = () => setOpen(true);
@@ -88,7 +91,8 @@ const ForumBannerUpload = ({ forumId }) => {
         handleClose();
         setUpdateMessage(response.data.message);
         setTimeout(() => {
-          window.location.reload(); // Reload the page to reflect the changes
+          setUpdateMessage()
+          setRefresh(true) // to reload the forum banner image after upload
         }, 1500);
       } catch (error) {
         setUpdateMessage(error.response.data.message);
@@ -97,7 +101,7 @@ const ForumBannerUpload = ({ forumId }) => {
         }, 3000);
       }
     },
-    [forumId, selectedFile]
+    [forumId, selectedFile,navigate]
   );
 
   const handleFileRead = async () => {
@@ -232,13 +236,11 @@ const ForumBannerUpload = ({ forumId }) => {
             </Stack>
           </form>
 
-          {updateMessage && (
-            <Typography variant="body2" color="info" sx={{ mt: 2 }}>
-              {updateMessage}
-            </Typography>
-          )}
         </Box>
       </Modal>
+          {updateMessage && (
+            <PositionedSnackbar message={updateMessage} />
+          )}
     </div>
   );
 };

@@ -70,7 +70,7 @@ export default function AllForums() {
       setTimeout(() => {
         setMessage(null);
         // window.location.reload();
-        setCounter((val) => val + 1);
+        // setCounter((val) => val + 1);
         navigate('/user/forums')
       }, 1000);
 

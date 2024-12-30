@@ -69,7 +69,7 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onRep
         >
             {message && (
                 <PositionedSnackbar message={message} isError={true} />
-            )}{message}
+            )}
             <TextField
                 fullWidth
                 multiline
