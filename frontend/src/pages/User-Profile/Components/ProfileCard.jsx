@@ -9,15 +9,14 @@ import {
   Modal,
   IconButton,
   Stack,
-  Divider
 } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import PositionedSnackbar from "../../../components/SnackBar";
+import axiosInstance from "../../../../utils/axiosInstance";
 
 const styles = {
   details: {
@@ -74,10 +73,8 @@ export default function ProfileCard(props) {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [avatar, setAvatar] = useState(null)
   const [avatrUrl, setAvatarUrl] = useState(null)
   const [updateMessage, setUpdateMessage] = useState("");
-  const navigate = useNavigate();
 
   const handleOpen = () => setOpen(true);
 
@@ -109,16 +106,9 @@ export default function ProfileCard(props) {
   };
 
   const handleFileRead = async () => {
-    const file = await axios.get(
-      `http://localhost:8080/user/avatar/`,
-      {
-        withCredentials: true,
-        responseType: 'blob'
-      }
-    );
+    const file = await axiosInstance.get(`/user/avatar/`, { responseType: 'blob' });
 
     if (file.data) {
-      setAvatar(file.data);
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarUrl(reader.result);
@@ -137,13 +127,7 @@ export default function ProfileCard(props) {
     formData.append("email", props.email);
 
     try {
-      const response = await axios.put(
-        `http://localhost:8080/user/update/avatar/${props.id}`,
-        formData,
-        {
-          withCredentials: true
-        }
-      );
+      const response = await axiosInstance.put(`/user/update/avatar/${props.id}`, formData);
       handleClose();
       setUpdateMessage(response.data.message);
       setTimeout(() => {
@@ -187,7 +171,6 @@ export default function ProfileCard(props) {
           >
             <Avatar
               sx={{ width: 100, height: 100, mb: 1.5 }}
-              // "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"
               src={avatrUrl || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"}
             ></Avatar>
           </Badge>
@@ -290,20 +273,3 @@ export default function ProfileCard(props) {
     </Card>
   );
 }
-
-
-
-// const handleFileUpload = async (event, id, email) => {
-//   event.preventDefault();
-//   console.log("onsubmit", typeof (event.target));
-
-//   const formData = new FormData(event.target);
-//   formData.append("email", email)
-//   console.log(formData.get('avatar'));
-
-//   const response = await axios.put(
-//     "http://localhost:8080/user/update/avatar/" + id,
-//     formData,
-//     {}
-//   );
-// }

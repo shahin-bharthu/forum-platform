@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import axios from 'axios';
 import Grid from "@mui/material/Grid2";
 import ProfileCard from "./Components/ProfileCard";
 import SettingsCard from "./Components/SettingsCard";
+import axiosInstance from "../../../utils/axiosInstance.js";
 
 export default function Index() {
   const [text, setText] = useState("");
@@ -47,11 +47,7 @@ export default function Index() {
 
   const fetchUserDetails = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/user/${userId}`,
-        {
-          withCredentials: true
-        }
-      ); 
+      const response = await axiosInstance.get(`/user/${userId}`); 
       
       const data = response.data.user;
       setUser({
@@ -72,12 +68,6 @@ export default function Index() {
       console.error("Failed to fetch user details:", error);
     }
   };
-
-  // useEffect(() => {
-  //   console.log("second useeffect");
-    
-  //   console.log("USER: ", user);
-  // }, [user]);
   
   const fullName = `${user.firstname} ${user.lastname}`;
 

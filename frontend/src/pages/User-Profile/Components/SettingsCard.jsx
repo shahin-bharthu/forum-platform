@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import dayjs from "dayjs";
 import Card from "@mui/material/Card";
 import MenuItem from "@mui/material/MenuItem";
@@ -16,7 +15,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import PositionedSnackbar from "../../../components/SnackBar.jsx";
-import { date, z } from "zod";
+import { z } from "zod";
+import axiosInstance from "../../../../utils/axiosInstance.js";
 
 export default function SettingsCard(props) {
   const genderSelect = [
@@ -89,8 +89,8 @@ export default function SettingsCard(props) {
       .email("Invlaid email address"),
     country: z
       .string()
-      .refine((val) => countries.some(country => country.value === val), { 
-        message: "Invalid selection" 
+      .refine((val) => countries.some(country => country.value === val), {
+        message: "Invalid selection"
       })
   });
 
@@ -124,16 +124,16 @@ export default function SettingsCard(props) {
 
   const changeField = (event) => {
     const { name, value } = event.target;
-    
+
     // Trim firstname and lastname
-    const processedValue = 
-      name === 'firstname' || name === 'lastname' 
-        ? value.trim() 
+    const processedValue =
+      name === 'firstname' || name === 'lastname'
+        ? value.trim()
         : value;
-    
-    setUser({ 
-      ...user, 
-      [name]: processedValue 
+
+    setUser({
+      ...user,
+      [name]: processedValue
     });
   };
 
@@ -159,16 +159,7 @@ export default function SettingsCard(props) {
         return;
       }
 
-      const response = await axios.put(
-        "http://localhost:8080/user/update",
-        formattedUser,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true
-        }
-      );
+      const response = await axiosInstance.put('/user/update', formattedUser);
 
       setUpdateMessage(response.data.message);
       setTimeout(() => {
@@ -218,7 +209,7 @@ export default function SettingsCard(props) {
                   dis={!edit}
                   req={true}
                   help={errors.firstname}
-                  error={errors.firstname? true:false}
+                  error={errors.firstname ? true : false}
                 />
               </Grid>
 
@@ -233,7 +224,7 @@ export default function SettingsCard(props) {
                   dis={!edit}
                   req={true}
                   help={errors.lastname}
-                  error={errors.lastname? true:false}
+                  error={errors.lastname ? true : false}
                 />
               </Grid>
 
@@ -247,7 +238,7 @@ export default function SettingsCard(props) {
                   }}
                   dis={!edit}
                   help={errors.dob}
-                  error={errors.dob? true:false}
+                  error={errors.dob ? true : false}
                 />
               </Grid>
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { getAuthToken } from './auth.js';
 import {Navigate} from "react-router-dom";
 

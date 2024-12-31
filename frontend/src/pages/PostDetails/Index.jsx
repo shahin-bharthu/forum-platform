@@ -1,21 +1,11 @@
-// import axios from "axios";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import Grid from '@mui/material/Grid2';
 import ForumInfoCard from "../ForumDetails/Components/ForumInfoCard";
 import PostDetailsCard from "./Components/PostDetailsCard";
-import axios from "axios";
-// import { useState } from "react";
-// import { Box, Button, Typography } from "@mui/material";
+import axiosInstance from "../../../utils/axiosInstance";
 
 
 export default function PostDetails() {
-    // const { forumDetails, forumCreatedBy } = useLoaderData();
-    // const [postLength, setPostLength] = useState()
-    // const [isSubbed, setIsSubbed] = useState()
-    // const isPrivate = !(forumDetails.isPublic)
-    // const isBlur = (isPrivate && !isSubbed)
-    // const navigate=useNavigate();
-
     const { topic, forum, user, forum_creator } = useLoaderData()
     const forumCreatedBy = 'test'
     const postLength = 2
@@ -33,26 +23,24 @@ export default function PostDetails() {
         updatedAt: "2024-11-21T17:19:53.000Z"
     }
     return (
-        <>
-            <Grid size={12} container spacing={3} sx={{ px: 3, width: '100%', mt: 10, alignSelf: 'start' }}>
-                <Grid size={{ xs: 12,sm:7, md: 8, lg:9, xl:9  }}
-                    sx={{ position: 'relative' }}
-                >
-                    <PostDetailsCard post={topic} user={user} forum={forum}/>
-                </Grid>
-                <Grid size={{ xs: 0,sm:5, md: 4, lg:3, xl:3}}>
-                    <ForumInfoCard creator={forum_creator} forum={forum} postLength={postLength} />
-                </Grid>
+        <Grid size={12} container spacing={3} sx={{ px: 3, width: '100%', mt: 10, alignSelf: 'start' }}>
+            <Grid size={{ xs: 12, sm: 7, md: 8, lg: 9, xl: 9 }}
+                sx={{ position: 'relative' }}
+            >
+                <PostDetailsCard post={topic} user={user} forum={forum} />
             </Grid>
-        </>
+            <Grid size={{ xs: 0, sm: 5, md: 4, lg: 3, xl: 3 }}>
+                <ForumInfoCard creator={forum_creator} forum={forum} postLength={postLength} />
+            </Grid>
+        </Grid>
     );
 }
 
 
-export const postDetailsLoader = async ({params}) => {
-    const {id} = params;
-    const postDetails = await axios.get(`http://localhost:8080/topic/${id}`, {withCredentials: true});
-    
+export const postDetailsLoader = async ({ params }) => {
+    const { id } = params;
+    const postDetails = await axiosInstance.get(`/topic/${id}`);
+
     return {
         topic: postDetails.data.data.topic,
         forum: postDetails.data.data.forum,

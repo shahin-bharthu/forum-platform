@@ -1,5 +1,6 @@
 import { CustomError } from "../../util/customError.js";
 import * as forumRepository from "./forumRepository.js";
+import * as userRepository from "../user/userRepository.js"
 import { db } from "../../config/connection.js";
 import { getImage } from "../../util/getImage.js";
 
@@ -103,6 +104,60 @@ const getForumBanner = async (id) => {
     return bannerPath;
 }
 
+
+const subscribeToForum = async(id, forum_id) => {
+    const forum = await forumRepository.getForumByForumId(forum_id);
+
+    if (!forum) {
+        throw new CustomError('Forum not found', 404)
+    }
+
+    if (forum.createdBy === id && forum.isActive === false) {
+        throw new CustomError('Cannot subscribe', 500);
+    }
+
+    const existingMembership = await forumRepository.getIsSubscribed(id, forum_id);
+
+    if (existingMembership) {
+        throw new CustomError('User is already subscribed to this forum', 409);
+    }
+
+    // increment subscriber count and save updated forum    
+    forum.subscriber_count += 1;
+    await forum.save(); 
+    
+    const user = await userRepository.getUserById(id);
+    if (!user) {
+        throw new CustomError('User not found', 404)
+    }
+
+    await forumRepository.createUserMembership(user.id, forum.id);
+    return forum;
+}
+
+
+const unSubscribeForum = async (user_id, forum_id) => {
+    const forum = await forumRepository.getForumByForumId(forum_id);
+    if (!forum) {
+        throw new CustomError('Forum not found', 404);
+    }
+
+    const user = await userRepository.getUserById(user_id); 
+    if (!user) {
+        throw new CustomError('User not found', 404);
+    }
+
+    const existingMembership = await forumRepository.getMembershipRecord(user.id, forum.id);    
+    if (!existingMembership) {
+        throw new CustomError('Subscription record does not exist', 404);
+    }
+    await existingMembership.destroy();
+
+    forum.subscriber_count -= 1;
+    await forum.save();
+    return forum;
+}
+
 export {
   getForums,
   createForum,
@@ -115,5 +170,7 @@ export {
   getTopicByForumId,
   getIsSubscribed,
   getRecentForums, 
-  getForumBanner
+  getForumBanner,
+  subscribeToForum,
+  unSubscribeForum
 };

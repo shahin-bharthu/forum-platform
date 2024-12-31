@@ -1,9 +1,8 @@
 import { useState, useCallback } from 'react';
 import { Box, TextField, IconButton } from '@mui/material';
 import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
-import axios from 'axios';
 import PositionedSnackbar from '../../../components/SnackBar';
-import axiosInstance from '../../../../utils/axiosInstance';
+import axiosInstance from '../../../../utils/axiosInstance.js';
 
 const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onReplySend }) => {
     const [comment, setComment] = useState('');

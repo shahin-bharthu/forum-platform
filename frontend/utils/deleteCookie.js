@@ -1,13 +1,3 @@
-// export default function deleteCookie() {    
-//     console.log(document.cookie);
-
-//     const date = new Date();
-//     date.setTime(date.getTime() + (-1 * 24 * 60 * 60 * 1000));
-//     document.cookie = "token"+"=; expires="+date.toUTCString()+";";
-//     console.log(document.cookie);
-
-// }
-
 export default function deleteCookie() {
     const date = new Date();
     date.setTime(date.getTime() - (24 * 60 * 60 * 1000));

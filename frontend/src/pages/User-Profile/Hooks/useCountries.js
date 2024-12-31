@@ -15,9 +15,7 @@ const useCountries=()=>{
                     label:country.name.common
                 }))
                 .sort((a,b)=>a.label.localeCompare(b.label));
-
                 setCountries(sortedCountries)
-
                 setError(null);
             }catch(error){
                 console.error('Error fetching countrie:',error);
