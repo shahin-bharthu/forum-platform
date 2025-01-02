@@ -60,7 +60,13 @@ export default function PostDetailsCard({ post, user, forum }) {
     }, []);
 
     useEffect(() => {
-        fetchUserAvatar(user.id);
+        if (user.avatar.startsWith("avatars")) {
+            fetchUserAvatar(user.id);
+        }
+        else {
+            setUserAvatarUrl(user.avatar);
+            setIsAvatarLoading(false);
+        }
     }, [user.id, fetchUserAvatar]);
 
     const avatarContent = useMemo(() => {

@@ -18,7 +18,16 @@ import CreatePost, { topicDetailsLoader } from "./pages/CreatePost/Index.jsx";
 import IntroDivider, { forumDetailsLoader } from "./pages/ForumDetails/Index.jsx";
 import MyPosts from "./pages/MyPosts/Index.jsx";
 import PostDetails, {postDetailsLoader} from "./pages/PostDetails/Index.jsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
+
+const GoogleWrapper = () => {
+  return (
+  <GoogleOAuthProvider clientId="134528752542-asar3k7cmrjklpha94hno1q5ngt9s3no.apps.googleusercontent.com">
+    <LoginPage></LoginPage>
+  </GoogleOAuthProvider>
+  )
+}
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,7 +45,7 @@ const router = createBrowserRouter([
         ),
       },
       { path: "signup", element: <SignupPage /> },
-      { path: "login/:status", loader: loginLoader, element: <LoginPage /> },
+      { path: "login/:status", loader: loginLoader, element: <GoogleWrapper /> },
       { path: "forgot-password", element: <ForgotPassword /> },
       { path: "reset-password/:token", element: <ResetPassword /> },
     ],

@@ -8,6 +8,8 @@ import AuthFormFooter from "./AuthFormFooter";
 import axios from "axios";
 import { z } from "zod";
 import { Link, useLoaderData, useNavigate, redirect } from "react-router-dom";
+import { useGoogleLogin } from '@react-oauth/google';
+import axiosInstance from '../../utils/axiosInstance.js';
 import PositionedSnackbar from "./SnackBar";
 
 const LoginForm = () => {
@@ -117,6 +119,31 @@ const LoginForm = () => {
     }
   }
 
+  const responseGoogle = async (authResult) => {
+		try {
+      console.log(authResult);
+      
+			if (authResult["code"]) {
+				const result = await axios.get(`http://localhost:8080/auth/google?code=${authResult["code"]}`, {
+          withCredentials: true
+        });
+
+				navigate('/user/dashboard');
+			} else {
+				console.log(authResult);
+				throw new Error(authResult);
+			}
+		} catch (e) {
+			console.log('Error while Google Login...', e);
+		}
+	};
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: responseGoogle,
+    onError: responseGoogle,
+    flow: 'auth-code'
+  })
+
   return (
     <div className={classes["auth-page"]}>
       <AuthFormHeader authHeading="Login" authPara="login " />
@@ -142,7 +169,7 @@ const LoginForm = () => {
           onFocus={handleInputFocus}
           help={errors.email}
           error={errors.email ? true:false}
-        />
+          />
         <PasswordInputField
           label="Password"
           type="password"
@@ -153,26 +180,31 @@ const LoginForm = () => {
           onFocus={handleInputFocus}
           help={errors.password}
           error={errors.password ? true: false}
-        />
+          />
         <p className={classes["forgot-password"]}>
           <Link
             className={classes["constant-color-link"]}
             to="/forgot-password"
-          >
+            >
             Forgot password?
           </Link>
         </p>
         <CustomButton
+          clickHandler = {googleLogin}
+          label={isSubmitting ? "Logging you in..." : "Sign In with Google"}
+          disabled={isSubmitting}
+          />
+        <CustomButton
           type="submit"
           label={isSubmitting ? "Logging you in..." : "Login"}
           disabled={isSubmitting}
-        />
+          />
       </form>
       <AuthFormFooter
         authPara="Don't have an account? "
         authLink="/signup"
         authLabelLink="Sign Up"
-      />
+        />
     </div>
   );
 };

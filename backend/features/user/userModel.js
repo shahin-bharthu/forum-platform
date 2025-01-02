@@ -13,7 +13,7 @@ export default (sequelize, Sequelize) => {
         },
         password: {
             type: Sequelize.STRING,
-            allowNull: false
+            // allowNull: false
         },
         username: {
             type: Sequelize.STRING,

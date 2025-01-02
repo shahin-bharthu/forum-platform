@@ -40,14 +40,16 @@ export default function ClippedDrawer() {
       const currentUser = await axiosInstance.get('/user');
       setCurrentUser(currentUser.data.user.username)
 
-      const response = await axiosInstance.get(`/user/avatar/${currentUser.data.user.id}`,{responseType: "blob",})
-      
-      if (response.data) {
-          const reader = new FileReader()
-          reader.onloadend = () => {
-            setProfilePhoto(reader.result)          
-          }
-          reader.readAsDataURL(response.data)
+      if (currentUser.data.user.avatar.startsWith("avatars")) {        
+        const response = await axiosInstance.get(`/user/avatar/${currentUser.data.user.id}`,{responseType: "blob",})
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setProfilePhoto(reader.result);          
+        }
+        reader.readAsDataURL(response.data);
+      }
+      else {
+        setProfilePhoto(currentUser.data.user.avatar)
       }
     }
     catch (error) {

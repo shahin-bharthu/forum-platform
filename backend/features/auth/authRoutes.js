@@ -1,14 +1,15 @@
 import { Router } from 'express';
 
-import { userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword, userLogout }  from './authController.js';
+import { userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword, userLogout, googleAuth }  from './authController.js';
 import { validateSignup, validateLogin } from './authValidator.js';
-import { authMiddleware } from './authMiddleware.js';
 
 const router = Router();
 
 router.post('/signup', validateSignup(), userSignUp)
 
 router.post('/login', validateLogin(), userLogin);
+
+router.get('/google', googleAuth);
 
 router.get('/verify-email/:id/:token', verifyEmail);
 

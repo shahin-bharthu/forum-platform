@@ -37,6 +37,7 @@ export default function Dashboard() {
 export async function dashboardLoader() {
     try {
         const recentForums = await axiosInstance.get('/forum/recent-forums');
+
         const recentForumData = recentForums.data.data || [];      
 
         const forumAvatar = await Promise.all(

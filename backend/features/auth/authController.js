@@ -1,8 +1,11 @@
 import { validationResult } from "express-validator";
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 import * as authServices from "./authServices.js";
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
+import { oauth2Client } from "../../util/googleClient.js";
+import { db } from "../../config/connection.js";
 
 const userSignUp = asyncErrorHandler(async (req,res,next) => {
     const errors = validationResult(req);
@@ -68,7 +71,6 @@ const resetPassword = asyncErrorHandler(async (req, res, next) => {
 });
 
 
-
 const userLogout = (req, res, next) => {
     try {
         res.clearCookie("token", {maxAge: 0});
@@ -81,4 +83,46 @@ const userLogout = (req, res, next) => {
     }
 };
 
-export {userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword, userLogout};
+
+const googleAuth = async (req, res, next) => {
+    const code = req.query.code;    
+    try {
+        const googleRes = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(googleRes.tokens);
+        const userRes = await axios.get(
+            `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
+        );
+        const { email, name, picture, hd } = userRes.data;        
+        let user = await db.User.findOne({where: {email}});
+
+        if (!user) {
+            const username = email.split('@')[0];
+            user = await db.User.create({username, email, avatar: picture});
+        }        
+
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const expirationDate = new Date(Date.now() + 3600000); // Set expiration date to 1 hour from now
+        
+        res.cookie('token', token, {
+            maxAge: 3600000,
+            secure: true
+        });
+        
+        res.cookie('expiration', expirationDate.toUTCString(), {
+            maxAge: 3600000, 
+            secure: true, 
+        });
+        
+        user.password = null
+        return res.status(200).json({ data: user, message: 'User logged in successfully' });
+        
+    } catch (err) {
+        console.log('ERR IN GOOGLE SIGN IN:', err);
+        res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+};
+
+
+export {userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword, userLogout, googleAuth};
