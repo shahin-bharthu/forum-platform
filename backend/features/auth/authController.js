@@ -1,11 +1,11 @@
 import { validationResult } from "express-validator";
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
-
 import * as authServices from "./authServices.js";
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 import { oauth2Client } from "../../util/googleClient.js";
 import { db } from "../../config/connection.js";
+import { downloadImage } from "../../util/downloadImage.js";
 
 const userSignUp = asyncErrorHandler(async (req,res,next) => {
     const errors = validationResult(req);
@@ -97,8 +97,14 @@ const googleAuth = async (req, res, next) => {
 
         if (!user) {
             const username = email.split('@')[0];
-            user = await db.User.create({username, email, avatar: picture});
-        }        
+            user = await db.User.create({username, email});
+
+            const savePath = `./avatars/${user.id}-${username}.jpg`;
+            await downloadImage(picture, savePath);
+
+            user.avatar = `avatars/${user.id}-${username}.jpg`;
+            await user.save()
+        }
 
         const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
         const expirationDate = new Date(Date.now() + 3600000); // Set expiration date to 1 hour from now
