@@ -21,10 +21,11 @@ import PostDetails, {postDetailsLoader} from "./pages/PostDetails/Index.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 
-const GoogleWrapper = () => {
+const GoogleWrapper = ({Outlet}) => {
   return (
   <GoogleOAuthProvider clientId="134528752542-asar3k7cmrjklpha94hno1q5ngt9s3no.apps.googleusercontent.com">
-    <LoginPage></LoginPage>
+    {Outlet}
+    {/* <LoginPage></LoginPage> */}
   </GoogleOAuthProvider>
   )
 }
@@ -44,8 +45,8 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { path: "signup", element: <SignupPage /> },
-      { path: "login/:status", loader: loginLoader, element: <GoogleWrapper /> },
+      { path: "signup", element: <GoogleWrapper Outlet={<SignupPage/>} /> },
+      { path: "login/:status", loader: loginLoader, element: <GoogleWrapper Outlet={<LoginPage/>} /> },
       { path: "forgot-password", element: <ForgotPassword /> },
       { path: "reset-password/:token", element: <ResetPassword /> },
     ],

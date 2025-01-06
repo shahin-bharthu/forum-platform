@@ -9,8 +9,10 @@ import axios from "axios";
 import { z } from "zod";
 import { Link, useLoaderData, useNavigate, redirect } from "react-router-dom";
 import { useGoogleLogin } from '@react-oauth/google';
-import axiosInstance from '../../utils/axiosInstance.js';
+import GoogleIcon from '@mui/icons-material/Google';
 import PositionedSnackbar from "./SnackBar";
+import { Button } from "@mui/material";
+import Divider from '@mui/material/Divider';
 
 const LoginForm = () => {
   const emailInput = useRef();
@@ -120,21 +122,18 @@ const LoginForm = () => {
   }
 
   const responseGoogle = async (authResult) => {
-		try {
-      console.log(authResult);
-      
+		try {      
 			if (authResult["code"]) {
-				const result = await axios.get(`http://localhost:8080/auth/google?code=${authResult["code"]}`, {
+				await axios.get(`http://localhost:8080/auth/google?code=${authResult["code"]}`, {
           withCredentials: true
         });
-
 				navigate('/user/dashboard');
 			} else {
-				console.log(authResult);
 				throw new Error(authResult);
 			}
 		} catch (e) {
 			console.log('Error while Google Login...', e);
+      setErrorMessage(e.response.data.message || "An error occured. Please try again later");
 		}
 	};
 
@@ -146,7 +145,7 @@ const LoginForm = () => {
 
   return (
     <div className={classes["auth-page"]}>
-      <AuthFormHeader authHeading="Login" authPara="login " />
+      <AuthFormHeader authHeading="Sign in" authPara="sign in" />
       <form
         onSubmit={submitHandler}
         className={classes["auth-form"]}
@@ -159,6 +158,14 @@ const LoginForm = () => {
           <PositionedSnackbar message={errorMessage} isError={true} />
         )}
         {message && <PositionedSnackbar message={message} />}
+        <Button
+          startIcon={<GoogleIcon/>}
+          onClick = {googleLogin}
+          variant="outlined"
+          size="small"
+          disabled={isSubmitting}
+        >{isSubmitting ? "Logging you in..." : "Sign In with Google"}</Button>
+        <Divider>or</Divider>
         <InputField
           label="Email"
           type="email"
@@ -190,11 +197,6 @@ const LoginForm = () => {
           </Link>
         </p>
         <CustomButton
-          clickHandler = {googleLogin}
-          label={isSubmitting ? "Logging you in..." : "Sign In with Google"}
-          disabled={isSubmitting}
-          />
-        <CustomButton
           type="submit"
           label={isSubmitting ? "Logging you in..." : "Login"}
           disabled={isSubmitting}
@@ -211,7 +213,7 @@ const LoginForm = () => {
 
 export default LoginForm;
 
-export async function loader({ request, params }) {
+export async function loader({ params }) {
   const status = params.status;
   switch (status) {
     case "100":

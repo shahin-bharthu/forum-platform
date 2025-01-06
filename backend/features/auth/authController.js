@@ -6,6 +6,7 @@ import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 import { oauth2Client } from "../../util/googleClient.js";
 import { db } from "../../config/connection.js";
 import { downloadImage } from "../../util/downloadImage.js";
+import { CustomError } from "../../util/customError.js";
 
 const userSignUp = asyncErrorHandler(async (req,res,next) => {
     const errors = validationResult(req);
@@ -84,51 +85,47 @@ const userLogout = (req, res, next) => {
 };
 
 
-const googleAuth = async (req, res, next) => {
+const googleAuth = asyncErrorHandler (async(req, res, next) => {
     const code = req.query.code;    
-    try {
-        const googleRes = await oauth2Client.getToken(code);
-        oauth2Client.setCredentials(googleRes.tokens);
-        const userRes = await axios.get(
-            `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
-        );
-        const { email, name, picture, hd } = userRes.data;        
-        let user = await db.User.findOne({where: {email}});
+    const googleRes = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(googleRes.tokens);
+    const userRes = await axios.get(
+        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
+    );
+    const { email, name, picture, hd } = userRes.data;
 
-        if (!user) {
-            const username = email.split('@')[0];
-            user = await db.User.create({username, email});
-
-            const savePath = `./avatars/${user.id}-${username}.jpg`;
-            await downloadImage(picture, savePath);
-
-            user.avatar = `avatars/${user.id}-${username}.jpg`;
-            await user.save()
-        }
-
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        const expirationDate = new Date(Date.now() + 3600000); // Set expiration date to 1 hour from now
-        
-        res.cookie('token', token, {
-            maxAge: 3600000,
-            secure: true
-        });
-        
-        res.cookie('expiration', expirationDate.toUTCString(), {
-            maxAge: 3600000, 
-            secure: true, 
-        });
-        
-        user.password = null
-        return res.status(200).json({ data: user, message: 'User logged in successfully' });
-        
-    } catch (err) {
-        console.log('ERR IN GOOGLE SIGN IN:', err);
-        res.status(500).json({
-            message: "Internal Server Error"
-        })
+    if (!(hd?.includes('argusoft.in') || hd?.includes('argusoft.com'))) {
+        throw new CustomError("Please use an email ending with argusoft.com or argusoft.in to sign up or sign in", 403);
     }
-};
+
+    let user = await db.User.findOne({ where: { email } });
+    if (!user) {
+        const username = email.split('@')[0];
+        user = await db.User.create({ username, email });
+
+        const savePath = `./avatars/${user.id}-${username}.jpg`;
+        await downloadImage(picture, savePath);
+
+        user.avatar = `avatars/${user.id}-${username}.jpg`;
+        await user.save()
+    }
+
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const expirationDate = new Date(Date.now() + 3600000); // Set expiration date to 1 hour from now
+
+    res.cookie('token', token, {
+        maxAge: 3600000,
+        secure: true
+    });
+
+    res.cookie('expiration', expirationDate.toUTCString(), {
+        maxAge: 3600000,
+        secure: true,
+    });
+
+    user.password = null
+    return res.status(200).json({ data: user, message: 'Logging you in' });
+});
 
 
 export {userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword, userLogout, googleAuth};

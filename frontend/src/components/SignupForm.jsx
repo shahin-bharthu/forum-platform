@@ -8,11 +8,16 @@ import AuthFormFooter from "./AuthFormFooter";
 import axios from 'axios';
 import { z } from 'zod';
 import PositionedSnackbar from "./SnackBar";
+import { Button, Divider } from "@mui/material";
+import GoogleIcon from '@mui/icons-material/Google';
+import { useGoogleLogin } from '@react-oauth/google';
+import { useNavigate } from "react-router-dom";
 
 const SignupForm = () => {
   const usernameInput = useRef();
   const passwordInput = useRef();
   const emailInput = useRef();
+  const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -72,6 +77,28 @@ const SignupForm = () => {
         }
       }),
   });
+
+  const responseGoogle = async (authResult) => {
+		try {      
+			if (authResult["code"]) {
+				await axios.get(`http://localhost:8080/auth/google?code=${authResult["code"]}`, {
+          withCredentials: true
+        });
+				navigate('/user/dashboard');
+			} else {
+				throw new Error(authResult);
+			}
+		} catch (e) {
+			console.log('Error while Google Login...', e);
+      setErrorMessage(e.response.data.message || "An error occured. Please try again later");
+		}
+	};
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: responseGoogle,
+    onError: responseGoogle,
+    flow: 'auth-code'
+  })
 
   const validateForm = (formData) => {
     try {
@@ -135,7 +162,7 @@ const SignupForm = () => {
 
   return (
     <div className={classes["auth-page"]}>
-      <AuthFormHeader authHeading='Sign Up' authPara='sign in' />
+      <AuthFormHeader authHeading='Sign Up' authPara='sign up' />
       <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
         {successMessage && (
           <PositionedSnackbar message={successMessage} isSuccess={true}/>
@@ -144,6 +171,14 @@ const SignupForm = () => {
         {errorMessage && (
           <PositionedSnackbar message={errorMessage} isError={true} />
         )}
+        <Button
+          startIcon={<GoogleIcon/>}
+          onClick = {googleLogin}
+          variant="outlined"
+          size="small"
+          disabled={isSubmitting}
+        >{isSubmitting ? "Logging you in..." : "Sign Up with Google"}</Button>
+        <Divider>or</Divider>
 
         <InputField
           label="Username"
