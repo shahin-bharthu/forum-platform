@@ -73,7 +73,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
       <MenuItem onClick={handleEditProfile}>
         <Avatar src={profilePhoto}
           sx={{ width: 30, height: 30, mx: 1 }} />
-        Hi, {userName}
+        <Typography sx={{textAlign:'center',m:1}}> Hi, {userName}</Typography>
       </MenuItem>
     </Menu>
   );

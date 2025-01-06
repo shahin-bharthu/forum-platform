@@ -9,6 +9,9 @@ import SelectList from "./Components/SelectList.jsx";
 import Stack from '@mui/material/Stack';
 import { Card } from "@mui/material";
 import axiosInstance from "../../../utils/axiosInstance.js";
+import { useDispatch, useSelector } from 'react-redux';
+import { clearNotification, setNotification } from "../../store/uiSlice.js";
+import PositionedSnackbar from "../../components/SnackBar.jsx";
 
 const CreatePost = ({isEdit}) => {
   const topicData = useLoaderData();
@@ -18,13 +21,12 @@ const CreatePost = ({isEdit}) => {
   const {forumName, forumId} = location.state || null || topicData.topic.forum_id
 
   const navigate = useNavigate();
-
+  const dispatch=useDispatch()
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errors, setErrors] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");// only used to show error for the fields of the form
   const [selectedForum, setSelectedForum] = useState(null);
-
+  const notification= useSelector(state=>state.ui.notification)//to show toast for success and error both
+  
   useEffect(() => {
     if (forumName !== null && forumId !== null) {
       setSelectedForum(forumId)
@@ -32,7 +34,6 @@ const CreatePost = ({isEdit}) => {
   }, []);
 
   const getSelectedForumFromList = (selectedForumFromList) => {
-    // console.log(selectedForumFromList);
     setSelectedForum(selectedForumFromList ?? forumId); 
   };
 
@@ -52,10 +53,8 @@ const CreatePost = ({isEdit}) => {
       content: enteredBody, 
       forum_id: selectedForum 
     };
-    console.log(formData);
 
     setErrorMessage("");
-    setErrors({});
 
     try {
       setIsSubmitting(true);
@@ -66,16 +65,17 @@ const CreatePost = ({isEdit}) => {
         withCredentials: true
       });
       
-      setSuccessMessage(response.data.message);
+      dispatch(setNotification({message:response.data.message, type:"success"}))
       setTimeout(() => {
+        dispatch(clearNotification())
         navigate(`/post/${response.data.data.id}`); 
       }, 1500);
     } catch (error) {
       setIsSubmitting(false);
-      console.error("Error:", error);
-      setErrorMessage(
-        error.response?.data?.errors[0].msg || "An error occurred. Please try again later."
-      );
+      dispatch(setNotification({message:error.response?.data?.errors?.[0]?.msg || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     }
   }
 
@@ -88,7 +88,6 @@ const CreatePost = ({isEdit}) => {
     const formData = {title:enteredTitle, content: enteredBody};
     
     setErrorMessage("");
-    setErrors({});
 
     try {
       setIsSubmitting(true);
@@ -98,17 +97,18 @@ const CreatePost = ({isEdit}) => {
         withCredentials: true
       });
       
-      setSuccessMessage(response.data.message);
+      dispatch(setNotification({message:response.data.message, type:"success"}))
       setIsSubmitting(false);
       setTimeout(() => {
+        dispatch(clearNotification())
         navigate(`/post/my-posts`)
       }, 1000);
     } catch (error) {
       setIsSubmitting(false);
-      console.error("Error:", error);
-      setErrorMessage(
-        error.response?.data?.message || "An error occurred. Please try again later."
-      );
+      dispatch(setNotification({message:error.response?.data?.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     }
   }
 
@@ -118,6 +118,7 @@ const CreatePost = ({isEdit}) => {
       <form onSubmit={isEdit? (event)=>editPostHandler(event, topicData.topic.id):  addPostHandler} noValidate>
 
         {!isEdit && <SelectList selectedForumName={forumName} getForum={getSelectedForumFromList}/>}
+        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
 
         <TextInputField
           label="Title"
@@ -138,8 +139,7 @@ const CreatePost = ({isEdit}) => {
           value={isEdit ? topicData.topic.content : null}
         />
 
-        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-        {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+        {notification.message && <PositionedSnackbar message={notification.message} type={notification.type} />}
 
         <Stack spacing={2} direction="row" sx={{ m: 1, pt: 2, justifyContent: 'right' }}>
           <CustomButton

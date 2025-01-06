@@ -13,6 +13,8 @@ import PublicIcon from '@mui/icons-material/Public';
 import VpnLockIcon from '@mui/icons-material/VpnLock';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import axiosInstance from '../../../utils/axiosInstance.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearNotification, setNotification } from '../../store/uiSlice.js';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -60,10 +62,11 @@ export function FloatingActionButtons({ onClick }) {
 export default function MyForum() {
   const { privateForums, publicForums, archivedForums, empty } = useLoaderData();
 
-  const [message, setMessage] = useState();
   const [value, setValue] = useState(0);
+  const notification = useSelector(state=>state.ui.notification)
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -103,13 +106,13 @@ export default function MyForum() {
     const response = await axiosInstance.patch(`/forum/archive/${id}`, null)
 
     if (archiving) {
-      setMessage(`Archived forum ${response.data.data.name}`);
+      dispatch(setNotification({message:`Archived forum ${response.data.data.name}`, type:null}))
     }
     else {
-      setMessage(`Unarchived forum ${response.data.data.name}`);
+      dispatch(setNotification({message:`Unarchived forum ${response.data.data.name}`, type:null}))
     }
     setTimeout(() => {
-      setMessage(null);
+      dispatch(clearNotification())
       navigate('/user/my-forums')
     }, 1000);
   }
@@ -118,8 +121,8 @@ export default function MyForum() {
   return (
     <>
       <Box sx={{ flexGrow: 1, mt: 8, width: '100%', mx: 2, alignSelf: 'start' }}>
-        {message && (
-          <PositionedSnackbar message={message} />
+        {notification.message && (
+          <PositionedSnackbar message={notification.message} type={notification.type} />
         )}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', position: 'sticky', }}>
           <Tabs value={value} onChange={handleChange} centered>

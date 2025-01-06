@@ -10,8 +10,13 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         setUserProfile: (state, action) => {
-            state.userName = action.payload.userName
-            state.profilePhoto = action.payload.profilePhoto
+            
+            if (action.payload.userName) {
+                state.userName = action.payload.userName;
+            }
+            if (action.payload.profilePhoto) {
+                state.profilePhoto = action.payload.profilePhoto;
+            }
         },
         clearUserProfile: (state) => {
             state.userName = "user"

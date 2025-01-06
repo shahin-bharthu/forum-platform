@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../../utils/timestamp';
 import TopicSkeleton from '../../../components/PostsSkeleton';
 import axiosInstance from '../../../../utils/axiosInstance';
+import { useSelector } from 'react-redux';
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
   '.MuiCardHeader-content': {
@@ -61,8 +62,8 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [userAvatar, setUserAvatar] = useState({})
   const [isLiked, setIsLiked] = useState([{ liked: false }])
-  const [isLoading, setIsLoading] = useState(true);
-
+  const isLoading = useSelector(state => state.loading.isLoading);
+  
   const navigate = useNavigate()
 
   const fetchForumTopics = useCallback(async () => {
@@ -111,10 +112,8 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
         {});
 
       setUserAvatar(avatarMap);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching forum topics:', error);
-      setIsLoading(false);
     }
   }, [forum.forum_id, setPostLength]);
 

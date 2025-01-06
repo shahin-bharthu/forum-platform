@@ -10,7 +10,6 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import PositionedSnackbar from '../../../components/SnackBar';
 import { useDispatch } from 'react-redux';
 import { setUserProfile } from '../../../store/userSlice';
 import axiosInstance from '../../../../utils/axiosInstance';
@@ -21,9 +20,6 @@ export default function ClippedDrawer() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  // const [currentUser, setCurrentUser] = useState("Your Username");
-  // const [profilePhoto, setProfilePhoto] = useState();
-  const [success, setSuccess] = useState("");
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -71,13 +67,8 @@ export default function ClippedDrawer() {
   const handleLogout = useCallback(async () => {
     try {
       deleteCookie();
-      await axiosInstance.post('/auth/logout');
       setDialogOpen(false);
-      setSuccess("Logging you out")
-      setTimeout(() => {
-        setSuccess("")
-        navigate('/login/201', { replace: true });
-      }, 1500);
+      await axiosInstance.post('/auth/logout');
     } catch (error) {
       console.error("couldn't log user out", error);
     }
@@ -153,7 +144,6 @@ export default function ClippedDrawer() {
 
   return (
     <>
-      {success && (<PositionedSnackbar message={success} />)}
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <CombinedAppBar handleDrawerToggle={handleDrawerToggle} />

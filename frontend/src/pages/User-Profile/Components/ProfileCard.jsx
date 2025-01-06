@@ -9,15 +9,16 @@ import {
   Modal,
   IconButton,
   Stack,
-  Divider
 } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import PositionedSnackbar from "../../../components/SnackBar";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserProfile } from "../../../store/userSlice";
+import { clearNotification, setNotification } from "../../../store/uiSlice";
 
 const styles = {
   details: {
@@ -75,12 +76,14 @@ export default function ProfileCard(props) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [avatar, setAvatar] = useState(null)
-  const [avatrUrl, setAvatarUrl] = useState(null)
-  const [updateMessage, setUpdateMessage] = useState("");
-  const navigate = useNavigate();
 
   const handleOpen = () => setOpen(true);
-
+  
+  const dispatch = useDispatch()
+  const profilePhoto = useSelector(state => state.user.profilePhoto);
+  const { userPostCount } = useSelector(state => state.userPosts.userPostCount);
+  const notification = useSelector(state=>state.ui.notification);
+  
   const handleClose = () => {
     setOpen(false);
     setSelectedFile(null);
@@ -120,9 +123,9 @@ export default function ProfileCard(props) {
     if (file.data) {
       setAvatar(file.data);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarUrl(reader.result);
-      };
+      dispatch(setUserProfile({
+        profilePhoto: reader.result
+      }));
       reader.readAsDataURL(file.data);
     }
   };
@@ -144,16 +147,30 @@ export default function ProfileCard(props) {
           withCredentials: true
         }
       );
+
+      //Dispatching here again to update the state so that the components using the slice can be updated
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        dispatch(setUserProfile({
+          profilePhoto: reader.result
+        }));
+      };
+      reader.readAsDataURL(selectedFile);
+
+
       handleClose();
-      setUpdateMessage(response.data.message);
+      dispatch(setNotification({message:response.data.message, type:null}))
       setTimeout(() => {
-        setUpdateMessage(null)
-        window.location.reload();
+        dispatch(clearNotification())
       }, 1500);
     } catch (error) {
-      console.error('Error uploading file:', error);
+      dispatch(setNotification({message:'Error uploading file. Try again later!', type:'error'}))
+    } finally {
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     }
-  }, [props.id, props.email, selectedFile]);
+  }, [props.id, props.email, selectedFile, dispatch]);
 
   return (
     <Card variant="outlined">
@@ -163,9 +180,10 @@ export default function ProfileCard(props) {
         justifyContent="center"
         alignItems="center"
       >
-        {updateMessage && (
-          <PositionedSnackbar message={updateMessage} />
-        )}
+        {/*To display the snackbar in case of success or failure */}
+        {notification.messag &&
+          <PositionedSnackbar message={notification.message} type={notification.type} />
+        }
         {/* CARD HEADER START */}
         <Grid sx={{ p: "1.5rem 0rem", textAlign: "center" }}>
           {/* PROFILE PHOTO */}
@@ -188,7 +206,7 @@ export default function ProfileCard(props) {
             <Avatar
               sx={{ width: 100, height: 100, mb: 1.5 }}
               // "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"
-              src={avatrUrl || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"}
+              src={profilePhoto || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"}
             ></Avatar>
           </Badge>
 
@@ -202,14 +220,14 @@ export default function ProfileCard(props) {
         <Grid container>
           <Grid >
             {/* <Typography style={styles.details}>Detail ID</Typography> */}
-            <Typography style={styles.details}>Detail 1</Typography>
+            <Typography style={styles.details}>No of Posts</Typography>
             <Typography style={styles.details}>Detail 2</Typography>
             <Typography style={styles.details}>Detail 3</Typography>
           </Grid>
           {/* VALUES */}
           <Grid sx={{ textAlign: "end" }}>
             {/* <Typography style={styles.value}>{props.id}</Typography> */}
-            <Typography style={styles.value}>{props.dt1}</Typography>
+            <Typography style={styles.value}>{userPostCount}</Typography>
             <Typography style={styles.value}>{props.dt2}</Typography>
             <Typography style={styles.value}>{props.dt3}</Typography>
           </Grid>

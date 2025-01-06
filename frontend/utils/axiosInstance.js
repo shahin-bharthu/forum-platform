@@ -1,5 +1,8 @@
 import axios from 'axios';
 import { getAuthToken } from './auth.js';
+import { setLoading } from '../src/Store/loaderSlice.js';
+import { store } from '../src/Store/Index.js';
+
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:8080', 
@@ -15,6 +18,7 @@ axiosInstance.interceptors.request.use(
     if (!token) {
         window.location.href = 'http://localhost:5173/login/201';
     }
+    store.dispatch(setLoading(true));
     return config;
   },
   function (error) {
@@ -28,6 +32,7 @@ axiosInstance.interceptors.response.use(
     function (response) {
       // Do something with the response data
       // console.log('Response:', response);
+      store.dispatch(setLoading(false));
       return response;
     },
     function (error) {
@@ -37,6 +42,7 @@ axiosInstance.interceptors.response.use(
         console.error('Unauthorized, logging out...');
         // Perform any logout actions or redirect to login page
       }
+      store.dispatch(setLoading(false));
       return Promise.reject(error);
     }
 );

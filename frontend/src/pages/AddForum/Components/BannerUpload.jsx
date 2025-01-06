@@ -15,6 +15,8 @@ import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../../utils/axiosInstance";
 import PositionedSnackbar from "../../../components/SnackBar";
+import { useDispatch, useSelector } from "react-redux";
+import { clearNotification, setNotification } from "../../../store/uiSlice";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -32,12 +34,13 @@ const ForumBannerUpload = ({ forumId }) => {
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [updateMessage, setUpdateMessage] = useState("");
   const [bannerUrl, setBannerUrl] = useState(null);
   const [refresh,setRefresh] = useState(false) // used to reload the profile image compoent instead of window.location.reload() to avoid change of any other inputs
   
   const navigate = useNavigate();
-
+  const dispatch = useDispatch()
+  const notification = useSelector(state=>state.ui.notification)
+ 
   useEffect(() => {
     const fetchAvatar = async () => {
       await handleFileRead();
@@ -83,19 +86,20 @@ const ForumBannerUpload = ({ forumId }) => {
         const response = await axiosInstance.put(`/forum/banner/${forumId}`,formData);
         
         handleClose();
-        setUpdateMessage(response.data.message);
+        dispatch(setNotification({message:response.data.message, type: 'success'}))
         setTimeout(() => {
-          setUpdateMessage()
+          dispatch(clearNotification())
           setRefresh(true) // to reload the forum banner image after upload
         }, 1500);
       } catch (error) {
-        setUpdateMessage(error.response.data.message);
+        dispatch(setNotification({message:error.response.data.message, type:'error'}))
         setTimeout(() => {
+          dispatch(clearNotification())
           navigate('/user/dashboard');
         }, 3000);
       }
     },
-    [forumId, selectedFile,navigate]
+    [forumId, selectedFile, navigate, dispatch]
   );
 
   const handleFileRead = async () => {
@@ -224,8 +228,8 @@ const ForumBannerUpload = ({ forumId }) => {
 
         </Box>
       </Modal>
-          {updateMessage && (
-            <PositionedSnackbar message={updateMessage} />
+          {notification.message && (
+            <PositionedSnackbar message={notification.message} type={notification.type} />
           )}
     </div>
   );

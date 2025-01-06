@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid2';
 import ForumHeaderCard from "./Components/ForumHeaderCard";

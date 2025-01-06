@@ -18,6 +18,8 @@ import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import PositionedSnackbar from '../../../components/SnackBar';
 import axiosInstance from '../../../../utils/axiosInstance.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearNotification, setNotification } from '../../../store/uiSlice.js';
 
 export default function ForumHeaderCard({ forum, setIsSubbed }) {
 
@@ -27,8 +29,10 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
 
   const [subscribed, setSubscribed] = useState(false);
-  const [message, setMessage] = useState();
   const [bannerUrl, setBannerUrl] = useState();
+  const notification = useSelector(state=>state.ui.notification)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     async function isSubscribed(forum) {
@@ -40,7 +44,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
     }
 
     const fetchAvatar = async () => {
-      const data = await handleFileRead();
+      await handleFileRead();
     };
 
     fetchAvatar().catch(console.error);
@@ -66,10 +70,9 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
     try {
       const response = await axiosInstance.post(`/forum/subscribe/${forumId}`, null);
 
-      setMessage(`Subscribed to ${response.data.data.name}`);
-
+      dispatch(setNotification({message:`Subscribed to ${response.data.data.name}`, type:null}))
       setTimeout(() => {
-        setMessage(null);
+        dispatch(clearNotification())
         setSubscribed(true)
         setIsSubbed(true)
       }, 1000);
@@ -91,10 +94,9 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
     try {
       const response = await axiosInstance.post(`/forum/unsubscribe/${forumId}`, null);
 
-      setMessage(`Unsubscribed from ${response.data.data.name}`);
-
+      dispatch(setNotification({message:`Unsubscribed from ${response.data.data.name}`}))
       setTimeout(() => {
-        setMessage(null);
+        dispatch(clearNotification())
         setSubscribed(false);
         setIsSubbed(false)
       }, 1000);
@@ -119,8 +121,8 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
         image="https://cdn.textures4photoshop.com/tex/thumbs/300/webp/blue-sky-gradient-thumb17.webp"
       />
 
-      {message && (
-        <PositionedSnackbar message={message} />
+      {notification.message && (
+        <PositionedSnackbar message={notification.message} type={notification.type} />
       )}
 
       <Box

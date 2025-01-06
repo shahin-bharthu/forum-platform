@@ -10,15 +10,18 @@ import Avatar from "@mui/material/Avatar";
 import { blue } from "@mui/material/colors";
 import { Navigate, useRouteLoaderData } from "react-router-dom";
 import PositionedSnackbar from "../../components/SnackBar.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { clearNotification, setNotification } from "../../store/uiSlice.js";
 
 const Index = () => {
   const token = useRouteLoaderData('root');
   const emailInput = useRef();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState({});
+  const notification = useSelector(state=>state.ui.notification)
+
+  const dispatch = useDispatch()
 
   const userSchema = z.object({
     email: z.string()
@@ -59,13 +62,11 @@ const Index = () => {
   const handleInputChange = (event) => {
     const { name } = event.target;
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
   };
 
   const handleInputFocus = (event) => {
     const { name } = event.target;
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
   };
 
   async function submitHandler(event) {
@@ -77,7 +78,6 @@ const Index = () => {
     if (!validateForm(formData)) {
       return;
     }
-    setErrorMessage("");
     setErrors({});
 
     try {
@@ -86,15 +86,17 @@ const Index = () => {
         "Content-Type": "application/json",
         withCredentials: true
       })
-      setSuccessMessage(response.data.message);
-
-      // setIsSubmitting(false);
+      dispatch(setNotification({message:response.data.message, type:'success'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error:", error);
-      setErrorMessage(
-        error.response?.data?.message || "An error occurred. Please try again later."
-      );
+      dispatch(setNotification({message:error.response?.data?.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     }
   }
 
@@ -110,11 +112,8 @@ const Index = () => {
           <h3 className={classes["heading"]}>Forgot Password</h3>
           <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
 
-            {successMessage && (
-              <PositionedSnackbar message={successMessage} isSuccess={true} />
-            )}
-            {errorMessage && (
-              <PositionedSnackbar message={errorMessage} isError={true} />
+            {notification.message && (
+              <PositionedSnackbar message={notification.message} type={notification.type} />
             )}
 
             <InputField

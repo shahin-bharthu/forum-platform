@@ -19,6 +19,9 @@ import { formatDate } from "../../../utils/timestamp";
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import TopicSkeleton from "../../components/PostsSkeleton";
 import axiosInstance from "../../../utils/axiosInstance.js";
+import { useDispatch, useSelector } from 'react-redux';
+import { setPostCount } from "../../store/userPostSlice.js";
+import { clearNotification, setNotification } from "../../store/uiSlice.js";
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-content": {
@@ -107,21 +110,24 @@ export default function MyPosts() {
   ]);
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [forumBanner, setForumBanner] = useState({});
-  const [message, setMessage] = useState();
   const [menuAnchor, setMenuAnchor] = useState(null);  // Track the anchor element for the menu
   const [activeIndex, setActiveIndex] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-
+  const [refresh,setrefresh]=useState(false);
+  
+  const notification = useSelector(state=>state.ui.notification);
+  const isLoading = useSelector(state => state.loading.isLoading);
 
   const navigate = useNavigate()
+  const dispatch=useDispatch()
 
   const getForumTopics = useCallback(async () => {
     try {
-      setLoading(true);
       const myTopics = await axiosInstance.get(`/topic/my-topics`);
       const myTopicsData = myTopics.data.data;
-
+      dispatch(setPostCount({
+        userPostCount:myTopicsData.length
+      }))
       const forumsList = await Promise.all(myTopicsData.map(forumTopic => axiosInstance.get(`/forum/${forumTopic.forum_id}`)));
 
       const forumNames = forumsList.map(creator => creator.data.data.name);
@@ -159,17 +165,14 @@ export default function MyPosts() {
           }
         })
       );
-
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching topics:", error);
-      setLoading(false);
     }
-  }, []);
+  }, [dispatch,refresh]);
 
   useEffect(() => {
     getForumTopics();
-  }, [getForumTopics]);
+  }, [getForumTopics,dispatch]);
 
 
   const handleMenuClick = useCallback((event, index) => {
@@ -185,16 +188,18 @@ export default function MyPosts() {
   const handleDeleteTopic = async () => {
     if (activeIndex !== null) {
       try {
-        const response = await axiosInstance.delete(`/topic/${activeIndex}`);
-
-        setMessage('Post deleted');
+        await axiosInstance.delete(`/topic/${activeIndex}`);
+        dispatch(setNotification({message:'Post deleted', type:null}))
         setTimeout(() => {
-          setMessage(null);
-          window.location.reload();
+          dispatch(clearNotification())
+          setrefresh(prev=>!prev)
         }, 1000);
       } catch (error) {
         console.error("Error deleting post:", error);
-        setMessage('Failed to delete post');
+        dispatch(setNotification({message:'Failed to delete post', type:'error'}))
+        setTimeout(() => {
+          dispatch(clearNotification())
+        }, 1500);
       }
     }
     handleDialogClose();
@@ -250,7 +255,7 @@ export default function MyPosts() {
     </Dialog>
   )
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Grid size={12} sx={{ width: "100%", px: 3, mt: 10 }}>
         {[1, 2, 3].map((_, index) => (
@@ -279,7 +284,7 @@ export default function MyPosts() {
   return (
     <>
       <Grid size={12} sx={{ width: "100%", px: 3, mt: 10, alignSelf: "start" }}>
-        {message && <PositionedSnackbar message={message} />}
+        {notification.message && <PositionedSnackbar message={notification.message} type={notification.type} />}
         {forumTopics.map((topic, index) => (
           <Box key={index} mb={2}>
             <Card>

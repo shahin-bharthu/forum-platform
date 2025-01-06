@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import PublicIcon from '@mui/icons-material/Public';
 import VpnLockIcon from '@mui/icons-material/VpnLock';
 import Tooltip from '@mui/material/Tooltip';
+import { useSelector } from 'react-redux';
 
 const StyledCardHeader = memo(styled(CardHeader)`
   display: flex;
@@ -73,10 +74,12 @@ const ForumCardSkeleton = memo(() => (
   </Card>
 ));
 
+ForumCardSkeleton.displayName = 'ForumCardSkeleton';
 
-export default function RecentNewForumsCard({ recentForumData = [], isLoading = false }) {
+export default function RecentNewForumsCard({ recentForumData = [], }) {
   const navigate = useNavigate()
-  
+  const isLoading = useSelector(state => state.loading.isLoading);
+
   const handleViewDetails = useCallback((event, forum_id) => {    
     event.preventDefault();
     navigate(`/forum/${forum_id}`);
@@ -86,8 +89,8 @@ export default function RecentNewForumsCard({ recentForumData = [], isLoading = 
   if (isLoading ) {
     return (
       <Grid container spacing={2}>
-        {[1, 2, 3].map((_, index) => (
-          <Grid key={index} xs={12} sm={6} md={12}>
+        {[1, 2, 3,4].map((_, index) => (
+          <Grid key={index} size={{ xs: 6, sm: 6, md: 12 }}          >
             <ForumCardSkeleton />
           </Grid>
         ))}
