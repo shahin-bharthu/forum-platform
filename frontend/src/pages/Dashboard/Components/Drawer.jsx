@@ -10,7 +10,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import PositionedSnackbar from '../../../components/SnackBar';
+import { useDispatch } from 'react-redux';
+import { setUserProfile } from '../../../store/userSlice';
 import axiosInstance from '../../../../utils/axiosInstance';
 
 const drawerWidth = 200;
@@ -19,14 +20,13 @@ export default function ClippedDrawer() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState("Your Username");
-  const [profilePhoto, setProfilePhoto] = useState();
-  const [success,setSuccess] = useState("");
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -38,25 +38,27 @@ export default function ClippedDrawer() {
     async function getCurrentUser() {
       try {
       const currentUser = await axiosInstance.get('/user');
-      setCurrentUser(currentUser.data.user.username)
 
-      const response = await axiosInstance.get(
-        `/user/avatar/${currentUser.data.user.id}`,
-        { responseType: "blob" }
-      );
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePhoto(reader.result);
-      };
-      reader.readAsDataURL(response.data);
-    }
-    catch (error) {
-      console.error('Error fetching username or profile photo: ', error);
-    }
+      const response = await axiosInstance.get(`/user/avatar/${currentUser.data.user.id}`,{responseType: "blob",})
+      
+      if (response.data) {
+          const reader = new FileReader()
+          reader.onloadend = () => {
+            dispatch(setUserProfile({
+              userName:currentUser.data.user.username,
+              profilePhoto:reader.result
+            }))
+          }
+          reader.readAsDataURL(response.data)
+        }
+      }
+      catch (error) {
+        console.error('Error fetching username or profile photo: ', error);
+      }
     }
 
     getCurrentUser();
-  }, [location.pathname]);
+  }, [location.pathname,dispatch]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -65,13 +67,8 @@ export default function ClippedDrawer() {
   const handleLogout = useCallback(async () => {
     try {
       deleteCookie();
-      await axiosInstance.post('/auth/logout');
       setDialogOpen(false);
-      setSuccess("Logging you out")
-      setTimeout(() => {
-        setSuccess("")
-        navigate('/login/201', {replace: true});
-      }, 1500);
+      await axiosInstance.post('/auth/logout');
     } catch (error) {
       console.error("couldn't log user out", error);
     }
@@ -98,7 +95,7 @@ export default function ClippedDrawer() {
   const logoutDialog = (
     <Dialog open={dialogOpen} onClose={handleDialogClose}>
       <DialogContent>
-        <DialogTitle sx={{px:0}}>
+        <DialogTitle sx={{ px: 0 }}>
           Are you sure you want to log out?
         </DialogTitle>
         <DialogContentText>
@@ -147,10 +144,9 @@ export default function ClippedDrawer() {
 
   return (
     <>
-    {success && (<PositionedSnackbar message={success} />)}
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <CombinedAppBar currentUser={currentUser} profilePhoto={profilePhoto} handleDrawerToggle={handleDrawerToggle} />
+        <CombinedAppBar handleDrawerToggle={handleDrawerToggle} />
         {/* Drawer for small screens */}
         {isSmallScreen ? (
           <Drawer

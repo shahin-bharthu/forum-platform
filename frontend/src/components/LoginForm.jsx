@@ -13,6 +13,8 @@ import GoogleIcon from '@mui/icons-material/Google';
 import PositionedSnackbar from "./SnackBar";
 import { Button } from "@mui/material";
 import Divider from '@mui/material/Divider';
+import { useDispatch, useSelector } from "react-redux";
+import { clearNotification, setNotification } from "../store/uiSlice";
 
 const LoginForm = () => {
   const emailInput = useRef();
@@ -21,9 +23,12 @@ const LoginForm = () => {
   const { message } = useLoaderData()
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); 
+  const [errors, setErrors] = useState({}); 
+
+  const notification = useSelector(state=>state.ui.notification)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (message === null) {
@@ -68,13 +73,11 @@ const LoginForm = () => {
   const handleInputChange = (event) => {
     const { name } = event.target;
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
   };
 
   const handleInputFocus = (event) => {
     const { name } = event.target;
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
   };
 
   async function submitHandler(event) {
@@ -104,20 +107,19 @@ const LoginForm = () => {
       );
 
       if (response.status === 200) {
-        setSuccessMessage("Logging you in")
+        dispatch(setNotification({message:'Signing you in', type:"success"}))
         setTimeout(() => {
+          dispatch(clearNotification())
           navigate("/user/dashboard", { replace: true });
         }, 1000);
       }
-
-
       setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
-      setErrorMessage(
-        error.response.data.message ||
-        "An error occurred. Please try again later."
-      );
+      dispatch(setNotification({message:error.response.data.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     }
   }
 
@@ -151,11 +153,8 @@ const LoginForm = () => {
         className={classes["auth-form"]}
         noValidate
       >
-        {successMessage && (
-          <PositionedSnackbar message={successMessage} isSuccess={true}/>
-        )}
-        {errorMessage && (
-          <PositionedSnackbar message={errorMessage} isError={true} />
+        {notification.message && (
+          <PositionedSnackbar message={notification.message} type={notification.type}/>
         )}
         {message && <PositionedSnackbar message={message} />}
         <Button

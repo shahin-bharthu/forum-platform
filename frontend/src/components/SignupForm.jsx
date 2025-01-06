@@ -8,6 +8,8 @@ import AuthFormFooter from "./AuthFormFooter";
 import axios from 'axios';
 import { z } from 'zod';
 import PositionedSnackbar from "./SnackBar";
+import { useDispatch, useSelector } from "react-redux";
+import { clearNotification, setNotification } from "../store/uiSlice";
 import { Button, Divider } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import { useGoogleLogin } from '@react-oauth/google';
@@ -20,9 +22,10 @@ const SignupForm = () => {
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState({});
+  const notification = useSelector(state=>state.ui.notification);
+
+  const dispatch = useDispatch();
 
   const userSchema = z.object({
     username: z.string()
@@ -120,13 +123,11 @@ const SignupForm = () => {
   const handleInputChange = (event) => {
     const { name } = event.target;
     setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
-    setErrorMessage("");
   };
 
   const handleInputFocus = (event) => {
     const { name } = event.target;
     setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
-    setErrorMessage("");
   };
 
   async function submitHandler(event) {
@@ -151,12 +152,17 @@ const SignupForm = () => {
 
       console.log(response);
       setIsSubmitting(false);
-      setSuccessMessage(response.data.message);
-
+      dispatch(setNotification({message:response.data.message, type:'success'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     } catch (error) {
       console.error("Error: ", error);
       setIsSubmitting(false);
-      setErrorMessage(error.response.data.message || "An error occurred. Please try again later.");
+      dispatch(setNotification({message:error.response.data.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     }
   }
 
@@ -164,12 +170,8 @@ const SignupForm = () => {
     <div className={classes["auth-page"]}>
       <AuthFormHeader authHeading='Sign Up' authPara='sign up' />
       <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
-        {successMessage && (
-          <PositionedSnackbar message={successMessage} isSuccess={true}/>
-        )}
-        
-        {errorMessage && (
-          <PositionedSnackbar message={errorMessage} isError={true} />
+      {notification.message && (
+          <PositionedSnackbar message={notification.message} type={notification.type}/>
         )}
         <Button
           startIcon={<GoogleIcon/>}

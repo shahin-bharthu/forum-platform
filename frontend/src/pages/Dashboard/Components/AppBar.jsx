@@ -4,10 +4,13 @@ import { Menu as MenuIcon, Add as AddIcon, MoreVert as MoreIcon, AutoStories } f
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import { useSelector } from 'react-redux';
 
-function CombinedAppBar({ currentUser, profilePhoto, handleDrawerToggle }) {
+function CombinedAppBar({ handleDrawerToggle }) {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const navigate = useNavigate();
+
+  const { userName, profilePhoto } = useSelector((state) => state.user);
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -18,7 +21,7 @@ function CombinedAppBar({ currentUser, profilePhoto, handleDrawerToggle }) {
   const handleCreatePost = useCallback(() => {
     handleMobileMenuClose();
     navigate('/user/create-post', { state: { forumName: null, forumId: null } })
-  }, [handleMobileMenuClose]);
+  }, [handleMobileMenuClose,navigate]);
 
   const handleMobileMenuOpen = useCallback((event) => {
     setMobileMoreAnchorEl(event.currentTarget);
@@ -70,7 +73,7 @@ function CombinedAppBar({ currentUser, profilePhoto, handleDrawerToggle }) {
       <MenuItem onClick={handleEditProfile}>
         <Avatar src={profilePhoto}
           sx={{ width: 30, height: 30, mx: 1 }} />
-        Hi, {currentUser}
+        <Typography sx={{textAlign:'center',m:1}}> Hi, {userName}</Typography>
       </MenuItem>
     </Menu>
   );
@@ -143,7 +146,7 @@ function CombinedAppBar({ currentUser, profilePhoto, handleDrawerToggle }) {
               >
                 <Avatar src={profilePhoto}
                   sx={{ width: 30, height: 30, mx: 1 }} />
-                Hi, {currentUser}
+                Hi, {userName}
               </Button>
             </Tooltip>
           </Box>

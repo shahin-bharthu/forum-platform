@@ -16,7 +16,9 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import PositionedSnackbar from "../../../components/SnackBar.jsx";
 import { z } from "zod";
-import axiosInstance from "../../../../utils/axiosInstance.js";
+import { CircularProgress, Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import {clearNotification, setNotification} from "../../../store/uiSlice.js"
 
 export default function SettingsCard(props) {
   const genderSelect = [
@@ -40,11 +42,11 @@ export default function SettingsCard(props) {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [edit, setEdit] = useState(true);
-  const [updateMessage, setUpdateMessage] = useState("");
   const [errors, setErrors] = useState({});
+  const notification = useSelector(state=>state.ui.notification);// to show toast
 
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   useEffect(() => {
     setUser({
       id: props.id,
@@ -118,10 +120,6 @@ export default function SettingsCard(props) {
     }
   };
 
-  // const changeField = (event) => {
-  //   setUser({ ...user, [event.target.name]: event.target.value });
-  // };
-
   const changeField = (event) => {
     const { name, value } = event.target;
 
@@ -161,9 +159,9 @@ export default function SettingsCard(props) {
 
       const response = await axiosInstance.put('/user/update', formattedUser);
 
-      setUpdateMessage(response.data.message);
+      dispatch(setNotification({message:response.data.message, type:null}))
       setTimeout(() => {
-        setUpdateMessage(null)
+        dispatch(clearNotification())
         navigate("/user/profile");
       }, 1500);
 
@@ -177,8 +175,8 @@ export default function SettingsCard(props) {
     <Card variant="outlined" sx={{ height: "100%", width: "100%" }}>
       <br />
 
-      {updateMessage && (
-        <PositionedSnackbar message={updateMessage} />
+      {notification.message && (
+        <PositionedSnackbar message={notification.message} type={notification.type} />
       )}
 
       {/* MAIN CONTENT CONTAINER */}
@@ -288,11 +286,19 @@ export default function SettingsCard(props) {
                   title="Country"
                   dis={!edit}
                   req={true}
-                  content={countries.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
+                  content = {
+                    isLoading ? (
+                      <CircularProgress size="30px" sx={{ mx: 11 }} />
+                    ) : error ? (
+                      <Typography sx={{ mx: 11, color: 'red' }}>An error occurred. Please try again.</Typography>
+                    ) : (
+                      countries.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))
+                    )
+                }
                   help={errors.country}
                 />
               </Grid>

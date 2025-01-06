@@ -16,6 +16,7 @@ import { formatDate } from '../../../../utils/timestamp';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import TopicSkeleton from '../../../components/PostsSkeleton';
 import axiosInstance from '../../../../utils/axiosInstance.js';
+import { useSelector } from 'react-redux';
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
     '.MuiCardHeader-content': {
@@ -59,7 +60,8 @@ export default function MyPosts() {
     const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', forum: { name: 'username', id: null } }]);
     const [expanded, setExpanded] = useState([{ isExpanded: false }]);
     const [forumBanner, setForumBanner] = useState({})
-    const [isLoading, setIsLoading] = useState(true);
+
+    const isLoading = useSelector(state => state.loading.isLoading);
 
     const navigate = useNavigate()
 
@@ -102,7 +104,6 @@ export default function MyPosts() {
 
     const fetchForumTopics = useCallback(async () => {
         try {
-            setIsLoading(true);
             const myTopics = await axiosInstance.get(`/topic/recent-topics`);
             const myTopicsData = myTopics.data.data || [];
 
@@ -116,9 +117,7 @@ export default function MyPosts() {
         } catch (error) {
             console.error('Error fetching forum topics:', error);
             setForumTopics([]);
-        } finally {
-            setIsLoading(false);
-        }
+        } 
     }, [fetchForumBanners]);
 
     useEffect(() => {

@@ -4,6 +4,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useState, useEffect, useCallback } from "react";
 import { formatDate } from "../../../../utils/timestamp";
 import axiosInstance from "../../../../utils/axiosInstance.js";
+import { useSelector } from "react-redux";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     ".MuiCardHeader-content": {
@@ -20,13 +21,14 @@ const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
 }));
 
 export default function ChildrenComments({ parentId, childRefreshKey }) {
+  
     const [replies, setReplies] = useState([]);
     const [likedReplies, setLikedReplies] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const isLoading = useSelector(state => state.loading.isLoading);
     const fetchReplies = useCallback(async () => {
-        setIsLoading(true);
+
         setError(null);
 
         try {
@@ -63,9 +65,7 @@ export default function ChildrenComments({ parentId, childRefreshKey }) {
         } catch (error) {
             console.error('Error fetching replies', error);
             setError('Failed to load replies');
-        } finally {
-            setIsLoading(false);
-        }
+        } 
     }, [parentId]);
 
     useEffect(() => {
@@ -110,24 +110,6 @@ export default function ChildrenComments({ parentId, childRefreshKey }) {
                 }}
             >
                 <Typography variant="body2">{error}</Typography>
-            </Box>
-        );
-    }
-
-    if (replies.length === 0) {
-        return (
-            <Box 
-                sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    width: '100%', 
-                    py: 2 
-                }}
-            >
-                <Typography variant="body2" color="text.secondary">
-                    No replies yet
-                </Typography>
             </Box>
         );
     }

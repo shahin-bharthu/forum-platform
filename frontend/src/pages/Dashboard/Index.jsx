@@ -2,15 +2,11 @@ import Grid from '@mui/material/Grid2';
 import RecentNewPostsCard from "./Components/RecentNewPostsCard";
 import RecentNewForumsCard from "./Components/RecentNewForumsCard";
 import { Typography } from "@mui/material";
-import { useLoaderData, useNavigation } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
 
 export default function Dashboard() {
     const { recentForumData, empty } = useLoaderData()
-
-    const navigation = useNavigation();
-
-    const isLoading = navigation.state === "loading";
     
     return (
         <>
@@ -27,7 +23,7 @@ export default function Dashboard() {
                         RECENT NEW FORUMS
                     </Typography>
                     {empty && <Typography sx={{textAlign: 'left', ml: 1}}>No recent forums</Typography>}
-                    {!empty && <RecentNewForumsCard recentForumData={recentForumData} isLoading={isLoading}/>}
+                    {!empty && <RecentNewForumsCard recentForumData={recentForumData} />}
                 </Grid>
             </Grid>
         </>
@@ -37,7 +33,6 @@ export default function Dashboard() {
 export async function dashboardLoader() {
     try {
         const recentForums = await axiosInstance.get('/forum/recent-forums');
-
         const recentForumData = recentForums.data.data || [];      
 
         const forumAvatar = await Promise.all(

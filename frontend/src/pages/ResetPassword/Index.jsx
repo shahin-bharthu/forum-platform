@@ -9,18 +9,20 @@ import Avatar from "@mui/material/Avatar";
 import {blue } from "@mui/material/colors";
 import LockResetOutlinedIcon from '@mui/icons-material/LockResetOutlined';
 import PositionedSnackbar from "../../components/SnackBar";
+import { useDispatch, useSelector } from "react-redux";
+import { clearNotification, setNotification } from "../../store/uiSlice";
 
 const Index = () => {
     const passwordInput = useRef();
     const confirmPasswordInput = useRef();
     const { token } = useParams();
+
     const navigate = useNavigate();
+    const dispatch = useDispatch()
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [message, setMessage] = useState("");
-    const [errors, setErrors] = useState({});
-
+    const [errors, setErrors] = useState({});// used for validation error
+    const notification = useSelector(state=>state.ui.notification)
 
     const resetPasswordScheme = z.object({
         password: z.string()
@@ -85,13 +87,11 @@ const Index = () => {
     const handleInputChange = (event) => {
         const { name } = event.target;
         setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
-        setErrorMessage("");
     };
 
     const handleInputFocus = (event) => {
         const { name } = event.target;
         setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
-        setErrorMessage("");
     };
 
     async function submitHandler(event) {
@@ -106,7 +106,6 @@ const Index = () => {
             return;
         }
 
-        setErrorMessage("");
         setErrors({});
 
         try {
@@ -117,30 +116,32 @@ const Index = () => {
             })
             
             if (response.status == 200) {
-                setMessage("Your password has been reset! Login again to continue")
+                dispatch(setNotification({message:"Your password has been reset! Login again to continue", type:'success'}))
                 setTimeout(() => {
+                    dispatch(clearNotification())
                     navigate("/login/201", { replace: true });
                 }, 3000);
             }
         }
         catch (error) {
             setIsSubmitting(false);
-            setErrorMessage(error.response.data.message || "An error occurred. Please try again later.");
+            dispatch(setNotification({message:error.response.data.message || "An error occurred. Please try again later.", type:'error'}))
             console.error("Error:", error.response);
+            setTimeout(() => {
+                dispatch(clearNotification())
+            }, 2000);
         }
     }
 
     return (
         <div className={classes["auth-page"]}>
-            {message && <PositionedSnackbar message={message}></PositionedSnackbar>}
+            {notification.message && <PositionedSnackbar message={notification.message} type={notification.type}/>}
             <Avatar sx={{ bgcolor: blue[600] }}>
                 <LockResetOutlinedIcon sx={{ fontSize: 30 }}  />
             </Avatar>
             <h3 className={classes["heading"]}>Reset Password</h3>
             <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
-                {errorMessage && (
-                    <div className={classes["error-message"]}>{errorMessage}</div>
-                )}
+            
                 {errors.password && <p className={classes["error-message"]}>{errors.password}</p>}
                 {errors.confirmPassword && <p className={classes["error-message"]}>{errors.confirmPassword}</p>}
                 <PasswordInputField

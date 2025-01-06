@@ -2,12 +2,15 @@ import { useState, useCallback } from 'react';
 import { Box, TextField, IconButton } from '@mui/material';
 import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import PositionedSnackbar from '../../../components/SnackBar';
-import axiosInstance from '../../../../utils/axiosInstance.js';
+import axiosInstance from '../../../../utils/axiosInstance';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearNotification, setNotification } from '../../../store/uiSlice';
 
 const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onReplySend }) => {
     const [comment, setComment] = useState('');
-    const [message, setMessage] = useState();
+    const notification = useSelector(state=>state.ui.notification)
 
+    const dispatch=useDispatch()
     const handleCommentChange = useCallback((event) => {
         setComment(event.target.value);
     }, []);
@@ -28,12 +31,12 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onRep
             onReplySend?.();
         } catch (error) {
             console.error('Comment submission failed:', error);
-            setMessage(error.response?.data?.message || 'Failed to post comment. Please try again.')
+            dispatch(setNotification({message:error.response?.data?.message || 'Failed to post comment. Please try again.', type:'error'}))
             setTimeout(() => {
-                setMessage(null);
+                dispatch(clearNotification())
             }, 1500);
         }
-    }, [postId, parentCommentId, comment, onCommentadded, onReplySend]);
+    }, [postId, parentCommentId, comment, onCommentadded, onReplySend, dispatch]);
 
     const handleCancelComment = useCallback(() => {
         setComment('');
@@ -62,8 +65,8 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onRep
                     backgroundColor: '#f9f9f9',
                 }}
         >
-            {message && (
-                <PositionedSnackbar message={message} isError={true} />
+            {notification.message && (
+                <PositionedSnackbar message={notification.message} type={notification.type} />
             )}
             <TextField
                 fullWidth

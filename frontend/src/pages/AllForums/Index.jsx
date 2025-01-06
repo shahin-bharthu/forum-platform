@@ -8,6 +8,8 @@ import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import axiosInstance from '../../../utils/axiosInstance.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearNotification, setNotification } from '../../store/uiSlice.js';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -41,8 +43,9 @@ export default function AllForums() {
   const { subscribedForums, subscribableForums, subscribableEmpty, subscribedEmpty } = useLoaderData();
   const navigate = useNavigate();
   const [subscribableForumsState, setSubscribableForumsState] = useState(subscribableForums);
-  const [message, setMessage] = useState();
   const [value, setValue] = useState(0);
+  const notification = useSelector(state=>state.ui.notification)
+  const dispatch = useDispatch()
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -53,13 +56,13 @@ export default function AllForums() {
     try {
       const response = await axiosInstance.post(`http://localhost:8080/forum/subscribe/${forumId}`,null);
 
-      setMessage(`Subscribed to ${response.data.data.name}`);
+      dispatch(setNotification({message:`Subscribed to ${response.data.data.name}`, type: null}))
       setSubscribableForumsState((prevState) =>
         prevState.filter((id) => id !== forumId)
       );
 
       setTimeout(() => {
-        setMessage(null);
+        dispatch(clearNotification())
         navigate('/user/forums')
       }, 1000);
 
@@ -93,8 +96,8 @@ export default function AllForums() {
           <Tab label="More Forums" {...a11yProps(1)} />
         </Tabs>
       </Box>
-      {message && (
-        <PositionedSnackbar message={message} />
+      {notification.message && (
+        <PositionedSnackbar message={notification.message} type={notification.type} />
       )}
       <CustomTabPanel value={value} index={0}>
         {subscribedEmpty && <p>Subscribe to forums to see here.</p> }
