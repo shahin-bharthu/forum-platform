@@ -11,7 +11,7 @@ import PositionedSnackbar from "./SnackBar";
 import { useDispatch, useSelector } from "react-redux";
 import { clearNotification, setNotification } from "../store/uiSlice";
 import { Button, Divider } from "@mui/material";
-import GoogleIcon from '@mui/icons-material/Google';
+import GoogleIcon from "./GoogleIcon";
 import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from "react-router-dom";
 
@@ -93,7 +93,11 @@ const SignupForm = () => {
 			}
 		} catch (e) {
 			console.log('Error while Google Login...', e);
-      setErrorMessage(e.response.data.message || "An error occured. Please try again later");
+      // setErrorMessage(e.response.data.message || "An error occured. Please try again later");
+      dispatch(setNotification({message:e.response.data.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 3500);
 		}
 	};
 

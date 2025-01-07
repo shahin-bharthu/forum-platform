@@ -9,12 +9,12 @@ import axios from "axios";
 import { z } from "zod";
 import { Link, useLoaderData, useNavigate, redirect } from "react-router-dom";
 import { useGoogleLogin } from '@react-oauth/google';
-import GoogleIcon from '@mui/icons-material/Google';
 import PositionedSnackbar from "./SnackBar";
 import { Button } from "@mui/material";
 import Divider from '@mui/material/Divider';
 import { useDispatch, useSelector } from "react-redux";
 import { clearNotification, setNotification } from "../store/uiSlice";
+import GoogleIcon from "./GoogleIcon";
 
 const LoginForm = () => {
   const emailInput = useRef();
@@ -164,7 +164,7 @@ const LoginForm = () => {
           variant="outlined"
           size="small"
           disabled={isSubmitting}
-        >{isSubmitting ? "Logging you in..." : "Sign In with Google"}</Button>
+        >{isSubmitting ? "Signing you in..." : "Sign In with Google"}</Button>
         <Divider>or</Divider>
         <InputField
           label="Email"
