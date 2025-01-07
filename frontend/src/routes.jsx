@@ -25,7 +25,6 @@ const GoogleWrapper = ({Outlet}) => {
   return (
   <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
     {Outlet}
-    {/* <LoginPage></LoginPage> */}
   </GoogleOAuthProvider>
   )
 }
