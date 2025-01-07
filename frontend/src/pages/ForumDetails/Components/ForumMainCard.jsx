@@ -62,7 +62,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [userAvatar, setUserAvatar] = useState({})
   const [isLiked, setIsLiked] = useState([{ liked: false }])
-  const isLoading = useSelector(state => state.loading.isLoading);
+  // const isLoading = useSelector(state => state.loading.isLoading);
   
   const navigate = useNavigate()
 
@@ -139,15 +139,15 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
     });
   }, []);
 
-  if (isLoading && !isBlur) {
-    return (
-      <Grid size={12} sx={{ width: '100%' }}>
-        {[1, 2, 3].map((_, index) => (
-          <TopicSkeleton key={index} />
-        ))}
-      </Grid>
-    );
-  }
+  // if (isLoading && !isBlur) {
+  //   return (
+  //     <Grid size={12} sx={{ width: '100%' }}>
+  //       {[1, 2, 3].map((_, index) => (
+  //         <TopicSkeleton key={index} />
+  //       ))}
+  //     </Grid>
+  //   );
+  // }
 
 
   if (forumTopics.length === 0) {

@@ -5,13 +5,12 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import menuList from '../../../../utils/sidebarlist';
 import { useNavigate, useLocation } from 'react-router-dom';
-import deleteCookie from '../../../../utils/deleteCookie';
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import { useDispatch } from 'react-redux';
-import { setUserProfile } from '../../../store/userSlice';
+import { clearUserProfile, setUserProfile } from '../../../store/userSlice';
 import axiosInstance from '../../../../utils/axiosInstance';
 
 const drawerWidth = 200;
@@ -38,7 +37,7 @@ export default function ClippedDrawer() {
     async function getCurrentUser() {
       try {
       const currentUser = await axiosInstance.get('/user');
-
+      
       const response = await axiosInstance.get(`/user/avatar/${currentUser.data.user.id}`,{responseType: "blob",})
       
       if (response.data) {
@@ -66,13 +65,16 @@ export default function ClippedDrawer() {
 
   const handleLogout = useCallback(async () => {
     try {
-      deleteCookie();
       setDialogOpen(false);
-      await axiosInstance.post('/auth/logout');
+      await axiosInstance.post('/auth/logout')
+      // setTimeout(() => {
+        navigate('/login/201', {replace: true});
+        dispatch(clearUserProfile())
+      // }, 1500);
     } catch (error) {
       console.error("couldn't log user out", error);
     }
-  }, []);
+  }, [dispatch,navigate]);
 
   const handleMenuItemClick = (path) => {
     if (path === 'logout') {
@@ -106,7 +108,7 @@ export default function ClippedDrawer() {
         <Button onClick={handleDialogClose} color="error">
           Cancel
         </Button>
-        <Button onClick={handleLogout} color="primary">
+        <Button type='button' onClick={handleLogout} color="primary">
           Yes, Log Out
         </Button>
       </DialogActions>

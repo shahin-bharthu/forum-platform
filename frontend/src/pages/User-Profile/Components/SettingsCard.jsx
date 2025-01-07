@@ -19,6 +19,7 @@ import { z } from "zod";
 import { CircularProgress, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {clearNotification, setNotification} from "../../../store/uiSlice.js"
+import axiosInstance from "../../../../utils/axiosInstance.js";
 
 export default function SettingsCard(props) {
   const genderSelect = [

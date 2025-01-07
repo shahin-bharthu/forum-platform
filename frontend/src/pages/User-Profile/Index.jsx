@@ -4,9 +4,12 @@ import Grid from "@mui/material/Grid2";
 import ProfileCard from "./Components/ProfileCard";
 import SettingsCard from "./Components/SettingsCard";
 import axiosInstance from "../../../utils/axiosInstance.js";
+import { formatDate } from "../../../utils/timestamp.js";
+import { useSelector } from "react-redux";
 
 export default function Index() {
   const [text, setText] = useState("");
+  const { userPostCount } = useSelector(state => state.userPosts.userPostCount);
   const [user, setUser] = useState({
     firstname: ' ',
     lastname: ' ',
@@ -59,8 +62,8 @@ export default function Index() {
         gender: data.gender || 'male',
         email: data.email,
         username: data.username,
-        dt1: 10,
-        dt2: 20,
+        dt1: userPostCount || 0,
+        dt2: formatDate(data.createdAt),
         dt3: 30,
       });
 

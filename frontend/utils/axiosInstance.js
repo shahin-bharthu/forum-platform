@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getAuthToken } from './auth.js';
-import { setLoading } from '../src/Store/loaderSlice.js';
-import { store } from '../src/Store/Index.js';
+import { setLoading } from '../src/store/loaderSlice.js';
+import { store } from '../src/store/index.js';
 
 
 const axiosInstance = axios.create({
@@ -10,14 +10,16 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// Add a request interceptor
 axiosInstance.interceptors.request.use(
   function (config) {
     // Do something before the request is sent
     const token = getAuthToken(); 
+
     if (!token) {
         window.location.href = 'http://localhost:5173/login/201';
+        return config;
     }
+
     store.dispatch(setLoading(true));
     return config;
   },

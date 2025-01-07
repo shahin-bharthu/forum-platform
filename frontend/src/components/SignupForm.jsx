@@ -155,14 +155,14 @@ const SignupForm = () => {
       dispatch(setNotification({message:response.data.message, type:'success'}))
       setTimeout(() => {
         dispatch(clearNotification())
-      }, 1500);
+      }, 3500);
     } catch (error) {
       console.error("Error: ", error);
       setIsSubmitting(false);
       dispatch(setNotification({message:error.response.data.message || "An error occurred. Please try again later.", type:'error'}))
       setTimeout(() => {
         dispatch(clearNotification())
-      }, 1500);
+      }, 3500);
     }
   }
 
@@ -223,7 +223,7 @@ const SignupForm = () => {
           disabled={isSubmitting}
         />
       </form>
-      <AuthFormFooter authPara='Already have an account? ' authLink='/login/201' authLabelLink='Login' />
+      <AuthFormFooter authPara='Already have an account? ' authLink='/login/201' authLabelLink='Sign In' />
     </div>
   );
 };

@@ -30,7 +30,7 @@ export default function PostDetails() {
                 <PostDetailsCard post={topic} user={user} forum={forum} />
             </Grid>
             <Grid size={{ xs: 0, sm: 5, md: 4, lg: 3, xl: 3 }}>
-                <ForumInfoCard creator={forum_creator} forum={forum} postLength={postLength} />
+                <ForumInfoCard creator={forum_creator} forum={forum} />
             </Grid>
         </Grid>
     );

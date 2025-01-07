@@ -61,7 +61,7 @@ export default function MyPosts() {
     const [expanded, setExpanded] = useState([{ isExpanded: false }]);
     const [forumBanner, setForumBanner] = useState({})
 
-    const isLoading = useSelector(state => state.loading.isLoading);
+    // const isLoading = useSelector(state => state.loading.isLoading);
 
     const navigate = useNavigate()
 
@@ -131,16 +131,16 @@ export default function MyPosts() {
     };
 
 
-    // Loading state
-    if (isLoading) {
-        return (
-            <Grid size={12} sx={{ width: '100%' }}>
-                {[1, 2, 3].map((_, index) => (
-                    <TopicSkeleton key={index}/>
-                ))}
-            </Grid>
-        );
-    }
+    // // Loading state
+    // if (isLoading) {
+    //     return (
+    //         <Grid size={12} sx={{ width: '100%' }}>
+    //             {[1, 2, 3].map((_, index) => (
+    //                 <TopicSkeleton key={index}/>
+    //             ))}
+    //         </Grid>
+    //     );
+    // }
 
 
     if (forumTopics.length === 0) {

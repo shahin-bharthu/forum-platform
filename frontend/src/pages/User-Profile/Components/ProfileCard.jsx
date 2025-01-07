@@ -19,6 +19,7 @@ import PositionedSnackbar from "../../../components/SnackBar";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserProfile } from "../../../store/userSlice";
 import { clearNotification, setNotification } from "../../../store/uiSlice";
+import axiosInstance from "../../../../utils/axiosInstance";
 
 const styles = {
   details: {
@@ -81,7 +82,6 @@ export default function ProfileCard(props) {
   
   const dispatch = useDispatch()
   const profilePhoto = useSelector(state => state.user.profilePhoto);
-  const { userPostCount } = useSelector(state => state.userPosts.userPostCount);
   const notification = useSelector(state=>state.ui.notification);
   
   const handleClose = () => {
@@ -214,13 +214,13 @@ export default function ProfileCard(props) {
           <Grid >
             {/* <Typography style={styles.details}>Detail ID</Typography> */}
             <Typography style={styles.details}>No of Posts</Typography>
-            <Typography style={styles.details}>Detail 2</Typography>
+            <Typography style={styles.details}>User Since</Typography>
             <Typography style={styles.details}>Detail 3</Typography>
           </Grid>
           {/* VALUES */}
           <Grid sx={{ textAlign: "end" }}>
             {/* <Typography style={styles.value}>{props.id}</Typography> */}
-            <Typography style={styles.value}>{userPostCount}</Typography>
+            <Typography style={styles.value}>{props.dt1}</Typography>
             <Typography style={styles.value}>{props.dt2}</Typography>
             <Typography style={styles.value}>{props.dt3}</Typography>
           </Grid>

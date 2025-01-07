@@ -116,7 +116,7 @@ export default function MyPosts() {
   const [refresh,setrefresh]=useState(false);
   
   const notification = useSelector(state=>state.ui.notification);
-  const isLoading = useSelector(state => state.loading.isLoading);
+  // const isLoading = useSelector(state => state.loading.isLoading);
 
   const navigate = useNavigate()
   const dispatch=useDispatch()
@@ -255,15 +255,15 @@ export default function MyPosts() {
     </Dialog>
   )
 
-  if (isLoading) {
-    return (
-      <Grid size={12} sx={{ width: "100%", px: 3, mt: 10 }}>
-        {[1, 2, 3].map((_, index) => (
-          <TopicSkeleton key={index}/>
-        ))}
-      </Grid>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Grid size={12} sx={{ width: "100%", px: 3, mt: 10 }}>
+  //       {[1, 2, 3].map((_, index) => (
+  //         <TopicSkeleton key={index}/>
+  //       ))}
+  //     </Grid>
+  //   );
+  // }
 
   if (forumTopics.length === 0) {
     return (

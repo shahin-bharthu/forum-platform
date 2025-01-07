@@ -23,7 +23,6 @@ const LoginForm = () => {
   const { message } = useLoaderData()
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(""); 
   const [errors, setErrors] = useState({}); 
 
   const notification = useSelector(state=>state.ui.notification)
@@ -92,7 +91,6 @@ const LoginForm = () => {
       return;
     }
 
-    setErrorMessage("");
     setErrors({});
 
     try {
@@ -135,7 +133,10 @@ const LoginForm = () => {
 			}
 		} catch (e) {
 			console.log('Error while Google Login...', e);
-      setErrorMessage(e.response.data.message || "An error occured. Please try again later");
+      dispatch(setNotification({message: e.response.data.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 3000);
 		}
 	};
 
@@ -197,7 +198,7 @@ const LoginForm = () => {
         </p>
         <CustomButton
           type="submit"
-          label={isSubmitting ? "Logging you in..." : "Login"}
+          label={isSubmitting ? "Signing you in..." : "Sign In"}
           disabled={isSubmitting}
           />
       </form>

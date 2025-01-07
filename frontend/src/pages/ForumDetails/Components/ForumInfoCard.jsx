@@ -120,10 +120,10 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
           direction="row"
           spacing={1}
           sx={{
-            justifyContent: 'space-between',
+            justifyContent: postLength ? 'space-between' : 'flex-start',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: 1
+            gap: postLength ? 1 : 3
           }}
         >
           <Chip
@@ -140,7 +140,7 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
             }}
           />
 
-          <Tooltip title="Number of posts">
+          {postLength>=0 && <Tooltip title="Number of posts">
             <Chip
               icon={<NumbersRoundedIcon />}
               label={postLength}
@@ -153,7 +153,7 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
                 }
               }}
             />
-          </Tooltip>
+          </Tooltip>}
 
           <Tooltip title="Number of subscribers">
             <Chip
