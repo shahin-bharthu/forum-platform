@@ -78,8 +78,6 @@ export default function MyForum() {
   }
 
   if (empty) {
-    console.log('in empty');
-
     return (
       <>
         <Box>

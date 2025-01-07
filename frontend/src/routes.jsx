@@ -23,7 +23,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const GoogleWrapper = ({Outlet}) => {
   return (
-  <GoogleOAuthProvider clientId="134528752542-asar3k7cmrjklpha94hno1q5ngt9s3no.apps.googleusercontent.com">
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
     {Outlet}
     {/* <LoginPage></LoginPage> */}
   </GoogleOAuthProvider>
