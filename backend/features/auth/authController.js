@@ -93,7 +93,8 @@ const googleAuth = asyncErrorHandler (async(req, res, next) => {
     const userRes = await axios.get(
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
     );
-    const { email, name, picture, hd } = userRes.data;
+    console.log(userRes.data);
+    const { email, given_name, family_name, picture, hd } = userRes.data;
 
     if (!(hd?.includes('argusoft.in') || hd?.includes('argusoft.com'))) {
         throw new CustomError("Please use an email ending with argusoft.com or argusoft.in to sign up or sign in", 403);
@@ -102,7 +103,7 @@ const googleAuth = asyncErrorHandler (async(req, res, next) => {
     let user = await db.User.findOne({ where: { email } });
     if (!user) {
         const username = email.split('@')[0];
-        user = await db.User.create({ username, email });
+        user = await db.User.create({ username, email, firstname: given_name, lastname: family_name });
 
         const savePath = `./avatars/${user.id}-${username}.jpg`;
         await downloadImage(picture, savePath);
