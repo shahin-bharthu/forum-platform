@@ -14,9 +14,9 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../../utils/axiosInstance";
-import PositionedSnackbar from "../../../components/SnackBar";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { clearNotification, setNotification } from "../../../store/uiSlice";
+import defaultForumBanner from "../../../assets/defaultForumbanner.png";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -39,7 +39,6 @@ const ForumBannerUpload = ({ forumId }) => {
   
   const navigate = useNavigate();
   const dispatch = useDispatch()
-  const notification = useSelector(state=>state.ui.notification)
  
   useEffect(() => {
     const fetchAvatar = async () => {
@@ -143,7 +142,7 @@ const ForumBannerUpload = ({ forumId }) => {
           sx={{ width: 100, height: 100, mb: 1.5 }}
           src={
             bannerUrl ||
-            "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"
+            defaultForumBanner
           }
         ></Avatar>
       </Badge>
@@ -228,9 +227,6 @@ const ForumBannerUpload = ({ forumId }) => {
 
         </Box>
       </Modal>
-          {notification.message && (
-            <PositionedSnackbar message={notification.message} type={notification.type} />
-          )}
     </div>
   );
 };

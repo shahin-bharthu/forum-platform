@@ -9,9 +9,8 @@ import SelectList from "./Components/SelectList.jsx";
 import Stack from '@mui/material/Stack';
 import { Card } from "@mui/material";
 import axiosInstance from "../../../utils/axiosInstance.js";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { clearNotification, setNotification } from "../../store/uiSlice.js";
-import PositionedSnackbar from "../../components/SnackBar.jsx";
 
 const CreatePost = ({isEdit}) => {
   const topicData = useLoaderData();
@@ -25,7 +24,6 @@ const CreatePost = ({isEdit}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");// only used to show error for the fields of the form
   const [selectedForum, setSelectedForum] = useState(null);
-  const notification= useSelector(state=>state.ui.notification)//to show toast for success and error both
   
   useEffect(() => {
     if (forumName !== null && forumId !== null) {
@@ -138,8 +136,6 @@ const CreatePost = ({isEdit}) => {
           reference={bodyInput}
           value={isEdit ? topicData.topic.content : null}
         />
-
-        {notification.message && <PositionedSnackbar message={notification.message} type={notification.type} />}
 
         <Stack spacing={2} direction="row" sx={{ m: 1, pt: 2, justifyContent: 'right' }}>
           <CustomButton

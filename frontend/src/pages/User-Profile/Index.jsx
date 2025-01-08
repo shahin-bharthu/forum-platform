@@ -6,7 +6,7 @@ import SettingsCard from "./Components/SettingsCard";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { formatDate } from "../../../utils/timestamp.js";
 import { useSelector } from "react-redux";
-
+import userBackdrop from "../../assets/UserProfileBackdrop.png"
 export default function Index() {
   const [text, setText] = useState("");
   const { userPostCount } = useSelector(state => state.userPosts.userPostCount);
@@ -85,7 +85,7 @@ export default function Index() {
             objectFit: "cover",
             objectPosition: "50% 50%",
           }}
-          src="https://iconerecife.com.br/wp-content/plugins/uix-page-builder/uixpb_templates/images/UixPageBuilderTmpl/default-cover-6.jpg"
+          src={userBackdrop}
         />
       </Grid>
 

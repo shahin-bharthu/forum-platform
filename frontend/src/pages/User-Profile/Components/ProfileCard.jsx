@@ -15,11 +15,11 @@ import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import axios from "axios";
-import PositionedSnackbar from "../../../components/SnackBar";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserProfile } from "../../../store/userSlice";
 import { clearNotification, setNotification } from "../../../store/uiSlice";
 import axiosInstance from "../../../../utils/axiosInstance";
+import defaultAvatar from "../../../assets/defaultAvatar.png"
 
 const styles = {
   details: {
@@ -82,7 +82,6 @@ export default function ProfileCard(props) {
   
   const dispatch = useDispatch()
   const profilePhoto = useSelector(state => state.user.profilePhoto);
-  const notification = useSelector(state=>state.ui.notification);
   
   const handleClose = () => {
     setOpen(false);
@@ -173,10 +172,7 @@ export default function ProfileCard(props) {
         justifyContent="center"
         alignItems="center"
       >
-        {/*To display the snackbar in case of success or failure */}
-        {notification.messag &&
-          <PositionedSnackbar message={notification.message} type={notification.type} />
-        }
+
         {/* CARD HEADER START */}
         <Grid sx={{ p: "1.5rem 0rem", textAlign: "center" }}>
           {/* PROFILE PHOTO */}
@@ -198,8 +194,7 @@ export default function ProfileCard(props) {
           >
             <Avatar
               sx={{ width: 100, height: 100, mb: 1.5 }}
-              // "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"
-              src={profilePhoto || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"}
+              src={profilePhoto || defaultAvatar}
             ></Avatar>
           </Badge>
 

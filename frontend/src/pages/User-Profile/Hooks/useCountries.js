@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading } from '../../../store/loaderSlice';
 const useCountries=()=>{
     const [countries,setCountries]=useState([]);
-    // const [isLoading,setIsLoading]=useState(true);
     const [error,setError]=useState(null)
-    const isLoading=useSelector(state=>state.loading.isLoading)
+    const isLoading = useSelector(state=>state.loading.isLoading)
+    const dispatch =useDispatch()
 
     useEffect(()=>{
         const fetchCountries=async()=>{
             try{
-                // setIsLoading(true);
+                dispatch(setLoading(true))
                 const response = await axios.get('https://restcountries.com/v3.1/all')
                 const sortedCountries=response.data.map(country=>({
                     value:country.cca2,
@@ -23,12 +24,12 @@ const useCountries=()=>{
                 console.error('Error fetching countrie:',error);
                 setError('Failed to fetch countries. Please try again later.')
             }
-            // finally{
-            //     setIsLoading(false)
-            // }
+            finally{
+                dispatch(setLoading(false))
+            }
         }
         fetchCountries()
-    },[]);
+    },[dispatch]);
     return {countries,isLoading,error}
 }
 

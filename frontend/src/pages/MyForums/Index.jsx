@@ -5,7 +5,6 @@ import { useLoaderData, useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
 import { useState } from 'react';
-import PositionedSnackbar from '../../components/SnackBar';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -13,7 +12,7 @@ import PublicIcon from '@mui/icons-material/Public';
 import VpnLockIcon from '@mui/icons-material/VpnLock';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import axiosInstance from '../../../utils/axiosInstance.js';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { clearNotification, setNotification } from '../../store/uiSlice.js';
 
 function CustomTabPanel(props) {
@@ -63,7 +62,6 @@ export default function MyForum() {
   const { privateForums, publicForums, archivedForums, empty } = useLoaderData();
 
   const [value, setValue] = useState(0);
-  const notification = useSelector(state=>state.ui.notification)
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -119,9 +117,6 @@ export default function MyForum() {
   return (
     <>
       <Box sx={{ flexGrow: 1, mt: 8, width: '100%', mx: 2, alignSelf: 'start' }}>
-        {notification.message && (
-          <PositionedSnackbar message={notification.message} type={notification.type} />
-        )}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', position: 'sticky', }}>
           <Tabs value={value} onChange={handleChange} centered>
             <Tab icon={<PublicIcon />} iconPosition="start" label="Public" {...a11yProps(0)} wrapped/>

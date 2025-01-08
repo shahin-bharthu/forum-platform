@@ -8,8 +8,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import {blue } from "@mui/material/colors";
 import LockResetOutlinedIcon from '@mui/icons-material/LockResetOutlined';
-import PositionedSnackbar from "../../components/SnackBar";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { clearNotification, setNotification } from "../../store/uiSlice";
 
 const Index = () => {
@@ -22,7 +21,6 @@ const Index = () => {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});// used for validation error
-    const notification = useSelector(state=>state.ui.notification)
 
     const resetPasswordScheme = z.object({
         password: z.string()
@@ -135,7 +133,6 @@ const Index = () => {
 
     return (
         <div className={classes["auth-page"]}>
-            {notification.message && <PositionedSnackbar message={notification.message} type={notification.type}/>}
             <Avatar sx={{ bgcolor: blue[600] }}>
                 <LockResetOutlinedIcon sx={{ fontSize: 30 }}  />
             </Avatar>

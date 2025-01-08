@@ -3,12 +3,11 @@ import Grid from '@mui/material/Grid2';
 import { useLoaderData, useNavigate } from "react-router-dom";
 import MediaCard from '../MyForums/Components/Card';
 import { useState } from 'react';
-import PositionedSnackbar from '../../components/SnackBar.jsx';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import axiosInstance from '../../../utils/axiosInstance.js';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { clearNotification, setNotification } from '../../store/uiSlice.js';
 
 function CustomTabPanel(props) {
@@ -44,7 +43,6 @@ export default function AllForums() {
   const navigate = useNavigate();
   const [subscribableForumsState, setSubscribableForumsState] = useState(subscribableForums);
   const [value, setValue] = useState(0);
-  const notification = useSelector(state=>state.ui.notification)
   const dispatch = useDispatch()
 
   const handleChange = (event, newValue) => {
@@ -96,9 +94,6 @@ export default function AllForums() {
           <Tab label="More Forums" {...a11yProps(1)} />
         </Tabs>
       </Box>
-      {notification.message && (
-        <PositionedSnackbar message={notification.message} type={notification.type} />
-      )}
       <CustomTabPanel value={value} index={0}>
         {subscribedEmpty && <p>Subscribe to forums to see here.</p> }
         {!subscribedEmpty && <Grid size={12} >

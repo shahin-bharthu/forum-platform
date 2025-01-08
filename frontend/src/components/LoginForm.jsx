@@ -12,7 +12,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import PositionedSnackbar from "./SnackBar";
 import { Button } from "@mui/material";
 import Divider from '@mui/material/Divider';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { clearNotification, setNotification } from "../store/uiSlice";
 import GoogleIcon from "./GoogleIcon";
 
@@ -25,7 +25,6 @@ const LoginForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({}); 
 
-  const notification = useSelector(state=>state.ui.notification)
 
   const dispatch = useDispatch()
 
@@ -154,9 +153,6 @@ const LoginForm = () => {
         className={classes["auth-form"]}
         noValidate
       >
-        {notification.message && (
-          <PositionedSnackbar message={notification.message} type={notification.type}/>
-        )}
         {message && <PositionedSnackbar message={message} />}
         <Button
           startIcon={<GoogleIcon/>}

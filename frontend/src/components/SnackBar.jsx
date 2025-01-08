@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
+import { useSelector } from 'react-redux';
 
 const createSnackbarTheme = (type) => createTheme({
     components: {
@@ -24,16 +25,16 @@ const createSnackbarTheme = (type) => createTheme({
     },
 });
 
-export default function PositionedSnackbar({ 
-    message, 
+export default function PositionedSnackbar({  
     vertical = 'top', 
-    horizontal = 'right', 
-    // 
-    type,
+    horizontal = 'right',
     autoHideDuration = 4000 
 }) {
+    const notification = useSelector(state=>state.ui.notification)
+
     const [open, setOpen] = useState(true);
-    const theme = createSnackbarTheme(type);
+    const theme = createSnackbarTheme(notification.type);
+    
 
     const handleClose = useCallback((event, reason) => {
         if (reason === 'clickaway') return;
@@ -51,6 +52,8 @@ export default function PositionedSnackbar({
         </IconButton>
     );
 
+    if (!notification.message) return null;
+
     return (
         <ThemeProvider theme={theme}>
             <Snackbar
@@ -58,7 +61,7 @@ export default function PositionedSnackbar({
                 open={open}
                 autoHideDuration={autoHideDuration}
                 onClose={handleClose}
-                message={message}
+                message={notification.message}
                 action={action}
                 TransitionComponent={(props) => <Slide {...props} direction="down" />}
             />

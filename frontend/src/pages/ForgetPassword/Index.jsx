@@ -9,8 +9,7 @@ import LockPersonOutlinedIcon from '@mui/icons-material/LockPersonOutlined';
 import Avatar from "@mui/material/Avatar";
 import { blue } from "@mui/material/colors";
 import { Navigate, useRouteLoaderData } from "react-router-dom";
-import PositionedSnackbar from "../../components/SnackBar.jsx";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { clearNotification, setNotification } from "../../store/uiSlice.js";
 
 const Index = () => {
@@ -19,7 +18,6 @@ const Index = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-  const notification = useSelector(state=>state.ui.notification)
 
   const dispatch = useDispatch()
 
@@ -111,11 +109,6 @@ const Index = () => {
           </Avatar>
           <h3 className={classes["heading"]}>Forgot Password</h3>
           <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
-
-            {notification.message && (
-              <PositionedSnackbar message={notification.message} type={notification.type} />
-            )}
-
             <InputField
               label="Email"
               type="email"
