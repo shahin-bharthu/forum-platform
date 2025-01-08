@@ -93,7 +93,6 @@ const SignupForm = () => {
 			}
 		} catch (e) {
 			console.log('Error while Google Login...', e);
-      // setErrorMessage(e.response.data.message || "An error occured. Please try again later");
       dispatch(setNotification({message:e.response.data.message || "An error occurred. Please try again later.", type:'error'}))
       setTimeout(() => {
         dispatch(clearNotification())
