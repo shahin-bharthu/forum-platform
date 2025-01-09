@@ -6,7 +6,7 @@ import CircularSpinner from "./components/CircularSpinner.jsx";
 function App() {
   return (
     <>
-    <CircularSpinner/>
+    {/* <CircularSpinner/> */}
     <RouterProvider router={router}></RouterProvider>
     </>
   );

@@ -78,7 +78,7 @@ ForumCardSkeleton.displayName = 'ForumCardSkeleton';
 
 export default function RecentNewForumsCard({ recentForumData = [], }) {
   const navigate = useNavigate()
-  // const isLoading = useSelector(state => state.loading.isLoading);
+  const isLoading = useSelector(state => state.loading.isLoading);
 
   const handleViewDetails = useCallback((event, forum_id) => {    
     event.preventDefault();
@@ -86,17 +86,17 @@ export default function RecentNewForumsCard({ recentForumData = [], }) {
   }, [navigate]);
 
 
-  // if (isLoading ) {
-  //   return (
-  //     <Grid container spacing={2}>
-  //       {[1, 2, 3,4].map((_, index) => (
-  //         <Grid key={index} size={{ xs: 6, sm: 6, md: 12 }}          >
-  //           <ForumCardSkeleton />
-  //         </Grid>
-  //       ))}
-  //     </Grid>
-  //   );
-  // }
+  if (isLoading ) {
+    return (
+      <Grid container spacing={2}>
+        {[1, 2, 3,4].map((_, index) => (
+          <Grid key={index} size={{ xs: 6, sm: 6, md: 12 }}          >
+            <ForumCardSkeleton />
+          </Grid>
+        ))}
+      </Grid>
+    );
+  }
 
 
   return (

@@ -93,7 +93,6 @@ const googleAuth = asyncErrorHandler (async(req, res, next) => {
     const userRes = await axios.get(
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
     );
-    console.log(userRes.data);
     const { email, given_name, family_name, picture, hd } = userRes.data;
 
     if (!(hd?.includes('argusoft.in') || hd?.includes('argusoft.com'))) {

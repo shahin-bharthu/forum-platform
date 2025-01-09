@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, memo} from 'react';
 import { useRouteLoaderData } from 'react-router-dom';
 import { decodeToken } from "react-jwt";
 import Card from '@mui/material/Card';
@@ -7,12 +7,69 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { IconButton, Tooltip } from '@mui/material';
+import { CardHeader, Grid2 as Grid, IconButton, Skeleton, Stack, styled, Tooltip } from '@mui/material';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import InfoIcon from '@mui/icons-material/Info';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import axiosInstance from '../../../../utils/axiosInstance';
+import { useSelector } from 'react-redux';
+
+const StyledCardHeader = memo(styled(CardHeader)`
+  display: flex;
+  justify-content: center;
+  padding: 10px 16px;
+  
+  .MuiCardHeader-content {
+    display: none;
+  }
+  
+  .MuiCardHeader-action {
+    display: none;
+  }
+  
+  .MuiCardHeader-avatar {
+    margin: 0;
+  }
+`);
+
+const ForumCardSkeleton = memo(() => (
+  <Card sx={{ width: '100%', my: 2 }}>
+    <StyledCardHeader
+      avatar={
+        <Skeleton
+          variant="rectangular"
+          width={225}
+          height={150}
+          animation="wave"
+        />
+      }
+    />
+    <CardContent sx={{ py: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Skeleton variant="text" width="60%" height={24} />
+      <Skeleton variant="text" width="90%" height={20} />
+    </CardContent>
+    <CardActions>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{
+          justifyContent: 'end',
+          width: '100%',
+          alignItems: 'center'
+        }}
+      >
+        <Skeleton variant="circular" width={24} height={24}/>
+        <Skeleton variant="circular" width={24} height={24}/>
+        <Skeleton variant="circular" width={24} height={24}/>
+
+      </Stack>
+    </CardActions>
+  </Card>
+));
+
+ForumCardSkeleton.displayName = 'ForumCardSkeleton';
+
 
 export default function MediaCard({
   id,
@@ -28,10 +85,11 @@ export default function MediaCard({
   }) {
   const token = useRouteLoaderData("user");
   const [bannerUrl, setBannerUrl] = useState();
+  const isLoading = useSelector(state => state.loading.isLoading);
 
   useEffect(() => {
     const fetchAvatar = async () => {
-      const data = await handleFileRead();
+      await handleFileRead();
     };
 
     fetchAvatar().catch(console.error);
@@ -59,6 +117,18 @@ export default function MediaCard({
     } catch (error) {
       console.error("Failed to decode token", error);
     }
+  }
+
+  if (isLoading) {
+    return (
+      <Grid container spacing={2}>
+        {/* {[1, 2, 3,4].map((_, index) => ( */}
+          {/* <Grid key={index} size={{ xs: 6, sm: 6, md: 12 }}          > */}
+            <ForumCardSkeleton />
+          {/* </Grid> */}
+        {/* ))} */}
+      </Grid>
+    );
   }
 
   return (

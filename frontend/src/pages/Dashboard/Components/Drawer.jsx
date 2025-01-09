@@ -57,7 +57,7 @@ export default function ClippedDrawer() {
     }
 
     getCurrentUser();
-  }, [location.pathname,dispatch]);
+  }, [dispatch]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
