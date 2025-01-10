@@ -66,7 +66,7 @@ const StyledMenu = memo(styled((props) => (
         fontSize: 18,
         color: theme.palette.text.secondary,
         marginRight: theme.spacing(1.5),
-      },
+      },                                                            
       "&:active": {
         backgroundColor: alpha(
           theme.palette.primary.main,
