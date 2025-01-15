@@ -76,7 +76,8 @@ export default function MyForum() {
   useEffect(() => {
     async function forumLoader() {
       try {
-        const response = await axiosInstance.get('/forum/my-forums');        
+        const response = await axiosInstance.get('/forum/my-forums'); 
+        
         const publicForums = response.data.publicUserForums || [];
         const privateForums = response.data.privateUserForums || [];
         const archivedForums = response.data.archivedUserForums || [];

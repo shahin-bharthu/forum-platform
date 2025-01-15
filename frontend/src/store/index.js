@@ -6,6 +6,7 @@ import loadingReducer from "./loaderSlice";
 import userPostReducer from "./userPostSlice";
 import uiReducer from "./uiSlice";
 import userForumsReducer from "./userForumsSlice";
+import allForumsReducer from "./allForumsSlice";
 
 const persistConfig = {
     key: "root",
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
     loading: loadingReducer,
     userPosts: userPostReducer,
     ui: uiReducer,
-    userForums: userForumsReducer
+    userForums: userForumsReducer,
+    allForums: allForumsReducer
     // dashboard: dashboardReducer,
 });
 

@@ -2,11 +2,16 @@ import Grid from '@mui/material/Grid2';
 import RecentNewPostsCard from "./Components/RecentNewPostsCard";
 import RecentNewForumsCard from "./Components/RecentNewForumsCard";
 import { Typography } from "@mui/material";
-import { useLoaderData } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
+import { useEffect } from 'react';
 
 export default function Dashboard() {
-    const { recentForumData, empty } = useLoaderData()
+    // const { recentForumData, empty } = useLoaderData();
+
+    
+    useEffect(() => {
+        
+    }, []);
     
     return (
         <>

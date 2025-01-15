@@ -128,7 +128,6 @@ export default function ChildrenComments({ parentId, childRefreshKey }) {
                             lg: '93%',
                             xl: '95%'
                         },
-                        justifySelf: 'right'
                     }}
                 >
                     <StyledCardHeader

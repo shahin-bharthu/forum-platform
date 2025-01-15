@@ -13,7 +13,7 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import UserRootPage from "./pages/UserRootPage.jsx";
 import MyForum from "./pages/MyForums/Index.jsx"; // , { forumLoader }
 import AddForum, {forumDetailsLoader as forumDetails} from "./pages/AddForum/Index.jsx"
-import AllForums, { allForumLoader } from "./pages/AllForums/Index.jsx";
+import AllForums from "./pages/AllForums/Index.jsx";
 import CreatePost, { topicDetailsLoader } from "./pages/CreatePost/Index.jsx";
 import IntroDivider, { forumDetailsLoader } from "./pages/ForumDetails/Index.jsx";
 import MyPosts from "./pages/MyPosts/Index.jsx";
@@ -63,11 +63,11 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/user/dashboard" /> },
       { path: "profile", element: <UserProfilePage /> },
-      { path: "dashboard",loader:dashboardLoader, element: <Dashboard /> },
+      { path: "dashboard",loader: dashboardLoader, element: <Dashboard /> },
       { path: "my-forums", id: "my-forums", element: <MyForum /> }, // loader: forumLoader
       { path: "add-forum", element: <AddForum isEdit={false}/> },
       { path: "edit-forum/:forum_id", loader: forumDetails, element: <AddForum isEdit={true}/> },
-      { path: "forums", loader: allForumLoader, element: <AllForums /> },
+      { path: "forums", element: <AllForums /> },
       { path: "create-post", element: <CreatePost isEdit={false} /> },
     ],
   },

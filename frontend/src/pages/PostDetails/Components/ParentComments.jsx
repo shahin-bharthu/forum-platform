@@ -271,7 +271,7 @@ export default function ParentComments({ postId, refreshKey }) {
                                     timeout={200} 
                                     unmountOnExit
                                 >
-                                    <Box sx={{ pl: 2, pb: 2 }}>
+                                    <Box sx={{ ml: 2, pb: 2, display: 'flex', alignItems: 'end', flexDirection: 'column' }}>
                                         <ChildrenComments 
                                             parentId={comment.id} 
                                             childRefreshKey={refreshTrigger} 
