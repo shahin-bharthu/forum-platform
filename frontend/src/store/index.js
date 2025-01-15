@@ -3,8 +3,10 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import userReducer from "./userSlice";
 import loadingReducer from "./loaderSlice";
-import userPostReducer from "./userPostSlice"
-import uiReducer from "./uiSlice"
+import userPostReducer from "./userPostSlice";
+import uiReducer from "./uiSlice";
+import userForumsReducer from "./userForumsSlice";
+
 const persistConfig = {
     key: "root",
     storage,
@@ -14,7 +16,8 @@ const rootReducer = combineReducers({
     user: userReducer,
     loading: loadingReducer,
     userPosts: userPostReducer,
-    ui: uiReducer
+    ui: uiReducer,
+    userForums: userForumsReducer
     // dashboard: dashboardReducer,
 });
 

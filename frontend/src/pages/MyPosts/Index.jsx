@@ -113,13 +113,13 @@ export default function MyPosts() {
   const [menuAnchor, setMenuAnchor] = useState(null);  // Track the anchor element for the menu
   const [activeIndex, setActiveIndex] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [refresh,setrefresh]=useState(false);
+  const [refresh, setrefresh] = useState(false);
   
   const notification = useSelector(state=>state.ui.notification);
   const isLoading = useSelector(state => state.loading.isLoading);
 
   const navigate = useNavigate()
-  const dispatch=useDispatch()
+  const dispatch = useDispatch()
 
   const getForumTopics = useCallback(async () => {
     try {

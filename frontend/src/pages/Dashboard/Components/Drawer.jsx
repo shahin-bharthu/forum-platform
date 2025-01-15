@@ -38,7 +38,7 @@ export default function ClippedDrawer() {
       try {
       const currentUser = await axiosInstance.get('/user');
       
-      const response = await axiosInstance.get(`/user/avatar/${currentUser.data.user.id}`,{responseType: "blob",})
+      const response = await axiosInstance.get(`/user/avatar/${currentUser.data.user.id}`,{responseType: "blob"});
       
       if (response.data) {
           const reader = new FileReader()

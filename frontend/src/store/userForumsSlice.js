@@ -10,13 +10,18 @@ export const userForumsSlice = createSlice({
     name: 'userForums',
     initialState,
     reducers: {
-        setPostCount: (state, action) => {
-            state.userPostCount = action.payload;
-            state.lastUpdated = new Date().toISOString();
+        setPublicForums: (state, action) => {
+            state.publicForums = action.payload;
+        },
+        setPrivateForums: (state, action) => {
+            state.privateForums = action.payload;
+        },
+        setArchivedForums: (state, action) => {
+            state.archivedForums = action.payload;
         }
     },
 })
 
-export const { setPostCount } = userForumsSlice.actions;
+export const { setPublicForums, setPrivateForums, setArchivedForums } = userForumsSlice.actions;
 
 export default userForumsSlice.reducer; 
