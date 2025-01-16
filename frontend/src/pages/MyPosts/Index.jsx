@@ -206,10 +206,10 @@ export default function MyPosts() {
   };
 
 
-  const handleEditTopic = (event, id) => {
+  const handleEditTopic = (event, id, name) => {
     handleCloseMenu()
     event.preventDefault();
-    navigate(`/post/edit/${id}`)
+    navigate(`/post/edit/${id}`, { state: { forumName: name, forumId: id } })
   }
 
   const handleExpandClick = (i) => {
@@ -310,7 +310,7 @@ export default function MyPosts() {
                       onClose={handleCloseMenu}
                     >
                       <MenuItem
-                        onClick={(event) => handleEditTopic(event, topic.id)}
+                        onClick={(event) => handleEditTopic(event, topic.id, topic.forumname)}
                         disableRipple>
                         <EditIcon />
                         Edit

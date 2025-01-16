@@ -1,29 +1,47 @@
 /* eslint-disable react/prop-types */
 import classes from "../../components/AuthForm.module.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TextInputField from "./Components/TextInput.jsx";
 import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import CustomButton from "../../components/Button";
 import Button from "@mui/material/Button";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { Card, Stack } from "@mui/material";
+import { Card, CircularProgress, Stack } from "@mui/material";
 import ForumBannerUpload from "./Components/BannerUpload.jsx";
 import axiosInstance from "../../../utils/axiosInstance.js";
 
 const Index = ({isEdit}) => {
-  const forumData = useLoaderData();
+  const [forumData, setForumData] = useState();
   const nameInput = useRef();
   const purposeInput = useRef();
-
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [isPublic, setIsPublic] = useState(forumData ? forumData.isPublic : true); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const params = useParams();
+
   
+  useEffect(() => {
+    async function forumDetailsLoader(forum_id) {
+      if (forum_id) {
+        const response = await axiosInstance.get(`/forum/forum-id/${forum_id}`);  
+        setForumData(response.data.data);
+      }
+      else {
+        setErrorMessage("Error fetching forum details. Please try again later!");
+      }
+    }
+
+    if (isEdit) {
+      forumDetailsLoader(params.forum_id).then(() => setLoading(false));
+    }
+
+  }, [params.forum_id, isEdit]);
 
   const handleInputChange = (event) => {
     const { name } = event.target;
@@ -106,7 +124,8 @@ const Index = ({isEdit}) => {
     nameInput.current.value = null;
   }
 
-  return ( 
+  return (
+    loading && isEdit ? <CircularProgress/> : 
     <Card variant="outlined" sx={{ m:2,p:3,justifyContent: 'left' }}>
       <h3 className={classes["heading"]}>{isEdit? 'Edit': 'Create'} Forum</h3>
       {isEdit && <ForumBannerUpload forumId={forumData.id}></ForumBannerUpload>}
@@ -162,13 +181,13 @@ const Index = ({isEdit}) => {
 
 export default Index;
 
-export async function forumDetailsLoader({params}) {
-  const forum_id = params.forum_id
-  if (forum_id) {
-    const response = await axiosInstance.get(`/forum/forum-id/${forum_id}`);  
-    return response.data.data
-  }
-  else {
-    return null;
-  }
-}
+// export async function forumDetailsLoader({params}) {
+//   const forum_id = params.forum_id
+//   if (forum_id) {
+//     const response = await axiosInstance.get(`/forum/forum-id/${forum_id}`);  
+//     return response.data.data
+//   }
+//   else {
+//     return null;
+//   }
+// }

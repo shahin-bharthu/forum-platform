@@ -130,7 +130,6 @@ export default function MyPosts() {
         setExpanded(array);
     };
 
-
     // Loading state
     if (isLoading) {
         return (

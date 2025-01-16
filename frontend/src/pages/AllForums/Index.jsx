@@ -46,8 +46,8 @@ export default function AllForums() {
   const navigate = useNavigate();
   const subscribableForums = useSelector(state => state.allForums.subscribableForums);
   const subscribedForums = useSelector(state => state.allForums.subscribedForums);
-  const [subscribedEmpty, setSubscribedEmpty] = useState(true);
-  const [subscribableEmpty, setSubscribableEmpty] = useState(true);
+  const [subscribedEmpty, setSubscribedEmpty] = useState(false);
+  const [subscribableEmpty, setSubscribableEmpty] = useState(false);
   const [value, setValue] = useState(0);
   const notification = useSelector(state=>state.ui.notification)
   const dispatch = useDispatch()
@@ -92,7 +92,6 @@ export default function AllForums() {
         dispatch(clearNotification())
         navigate('/user/forums')
       }, 1000);
-
 
     } catch (error) {
       console.error("Error: ", error);

@@ -22,7 +22,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { clearNotification, setNotification } from '../../../store/uiSlice.js';
 
 export default function ForumHeaderCard({ forum, setIsSubbed }) {
-
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));

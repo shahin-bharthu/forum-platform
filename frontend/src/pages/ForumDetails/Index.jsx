@@ -1,20 +1,43 @@
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid2';
 import ForumHeaderCard from "./Components/ForumHeaderCard";
 import ForumInfoCard from "./Components/ForumInfoCard";
 import ForumMainCard from "./Components/ForumMainCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import axiosInstance from "../../../utils/axiosInstance";
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function IntroDivider() {
-    const { forumDetails, forumCreatedBy } = useLoaderData();
-    const [postLength, setPostLength] = useState()
-    const [isSubbed, setIsSubbed] = useState()
-    const isPrivate = !(forumDetails.isPublic)
-    const isBlur = (isPrivate && !isSubbed)
+    const [forumDetails, setForumDetails] = useState();
+    const [forumCreatedBy, setForumCreatedBy] = useState();
+    const [postLength, setPostLength] = useState();
+    const [isSubbed, setIsSubbed] = useState();
+    const isPrivate = !(forumDetails?.isPublic);
+    const isBlur = (isPrivate && !isSubbed);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const params = useParams();
+
+    useEffect(() => {
+        async function forumDetailsLoader(forum_id) {
+            try {
+                const response = await axiosInstance.get(`/forum/forum-id/${forum_id}`);
+                const forumData = response.data.data;
+                const forumCreatorData = await axiosInstance.get(`/user/${forumData.createdBy}`);
+                
+                setForumDetails(forumData);
+                setForumCreatedBy(forumCreatorData.data.user.username);
+            } catch (error) {
+                console.log(error.message);
+            }
+        }
+
+        forumDetailsLoader(params.forum_id).then(()=> {setLoading(false)});
+    }, [params.forum_id]);
+    
     return (
+        loading ? <CircularProgress /> : 
         <>
             <Grid container spacing={3} direction="column" sx={{ px: 2, width:{ xs:'90%', sm:'95%',md:'80%'}, mt: 10, alignSelf: 'start' }}>
                 <Grid size={12} sx={{ borderRadius: 2 }}>
@@ -65,23 +88,4 @@ export default function IntroDivider() {
             </Grid>
         </>
     );
-}
-
-
-export async function forumDetailsLoader({ params }) {
-    const forum_id = params.forum_id;
-    try {
-        const response = await axiosInstance.get(`/forum/forum-id/${forum_id}`);
-        const forumData = response.data.data;
-
-        const forumCreatorId = forumData.createdBy;
-        const forumCreatorData = await axiosInstance.get(`/user/${forumCreatorId}`);
-        
-        return {
-            forumDetails: forumData,
-            forumCreatedBy: forumCreatorData.data.user.username,
-        };
-    } catch (error) {
-        console.log(error.message);
-    }
 }

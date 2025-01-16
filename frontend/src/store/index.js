@@ -7,6 +7,7 @@ import userPostReducer from "./userPostSlice";
 import uiReducer from "./uiSlice";
 import userForumsReducer from "./userForumsSlice";
 import allForumsReducer from "./allForumsSlice";
+import dashboardReducer from "./dashboardSlice";
 
 const persistConfig = {
     key: "root",
@@ -19,10 +20,9 @@ const rootReducer = combineReducers({
     userPosts: userPostReducer,
     ui: uiReducer,
     userForums: userForumsReducer,
-    allForums: allForumsReducer
-    // dashboard: dashboardReducer,
+    allForums: allForumsReducer,
+    dashboard: dashboardReducer
 });
-
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
