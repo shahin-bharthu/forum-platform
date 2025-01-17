@@ -8,18 +8,16 @@ import {
   Box,
   Modal,
   IconButton,
-  Stack,
 } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { styled } from '@mui/material/styles';
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserProfile } from "../../../store/userSlice";
 import { clearNotification, setNotification } from "../../../store/uiSlice";
 import axiosInstance from "../../../../utils/axiosInstance";
 import defaultAvatar from "../../../assets/defaultAvatar.png"
+import ImageUploadStepper from "../../../components/ImageUploadStepper";
 
 const styles = {
   details: {
@@ -59,56 +57,28 @@ const styles = {
   }
 };
 
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
-});
-
 export default function ProfileCard(props) {
   const [open, setOpen] = useState(false)
 
-  const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [avatar, setAvatar] = useState(null)
 
   const handleOpen = () => setOpen(true);
-  
+
   const dispatch = useDispatch()
   const profilePhoto = useSelector(state => state.user.profilePhoto);
-  
+
   const handleClose = () => {
     setOpen(false);
-    setSelectedFile(null);
     setPreviewUrl(null);
   };
 
   useEffect(() => {
     const fetchAvatar = async () => {
-      const data = await handleFileRead();
+      await handleFileRead();
     }
 
     fetchAvatar().catch(console.error);
   }, [])
-
-  //To preview the selected image and it's url before upload
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleFileRead = async () => {
     const file = await axiosInstance.get(`/user/avatar/`, { responseType: 'blob' });
@@ -125,10 +95,12 @@ export default function ProfileCard(props) {
   //Handles the submit of the aavtar image to send to the backend
   const handleFileUpload = useCallback(async (event) => {
     event.preventDefault();
-    if (!selectedFile) return;
+    const file = event.target.files[0];
+
+    if (!file) return;
 
     const formData = new FormData();
-    formData.append("avatar", selectedFile);
+    formData.append("avatar", file);
     formData.append("email", props.email);
 
     try {
@@ -147,22 +119,22 @@ export default function ProfileCard(props) {
           profilePhoto: reader.result
         }));
       };
-      reader.readAsDataURL(selectedFile);
+      reader.readAsDataURL(file);
 
 
       handleClose();
-      dispatch(setNotification({message:response.data.message, type:null}))
+      dispatch(setNotification({ message: response.data.message, type: null }))
       setTimeout(() => {
         dispatch(clearNotification())
       }, 1500);
     } catch (error) {
-      dispatch(setNotification({message:'Error uploading file. Try again later!', type:'error'}))
+      dispatch(setNotification({ message: 'Error uploading file. Try again later!', type: 'error' }))
     } finally {
       setTimeout(() => {
         dispatch(clearNotification())
       }, 1500);
     }
-  }, [props.id, props.email, selectedFile, dispatch]);
+  }, [props.id, props.email, dispatch]);
 
   return (
     <Card variant="outlined">
@@ -237,7 +209,18 @@ export default function ProfileCard(props) {
         onClose={handleClose}
         aria-labelledby="upload-modal-title"
       >
-        <Box sx={styles.modal}>
+        <Box sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 600,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+            outline: "none",
+          }}>
           <Typography
             id="upload-modal-title"
             variant="h6"
@@ -256,40 +239,8 @@ export default function ProfileCard(props) {
               />
             </Box>
           )}
-
-          <form onSubmit={handleFileUpload}>
-            <Stack spacing={2} alignItems="center">
-              <Box sx={styles.buttonContainer}>
-                <VisuallyHiddenInput
-                  type="file"
-                  accept="image/*"
-                  id="file-input"
-                  onChange={handleFileSelect}
-                />
-                <label htmlFor="file-input">
-                  <Button
-                    component="span"
-                    variant="outlined"
-                    startIcon={<CloudUploadIcon />}
-                  >
-                    Choose File
-                  </Button>
-                </label>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={!selectedFile}
-                >
-                  Upload Avatar
-                </Button>
-              </Box>
-
-              {selectedFile && (
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  Selected: {selectedFile.name}
-                </Typography>
-              )}
-            </Stack>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <ImageUploadStepper handleFileUpload={handleFileUpload} />
           </form>
         </Box>
       </Modal>
