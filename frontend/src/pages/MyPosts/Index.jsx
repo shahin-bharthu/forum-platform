@@ -5,7 +5,6 @@ import {
   MenuItem, Link
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
-import PositionedSnackbar from "../../components/SnackBar";
 import {
   ExpandMore as ExpandMoreIcon,
   MoreVert as MoreVertIcon,
@@ -115,7 +114,6 @@ export default function MyPosts() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refresh, setrefresh] = useState(false);
   
-  const notification = useSelector(state=>state.ui.notification);
   const isLoading = useSelector(state => state.loading.isLoading);
 
   const navigate = useNavigate()
@@ -284,7 +282,6 @@ export default function MyPosts() {
   return (
     <>
       <Grid size={12} sx={{ width: "100%", px: 3, mt: 10, alignSelf: "start" }}>
-        {notification.message && <PositionedSnackbar message={notification.message} type={notification.type} />}
         {forumTopics.map((topic, index) => (
           <Box key={index} mb={2}>
             <Card>

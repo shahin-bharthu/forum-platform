@@ -14,10 +14,9 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import PositionedSnackbar from "../../../components/SnackBar.jsx";
 import { z } from "zod";
 import { CircularProgress, Typography } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {clearNotification, setNotification} from "../../../store/uiSlice.js"
 import axiosInstance from "../../../../utils/axiosInstance.js";
 
@@ -44,7 +43,6 @@ export default function SettingsCard(props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [edit, setEdit] = useState(true);
   const [errors, setErrors] = useState({});
-  const notification = useSelector(state=>state.ui.notification);// to show toast
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -176,10 +174,6 @@ export default function SettingsCard(props) {
     <Card variant="outlined" sx={{ height: "100%", width: "100%" }}>
       <br />
 
-      {notification.message && (
-        <PositionedSnackbar message={notification.message} type={notification.type} />
-      )}
-
       {/* MAIN CONTENT CONTAINER */}
       <form>
         <CardContent
@@ -232,7 +226,6 @@ export default function SettingsCard(props) {
                 <DatePicker
                   value={user.dob}
                   onChange={(newValue) => {
-                    console.log("Selected DOB:", newValue);
                     setUser({ ...user, dob: newValue });
                   }}
                   dis={!edit}

@@ -1,37 +1,29 @@
 import { useCallback, useEffect, useState } from "react";
-import { Typography, Avatar, Badge, Button, Box, Modal, IconButton, Stack} from "@mui/material";
+import {
+  Typography,
+  Avatar,
+  Badge,
+  Box,
+  Modal,
+  IconButton,
+} from "@mui/material";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../../utils/axiosInstance";
-import PositionedSnackbar from "../../../components/SnackBar";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { clearNotification, setNotification } from "../../../store/uiSlice";
-
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
+import defaultForumBanner from "../../../assets/defaultForumbanner.png";
+import ImageUploadStepper from "../../../components/ImageUploadStepper";
 
 const ForumBannerUpload = ({ forumId }) => {
   const [open, setOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [bannerUrl, setBannerUrl] = useState(null);
-  const [refresh,setRefresh] = useState(false) // used to reload the profile image compoent instead of window.location.reload() to avoid change of any other inputs
-  
+  const [refresh, setRefresh] = useState(false) // used to reload the profile image compoent instead of window.location.reload() to avoid change of any other inputs
+
   const navigate = useNavigate();
   const dispatch = useDispatch()
-  const notification = useSelector(state=>state.ui.notification)
- 
+
   useEffect(() => {
     const fetchAvatar = async () => {
       await handleFileRead();
@@ -44,59 +36,45 @@ const ForumBannerUpload = ({ forumId }) => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setSelectedFile(null);
     setPreviewUrl(null);
-  };
-
-  // Preview the selected image before upload
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   // Handle file upload
   const handleFileUpload = useCallback(
     async (event) => {
       event.preventDefault();
-      if (!selectedFile) return;
+      const file = event.target.files[0];
+      console.log(file);
+      
+      if (!file) return;
 
       const formData = new FormData();
-      formData.append("banner", selectedFile);
-      console.log(selectedFile);
-      
-      console.log(formData);
+      formData.append('banner', file);
 
       try {
-        const response = await axiosInstance.put(`/forum/banner/${forumId}`,formData);
-        
+        const response = await axiosInstance.put(`/forum/banner/${forumId}`, formData);
+
         handleClose();
-        dispatch(setNotification({message:response.data.message, type: 'success'}))
+        dispatch(setNotification({ message: response.data.message, type: 'success' }))
         setTimeout(() => {
           dispatch(clearNotification())
           setRefresh(true) // to reload the forum banner image after upload
         }, 1500);
       } catch (error) {
-        dispatch(setNotification({message:error.response.data.message, type:'error'}))
+        dispatch(setNotification({ message: error?.response.data.message, type: 'error' }))
         setTimeout(() => {
           dispatch(clearNotification())
           navigate('/user/dashboard');
         }, 3000);
       }
     },
-    [forumId, selectedFile, navigate, dispatch]
+    [forumId, refresh ,handleClose, navigate, dispatch]
   );
 
   const handleFileRead = async () => {
-    const file = await axiosInstance.get(`/forum/banner/${forumId}`, 
+    const file = await axiosInstance.get(`/forum/banner/${forumId}`,
       {
-      responseType: "blob",
+        responseType: "blob",
       }
     );
 
@@ -134,7 +112,7 @@ const ForumBannerUpload = ({ forumId }) => {
           sx={{ width: 100, height: 100, mb: 1.5 }}
           src={
             bannerUrl ||
-            "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"
+            defaultForumBanner
           }
         ></Avatar>
       </Badge>
@@ -150,7 +128,7 @@ const ForumBannerUpload = ({ forumId }) => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: 600,
             bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
@@ -177,51 +155,11 @@ const ForumBannerUpload = ({ forumId }) => {
               />
             </Box>
           )}
-
-          <form onSubmit={handleFileUpload}>
-            <Stack spacing={2} alignItems="center">
-              <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-                <VisuallyHiddenInput
-                  type="file"
-                  accept="image/*"
-                  id="file-input"
-                  onChange={handleFileSelect}
-                />
-                <label htmlFor="file-input">
-                  <Button
-                    component="span"
-                    variant="outlined"
-                    startIcon={<CloudUploadIcon />}
-                  >
-                    Choose File
-                  </Button>
-                </label>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={!selectedFile}
-                >
-                  Upload Banner
-                </Button>
-              </Box>
-
-              {selectedFile && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 1 }}
-                >
-                  Selected: {selectedFile.name}
-                </Typography>
-              )}
-            </Stack>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <ImageUploadStepper handleFileUpload={handleFileUpload} />
           </form>
-
         </Box>
       </Modal>
-          {notification.message && (
-            <PositionedSnackbar message={notification.message} type={notification.type} />
-          )}
     </div>
   );
 };

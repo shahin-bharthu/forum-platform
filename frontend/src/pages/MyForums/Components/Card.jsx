@@ -14,6 +14,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import axiosInstance from '../../../../utils/axiosInstance';
 import { useSelector } from 'react-redux';
+import defaultForumBanner from '../../../assets/defaultForumbanner.png';
 
 const StyledCardHeader = memo(styled(CardHeader)`
   display: flex;
@@ -133,7 +134,7 @@ export default function MediaCard({
 
   return (
     <Card sx={{ maxWidth: 345, height: 300 }}>
-      <CardMedia sx={{ height: 140 }} image={bannerUrl || "https://blog.cengage.com/wp-content/uploads/2023/11/tl-discussion-boards-1551827-1024x351.png"} title={name} />
+      <CardMedia sx={{ height: 140 }} image={bannerUrl || defaultForumBanner } title={name} />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div" sx={{width:'90%',textOverflow:'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', px: 2}}>
           {name}
@@ -143,7 +144,6 @@ export default function MediaCard({
         </Typography>
       </CardContent>
       <CardActions sx={{justifyContent: 'right'}}>
-        {/* <Stack spacing={2} direction="row" sx={{justifyContent: 'right'}}> */}
         <Tooltip title="Learn More">
           <IconButton color="primary" aria-label="info-icon" onClick={onViewDetails}>
             <InfoIcon />
@@ -172,7 +172,6 @@ export default function MediaCard({
           }
           </>
         )}
-        {/* </Stack> */}
         {canSubscribe && (
           <Button size="small" onClick={onSubscribe}>
             Subscribe

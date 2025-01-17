@@ -16,11 +16,10 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
-import PositionedSnackbar from '../../../components/SnackBar';
 import axiosInstance from '../../../../utils/axiosInstance.js';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { clearNotification, setNotification } from '../../../store/uiSlice.js';
-
+import forumDetailsBackdrop from "../../../assets/ForumDetailsBackdrop.webp"
 export default function ForumHeaderCard({ forum, setIsSubbed }) {
   const navigate = useNavigate();
   const theme = useTheme();
@@ -29,7 +28,6 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
 
   const [subscribed, setSubscribed] = useState(false);
   const [bannerUrl, setBannerUrl] = useState();
-  const notification = useSelector(state=>state.ui.notification)
 
   const dispatch = useDispatch()
 
@@ -54,7 +52,6 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
     const file = await axiosInstance.get(`/forum/banner/${forum.id}`, {responseType: "blob"});
 
     if (file.data) {
-      // setBanner(file.data);
       const reader = new FileReader();
       reader.onloadend = () => {
         setBannerUrl(reader.result);
@@ -117,13 +114,8 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
         component="img"
         alt="Forum Header"
         height={isMobile ? "80" : "100"}
-        image="https://cdn.textures4photoshop.com/tex/thumbs/300/webp/blue-sky-gradient-thumb17.webp"
+        image={forumDetailsBackdrop}
       />
-
-      {notification.message && (
-        <PositionedSnackbar message={notification.message} type={notification.type} />
-      )}
-
       <Box
         sx={{
           display: 'flex',

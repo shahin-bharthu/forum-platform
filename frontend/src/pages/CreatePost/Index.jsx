@@ -9,9 +9,8 @@ import SelectList from "./Components/SelectList.jsx";
 import Stack from '@mui/material/Stack';
 import { Card, CircularProgress } from "@mui/material";
 import axiosInstance from "../../../utils/axiosInstance.js";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { clearNotification, setNotification } from "../../store/uiSlice.js";
-import PositionedSnackbar from "../../components/SnackBar.jsx";
 
 const CreatePost = ({isEdit}) => {
   const [topicData, setTopicData] = useState();
@@ -28,9 +27,6 @@ const CreatePost = ({isEdit}) => {
 
   const navigate = useNavigate();
   const dispatch=useDispatch()
-  const notification= useSelector(state=>state.ui.notification) //to show toast for success and error both
-  console.log(forumName);
-  console.log(forumId);
   
   useEffect(() => {
     if (!isEdit && forumName !== null && forumId !== null) {
@@ -77,12 +73,7 @@ const CreatePost = ({isEdit}) => {
 
     try {
       setIsSubmitting(true);
-      const response = await axiosInstance.post("http://localhost:8080/topic", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true
-      });
+      const response = await axiosInstance.post("/topic", formData);
       
       dispatch(setNotification({message:response.data.message, type:"success"}))
       setTimeout(() => {
@@ -158,8 +149,6 @@ const CreatePost = ({isEdit}) => {
           reference={bodyInput}
           value={isEdit ? topicData.topic.content : null}
         />
-
-        {notification.message && <PositionedSnackbar message={notification.message} type={notification.type} />}
 
         <Stack spacing={2} direction="row" sx={{ m: 1, pt: 2, justifyContent: 'right' }}>
           <CustomButton

@@ -7,8 +7,7 @@ import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
 import axios from 'axios';
 import { z } from 'zod';
-import PositionedSnackbar from "./SnackBar";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { clearNotification, setNotification } from "../store/uiSlice";
 import { Button, Divider } from "@mui/material";
 import GoogleIcon from "./GoogleIcon";
@@ -23,7 +22,6 @@ const SignupForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-  const notification = useSelector(state=>state.ui.notification);
 
   const dispatch = useDispatch();
 
@@ -173,9 +171,6 @@ const SignupForm = () => {
     <div className={classes["auth-page"]}>
       <AuthFormHeader authHeading='Sign Up' authPara='sign up' />
       <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
-      {notification.message && (
-          <PositionedSnackbar message={notification.message} type={notification.type}/>
-        )}
         <Button
           startIcon={<GoogleIcon/>}
           onClick = {googleLogin}

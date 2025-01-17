@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid2';
 import { useNavigate } from "react-router-dom";
 import MediaCard from '../MyForums/Components/Card';
 import { useEffect, useState } from 'react';
-import PositionedSnackbar from '../../components/SnackBar.jsx';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -49,7 +48,6 @@ export default function AllForums() {
   const [subscribedEmpty, setSubscribedEmpty] = useState(false);
   const [subscribableEmpty, setSubscribableEmpty] = useState(false);
   const [value, setValue] = useState(0);
-  const notification = useSelector(state=>state.ui.notification)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -122,9 +120,6 @@ export default function AllForums() {
           <Tab label="More Forums" {...a11yProps(1)} />
         </Tabs>
       </Box>
-      {notification.message && (
-        <PositionedSnackbar message={notification.message} type={notification.type} />
-      )}
       <CustomTabPanel value={value} index={0}>
         {subscribedEmpty && <p>Subscribe to forums to see here.</p> }
         {!subscribedEmpty && <Grid size={12} >

@@ -4,7 +4,7 @@ const storage = diskStorage({
   destination: `./forumLogos/`,
 
   filename: function (req, file, callBack) {
-    callBack(null, `${req.params.id}-${file.originalname}`);
+    callBack(null, `${req.params.id}-${Date.now()}-${file.originalname}`);
   },
 });
 

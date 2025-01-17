@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
 import { useState, useEffect } from 'react';
-import PositionedSnackbar from '../../components/SnackBar';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -63,7 +62,6 @@ export function FloatingActionButtons({ onClick }) {
 
 export default function MyForum() {
   const [value, setValue] = useState(0);
-  const notification = useSelector(state => state.ui.notification);
   const publicForums = useSelector(state => state.userForums.publicForums);
   const privateForums = useSelector(state => state.userForums.privateForums);
   const archivedForums = useSelector(state => state.userForums.archivedForums);
@@ -143,9 +141,6 @@ export default function MyForum() {
   return (
     <>
       <Box sx={{ flexGrow: 1, mt: 8, width: '100%', mx: 2, alignSelf: 'start' }}>
-        {notification.message && (
-          <PositionedSnackbar message={notification.message} type={notification.type} />
-        )}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', position: 'sticky', }}>
           <Tabs value={value} onChange={handleChange} centered>
             <Tab icon={<PublicIcon />} iconPosition="start" label="Public" {...a11yProps(0)} wrapped />
