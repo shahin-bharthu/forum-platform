@@ -16,7 +16,7 @@ export default (sequelize, Sequelize) => {
             // allowNull: false
         },
         purpose: {
-            type: Sequelize.STRING,
+            type: Sequelize.TEXT,
             allowNull: false
         },
         isPublic: {

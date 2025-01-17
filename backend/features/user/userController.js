@@ -45,7 +45,7 @@ const getAvatar = asyncErrorHandler(async (req, res, next) => {
 
 const getAvatarById = asyncErrorHandler (async (req,res,next) => {
   const {id} = req.params;
-  const avatarPath = await userService.getAvatarById(id);
+  const avatarPath = await userService.getAvatarById(id);  
   return res.sendFile(avatarPath)
 })
 

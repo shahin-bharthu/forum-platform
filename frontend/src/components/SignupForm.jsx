@@ -7,17 +7,23 @@ import AuthFormHeader from "./AuthFormHeader";
 import AuthFormFooter from "./AuthFormFooter";
 import axios from 'axios';
 import { z } from 'zod';
-import PositionedSnackbar from "./SnackBar";
+import { useDispatch } from "react-redux";
+import { clearNotification, setNotification } from "../store/uiSlice";
+import { Button, Divider } from "@mui/material";
+import GoogleIcon from "./GoogleIcon";
+import { useGoogleLogin } from '@react-oauth/google';
+import { useNavigate } from "react-router-dom";
 
 const SignupForm = () => {
   const usernameInput = useRef();
   const passwordInput = useRef();
   const emailInput = useRef();
+  const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState({});
+
+  const dispatch = useDispatch();
 
   const userSchema = z.object({
     username: z.string()
@@ -73,6 +79,31 @@ const SignupForm = () => {
       }),
   });
 
+  const responseGoogle = async (authResult) => {
+		try {      
+			if (authResult["code"]) {
+				await axios.get(`http://localhost:8080/auth/google?code=${authResult["code"]}`, {
+          withCredentials: true
+        });
+				navigate('/user/dashboard');
+			} else {
+				throw new Error(authResult);
+			}
+		} catch (e) {
+			console.log('Error while Google Login...', e);
+      dispatch(setNotification({message:e.response.data.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 3500);
+		}
+	};
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: responseGoogle,
+    onError: responseGoogle,
+    flow: 'auth-code'
+  })
+
   const validateForm = (formData) => {
     try {
       userSchema.parse(formData);
@@ -93,13 +124,11 @@ const SignupForm = () => {
   const handleInputChange = (event) => {
     const { name } = event.target;
     setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
-    setErrorMessage("");
   };
 
   const handleInputFocus = (event) => {
     const { name } = event.target;
     setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
-    setErrorMessage("");
   };
 
   async function submitHandler(event) {
@@ -124,27 +153,33 @@ const SignupForm = () => {
 
       console.log(response);
       setIsSubmitting(false);
-      setSuccessMessage(response.data.message);
-
+      dispatch(setNotification({message:response.data.message, type:'success'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 3500);
     } catch (error) {
       console.error("Error: ", error);
       setIsSubmitting(false);
-      setErrorMessage(error.response.data.message || "An error occurred. Please try again later.");
+      dispatch(setNotification({message:error.response.data.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 3500);
     }
   }
 
   return (
     <div className={classes["auth-page"]}>
-      <AuthFormHeader authHeading='Sign Up' authPara='sign in' />
+      <AuthFormHeader authHeading='Sign Up' authPara='sign up' />
       <form onSubmit={submitHandler} className={classes["auth-form"]} noValidate>
-        {successMessage && (
-          <PositionedSnackbar message={successMessage} isSuccess={true}/>
-        )}
-        
-        {errorMessage && (
-          <PositionedSnackbar message={errorMessage} isError={true} />
-        )}
-        {errors.username && <p className={classes["error-message"]}>{errors.username}</p>}
+        <Button
+          startIcon={<GoogleIcon/>}
+          onClick = {googleLogin}
+          variant="outlined"
+          size="small"
+          disabled={isSubmitting}
+        >{isSubmitting ? "Logging you in..." : "Sign Up with Google"}</Button>
+        <Divider>or</Divider>
+
         <InputField
           label="Username"
           type="text"
@@ -153,8 +188,10 @@ const SignupForm = () => {
           reference={usernameInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          help={errors.username}
+          error={errors.username ? true:false}
         />
-        {errors.email && <p className={classes["error-message"]}>{errors.email}</p>}
+
         <InputField
           label="Email"
           type="email"
@@ -163,8 +200,10 @@ const SignupForm = () => {
           reference={emailInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          help={errors.email}
+          error={errors.email ? true:false}
         />
-        {errors.password && <p className={classes["error-message"]}>{errors.password}</p>}
+
         <PasswordInputField
           label="Password"
           type="password"
@@ -173,6 +212,8 @@ const SignupForm = () => {
           reference={passwordInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          help={errors.password}
+          error={errors.password ? true: false}
         />
         <CustomButton
           type="submit"
@@ -180,7 +221,7 @@ const SignupForm = () => {
           disabled={isSubmitting}
         />
       </form>
-      <AuthFormFooter authPara='Already have an account? ' authLink='/login/201' authLabelLink='Login' />
+      <AuthFormFooter authPara='Already have an account? ' authLink='/login/201' authLabelLink='Sign In' />
     </div>
   );
 };

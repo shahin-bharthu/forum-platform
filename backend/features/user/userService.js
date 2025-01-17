@@ -32,9 +32,8 @@ const getUserDetails = async (id) => {
 }
 
 const getAvatarById = async (id) => {
-    const user = await userRepository.getUserById(id);
-
-    const avatarPath = await getImage(user.avatar, "user");
+    const user = await userRepository.getUserById(id);    
+    const avatarPath = await getImage(user.avatar, "user");    
     return avatarPath;
 }
 

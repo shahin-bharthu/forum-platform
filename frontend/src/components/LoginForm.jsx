@@ -8,17 +8,25 @@ import AuthFormFooter from "./AuthFormFooter";
 import axios from "axios";
 import { z } from "zod";
 import { Link, useLoaderData, useNavigate, redirect } from "react-router-dom";
+import { useGoogleLogin } from '@react-oauth/google';
 import PositionedSnackbar from "./SnackBar";
+import { Button } from "@mui/material";
+import Divider from '@mui/material/Divider';
+import { useDispatch } from "react-redux";
+import { clearNotification, setNotification } from "../store/uiSlice";
+import GoogleIcon from "./GoogleIcon";
 
 const LoginForm = () => {
   const emailInput = useRef();
   const passwordInput = useRef();
   const navigate = useNavigate();
-  const {message} = useLoaderData()
+  const { message } = useLoaderData()
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({}); 
+
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (message === null) {
@@ -63,13 +71,11 @@ const LoginForm = () => {
   const handleInputChange = (event) => {
     const { name } = event.target;
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
   };
 
   const handleInputFocus = (event) => {
     const { name } = event.target;
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
   };
 
   async function submitHandler(event) {
@@ -84,7 +90,6 @@ const LoginForm = () => {
       return;
     }
 
-    setErrorMessage("");
     setErrors({});
 
     try {
@@ -99,34 +104,64 @@ const LoginForm = () => {
       );
 
       if (response.status === 200) {
-        navigate("/user/dashboard", { replace: true });
+        dispatch(setNotification({message:'Signing you in', type:"success"}))
+        setTimeout(() => {
+          dispatch(clearNotification())
+          navigate("/user/dashboard", { replace: true });
+        }, 1000);
       }
-
       setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
-      setErrorMessage(
-        error.response.data.message ||
-          "An error occurred. Please try again later."
-      );
+      dispatch(setNotification({message:error.response.data.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     }
   }
 
+  const responseGoogle = async (authResult) => {
+		try {      
+			if (authResult["code"]) {
+				await axios.get(`http://localhost:8080/auth/google?code=${authResult["code"]}`, {
+          withCredentials: true
+        });
+				navigate('/user/dashboard');
+			} else {
+				throw new Error(authResult);
+			}
+		} catch (e) {
+			console.log('Error while Google Login...', e);
+      dispatch(setNotification({message: e.response.data.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 3000);
+		}
+	};
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: responseGoogle,
+    onError: responseGoogle,
+    flow: 'auth-code'
+  })
+
   return (
     <div className={classes["auth-page"]}>
-      <AuthFormHeader authHeading="Login" authPara="login " />
+      <AuthFormHeader authHeading="Sign in" authPara="sign in" />
       <form
         onSubmit={submitHandler}
         className={classes["auth-form"]}
         noValidate
       >
-        {errorMessage && (
-          <PositionedSnackbar message={errorMessage} isError={true}/>
-        )}
-        {errors.email && (
-          <p className={classes["error-message"]}>{errors.email}</p>
-        )}
-        {message && <PositionedSnackbar message={message}/>}
+        {message && <PositionedSnackbar message={message} />}
+        <Button
+          startIcon={<GoogleIcon/>}
+          onClick = {googleLogin}
+          variant="outlined"
+          size="small"
+          disabled={isSubmitting}
+        >{isSubmitting ? "Signing you in..." : "Sign In with Google"}</Button>
+        <Divider>or</Divider>
         <InputField
           label="Email"
           type="email"
@@ -135,10 +170,9 @@ const LoginForm = () => {
           reference={emailInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
-        />
-        {errors.password && (
-          <p className={classes["error-message"]}>{errors.password}</p>
-        )}
+          help={errors.email}
+          error={errors.email ? true:false}
+          />
         <PasswordInputField
           label="Password"
           type="password"
@@ -147,49 +181,51 @@ const LoginForm = () => {
           reference={passwordInput}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
-        />
+          help={errors.password}
+          error={errors.password ? true: false}
+          />
         <p className={classes["forgot-password"]}>
           <Link
             className={classes["constant-color-link"]}
             to="/forgot-password"
-          >
+            >
             Forgot password?
           </Link>
         </p>
         <CustomButton
           type="submit"
-          label={isSubmitting ? "Logging you in..." : "Login"}
+          label={isSubmitting ? "Signing you in..." : "Sign In"}
           disabled={isSubmitting}
-        />
+          />
       </form>
       <AuthFormFooter
         authPara="Don't have an account? "
         authLink="/signup"
         authLabelLink="Sign Up"
-      />
+        />
     </div>
   );
 };
 
 export default LoginForm;
 
-export async function loader({ request, params }) {
+export async function loader({ params }) {
   const status = params.status;
   switch (status) {
     case "100":
-      return {message: "No user found for this verification. Please sign up."};
+      return { message: "No user found for this verification. Please sign up." };
     case "101":
-      return {message: "User is already verified. Please log in."};
+      return { message: "User is already verified. Please log in." };
     case "102":
-      return {message: "Invalid verification link. Please request a new one."};
+      return { message: "Invalid verification link. Please request a new one." };
     case "103":
-      return {message: "The verification link has expired. Please request a new one."};
+      return { message: "The verification link has expired. Please request a new one." };
     case "104":
-      return {message: "Couldn't update user's verification status. Please try again later."};
+      return { message: "Couldn't update user's verification status. Please try again later." };
     case "201":
-      return {message: null};
+      return { message: null };
     case "200":
-      return {message: "User verified successfully"};
+      return { message: "User verified successfully" };
     default:
       throw redirect("/login/201");
   }

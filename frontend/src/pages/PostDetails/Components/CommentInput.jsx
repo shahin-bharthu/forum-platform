@@ -1,13 +1,14 @@
 import { useState, useCallback } from 'react';
 import { Box, TextField, IconButton } from '@mui/material';
 import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
-import axios from 'axios';
-import PositionedSnackbar from '../../../components/SnackBar';
+import axiosInstance from '../../../../utils/axiosInstance';
+import { useDispatch } from 'react-redux';
+import { clearNotification, setNotification } from '../../../store/uiSlice';
 
 const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onReplySend }) => {
     const [comment, setComment] = useState('');
-    const [message, setMessage] = useState();
 
+    const dispatch=useDispatch()
     const handleCommentChange = useCallback((event) => {
         setComment(event.target.value);
     }, []);
@@ -20,12 +21,7 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onRep
                 parent_comment_id: parentCommentId
             };
 
-            await axios.post('http://localhost:8080/comment', commentData, {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                withCredentials: true
-            });
+            await axiosInstance.post('http://localhost:8080/comment', commentData);
 
             // Reset and trigger callbacks
             setComment('');
@@ -33,12 +29,12 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onRep
             onReplySend?.();
         } catch (error) {
             console.error('Comment submission failed:', error);
-            setMessage(error.response?.data?.message || 'Failed to post comment. Please try again.')
+            dispatch(setNotification({message:error.response?.data?.message || 'Failed to post comment. Please try again.', type:'error'}))
             setTimeout(() => {
-                setMessage(null);
+                dispatch(clearNotification())
             }, 1500);
         }
-    }, [postId, parentCommentId, comment, onCommentadded, onReplySend]);
+    }, [postId, parentCommentId, comment, onCommentadded, onReplySend, dispatch]);
 
     const handleCancelComment = useCallback(() => {
         setComment('');
@@ -67,9 +63,7 @@ const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onRep
                     backgroundColor: '#f9f9f9',
                 }}
         >
-            {message && (
-                <PositionedSnackbar message={message} isError={true} />
-            )}{message}
+            
             <TextField
                 fullWidth
                 multiline

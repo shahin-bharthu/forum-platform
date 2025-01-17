@@ -1,8 +1,12 @@
 import { validationResult } from "express-validator";
 import jwt from 'jsonwebtoken';
-
+import axios from 'axios';
 import * as authServices from "./authServices.js";
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
+import { oauth2Client } from "../../util/googleClient.js";
+import { db } from "../../config/connection.js";
+import { downloadImage } from "../../util/downloadImage.js";
+import { CustomError } from "../../util/customError.js";
 
 const userSignUp = asyncErrorHandler(async (req,res,next) => {
     const errors = validationResult(req);
@@ -68,12 +72,12 @@ const resetPassword = asyncErrorHandler(async (req, res, next) => {
 });
 
 
-
 const userLogout = (req, res, next) => {
+    
     try {
         res.clearCookie("token", {maxAge: 0});
         res.clearCookie("expiration", {maxAge: 0});
-
+        
         return res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {
         console.log(error);
@@ -81,4 +85,48 @@ const userLogout = (req, res, next) => {
     }
 };
 
-export {userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword, userLogout};
+
+const googleAuth = asyncErrorHandler (async(req, res, next) => {
+    const code = req.query.code;    
+    const googleRes = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(googleRes.tokens);
+    const userRes = await axios.get(
+        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
+    );
+    const { email, given_name, family_name, picture, hd } = userRes.data;
+
+    if (!(hd?.includes('argusoft.in') || hd?.includes('argusoft.com'))) {
+        throw new CustomError("Please use an email ending with argusoft.com or argusoft.in to sign up or sign in", 403);
+    }
+
+    let user = await db.User.findOne({ where: { email } });
+    if (!user) {
+        const username = email.split('@')[0];
+        user = await db.User.create({ username, email, firstname: given_name, lastname: family_name });
+
+        const savePath = `./avatars/${user.id}-${username}.jpg`;
+        await downloadImage(picture, savePath);
+
+        user.avatar = `avatars/${user.id}-${username}.jpg`;
+        await user.save()
+    }
+
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const expirationDate = new Date(Date.now() + 3600000); // Set expiration date to 1 hour from now
+
+    res.cookie('token', token, {
+        maxAge: 3600000,
+        secure: true
+    });
+
+    res.cookie('expiration', expirationDate.toUTCString(), {
+        maxAge: 3600000,
+        secure: true,
+    });
+
+    user.password = null
+    return res.status(200).json({ data: user, message: 'Logging you in' });
+});
+
+
+export {userSignUp, userLogin, verifyEmail, forgotPassword, resetPassword, userLogout, googleAuth};

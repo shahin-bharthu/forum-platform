@@ -114,6 +114,26 @@ const getIsSubscribed = async (user_id, forum_id) => {
     }
 }
 
+
+const getMembershipRecord = async (user_id, forum_id) => {    
+    const membershipRecord = await db.UserMembership.findOne({
+        where: {
+            user_id,            
+            forum_id
+        },
+    });
+
+    return membershipRecord
+}
+
+const createUserMembership = async (user_id, forum_id) => {
+    await db.UserMembership.create({
+        user_id,
+        forum_id
+    });
+}
+
+
 export {
   getForums,
   createForum,
@@ -125,4 +145,6 @@ export {
   updateForumBanner,
   getTopicByForumId,
   getIsSubscribed,
+  getMembershipRecord,
+  createUserMembership
 };

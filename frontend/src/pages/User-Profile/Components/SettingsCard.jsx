@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import dayjs from "dayjs";
 import Card from "@mui/material/Card";
 import MenuItem from "@mui/material/MenuItem";
@@ -15,8 +14,11 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import { Divider } from "@mui/material";
-import PositionedSnackbar from "../../../components/SnackBar.jsx";
+import { z } from "zod";
+import { CircularProgress, Typography } from "@mui/material";
+import { useDispatch } from "react-redux";
+import {clearNotification, setNotification} from "../../../store/uiSlice.js"
+import axiosInstance from "../../../../utils/axiosInstance.js";
 
 export default function SettingsCard(props) {
   const genderSelect = [
@@ -40,9 +42,10 @@ export default function SettingsCard(props) {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [edit, setEdit] = useState(true);
-  const [updateMessage, setUpdateMessage] = useState("");
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   useEffect(() => {
     setUser({
       id: props.id,
@@ -55,8 +58,80 @@ export default function SettingsCard(props) {
     });
   }, [props]);
 
+  const userInfoSchema = z.object({
+    firstname: z
+      .string()
+      .min(1, "Field cannot be empty")
+      .max(50, "Cannot exceed 50 Characters")
+      .regex(/^[A-Za-z]+$/, "Should contain only alphabets"),
+    lastname: z
+      .string()
+      .min(1, "Field cannot be empty")
+      .max(50, "Cannot exceed 50 Characters")
+      .regex(/^[A-Z a-z]+$/, "Should contain only alphabets"),
+    dob: z
+      .string()
+      .refine((date) => {
+        const inputDate = new Date(date)
+        const today = new Date()
+        const minAge = new Date(
+          today.getFullYear() - 18,
+          today.getMonth(),
+          today.getDate()
+        )
+
+        return inputDate <= minAge
+      }
+        , { message: "You must be above 18 years of age" }),
+    gender: z
+      .enum(["male", "female", "other", "pnts"], "Gender must be from the selected list"),
+    email: z
+      .string()
+      .email("Invlaid email address"),
+    country: z
+      .string()
+      .refine((val) => countries.some(country => country.value === val), {
+        message: "Invalid selection"
+      })
+  });
+
+  const validateForm = (formData) => {
+
+    const trimmedFormData = {
+      ...formData,
+      firstname: formData.firstname.trim(),
+      lastname: formData.lastname.trim()
+    };
+
+    try {
+      userInfoSchema.parse(trimmedFormData);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors = {};
+        error.errors.forEach(err => {
+          newErrors[err.path[0]] = err.message;
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
+
   const changeField = (event) => {
-    setUser({ ...user, [event.target.name]: event.target.value });
+    const { name, value } = event.target;
+
+    // Trim firstname and lastname
+    const processedValue =
+      name === 'firstname' || name === 'lastname'
+        ? value.trim()
+        : value;
+
+    setUser({
+      ...user,
+      [name]: processedValue
+    });
   };
 
   const handleUpdateClick = (event) => {
@@ -75,20 +150,17 @@ export default function SettingsCard(props) {
         dob: dayjs(user.dob).format("YYYY-MM-DD"), // Format DOB as 'YYYY-MM-DD'
       };
 
-      const response = await axios.put(
-        "http://localhost:8080/user/update",
-        formattedUser,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true
-        }
-      );
+      if (!validateForm(formattedUser)) {
+        console.log("validation error");
+        handleDialogClose()
+        return;
+      }
 
-      setUpdateMessage(response.data.message);
+      const response = await axiosInstance.put('/user/update', formattedUser);
+
+      dispatch(setNotification({message:response.data.message, type:null}))
       setTimeout(() => {
-        setUpdateMessage(null)
+        dispatch(clearNotification())
         navigate("/user/profile");
       }, 1500);
 
@@ -101,10 +173,6 @@ export default function SettingsCard(props) {
   return (
     <Card variant="outlined" sx={{ height: "100%", width: "100%" }}>
       <br />
-
-      {updateMessage && (
-        <PositionedSnackbar message={updateMessage} />
-      )}
 
       {/* MAIN CONTENT CONTAINER */}
       <form>
@@ -133,6 +201,8 @@ export default function SettingsCard(props) {
                   title="First Name"
                   dis={!edit}
                   req={true}
+                  help={errors.firstname}
+                  error={errors.firstname ? true : false}
                 />
               </Grid>
 
@@ -146,6 +216,8 @@ export default function SettingsCard(props) {
                   title="Last Name"
                   dis={!edit}
                   req={true}
+                  help={errors.lastname}
+                  error={errors.lastname ? true : false}
                 />
               </Grid>
 
@@ -154,10 +226,11 @@ export default function SettingsCard(props) {
                 <DatePicker
                   value={user.dob}
                   onChange={(newValue) => {
-                    console.log("Selected DOB:", newValue);
                     setUser({ ...user, dob: newValue });
                   }}
                   dis={!edit}
+                  help={errors.dob}
+                  error={errors.dob ? true : false}
                 />
               </Grid>
 
@@ -177,6 +250,7 @@ export default function SettingsCard(props) {
                       {option.label}
                     </MenuItem>
                   ))}
+                  help={errors.gender}
                 />
               </Grid>
 
@@ -191,6 +265,7 @@ export default function SettingsCard(props) {
                   title="Email Address"
                   dis={true} // Email is not editable
                   req={true}
+                  help={errors.email}
                 />
               </Grid>
 
@@ -205,11 +280,20 @@ export default function SettingsCard(props) {
                   title="Country"
                   dis={!edit}
                   req={true}
-                  content={countries.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
+                  content = {
+                    isLoading ? (
+                      <CircularProgress size="30px" sx={{ mx: 11 }} />
+                    ) : error ? (
+                      <Typography sx={{ mx: 11, color: 'red' }}>An error occurred. Please try again.</Typography>
+                    ) : (
+                      countries.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))
+                    )
+                }
+                  help={errors.country}
                 />
               </Grid>
 

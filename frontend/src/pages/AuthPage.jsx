@@ -1,4 +1,4 @@
-import { Outlet, useRouteLoaderData } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 function AuthPage() {
     return <>

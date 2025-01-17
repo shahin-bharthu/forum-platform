@@ -6,6 +6,8 @@ import InputLabel from '@mui/material/InputLabel';
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import FormControl from '@mui/material/FormControl';
 import { useState } from "react";
+import { FormHelperText } from "@mui/material";
+
 const PasswordInputField = ({
   label,
   name,
@@ -14,8 +16,10 @@ const PasswordInputField = ({
   onChange,
   onFocus,
   reference,
+  help,
+  error
 }) => {
-    
+
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -29,34 +33,38 @@ const PasswordInputField = ({
   };
   return (
     <>
-    <FormControl sx={{ m: 0 }} variant="standard">
-    <InputLabel htmlFor="standard-adornment-password">{label} *</InputLabel>
-    <Input
-      type={showPassword ? "text" : "password"}
-      inputRef={reference}
-      name={name}
-      id={name}
-      value={value}
-      placeholder={placeholder}
-      onChange={onChange}
-      endAdornment={
-        <InputAdornment position="end">
-          <IconButton
-            aria-label="toggle password visibility"
-            onClick={handleClickShowPassword}
-            onMouseDown={handleMouseDownPassword}
-            onMouseUp={handleMouseUpPassword}
-            edge="end"
-          >
-            {showPassword ? <VisibilityOff /> : <Visibility />}
-          </IconButton>
-        </InputAdornment>
-      }
-      label={label}
-      onFocus={onFocus}
-      required 
-    />
-    </FormControl>
+      <FormControl sx={{ m: 0 }} variant="standard">
+        <InputLabel htmlFor="standard-adornment-password"error={error}>{label} *</InputLabel>
+        <Input
+          type={showPassword ? "text" : "password"}
+          inputRef={reference}
+          name={name}
+          id={name}
+          value={value}
+          placeholder={placeholder}
+          onChange={onChange}
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="toggle password visibility"
+                onClick={handleClickShowPassword}
+                onMouseDown={handleMouseDownPassword}
+                onMouseUp={handleMouseUpPassword}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          }
+          label={label}
+          onFocus={onFocus}
+          required
+          error={error}
+        />
+        {help && (
+          <FormHelperText error>{help}</FormHelperText>
+        )}
+      </FormControl>
     </>
   );
 };

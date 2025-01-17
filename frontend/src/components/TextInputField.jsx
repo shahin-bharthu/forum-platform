@@ -10,6 +10,8 @@ const TextInputField = ({
   onChange,
   onFocus,
   reference,
+  help,
+  error
 }) => {
   return (
       <TextField label={label} inputRef={reference}
@@ -21,6 +23,8 @@ const TextInputField = ({
         onChange={onChange}
         required variant="standard"
         onFocus={onFocus}
+        helperText={help}
+        error={error}
         />
   );
 };

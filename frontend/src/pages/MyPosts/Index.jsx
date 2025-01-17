@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import {
   Card, CardHeader, CardContent, CardActions, Collapse,
   IconButton, Typography, Box, Grid2 as Grid, Avatar, Menu,
-  MenuItem, Link, Skeleton
+  MenuItem, Link
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
-import axios from "axios";
-import PositionedSnackbar from "../../components/SnackBar";
 import {
   ExpandMore as ExpandMoreIcon,
   MoreVert as MoreVertIcon,
@@ -19,6 +17,10 @@ import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, B
 import { formatDate } from "../../../utils/timestamp";
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import TopicSkeleton from "../../components/PostsSkeleton";
+import axiosInstance from "../../../utils/axiosInstance.js";
+import { useDispatch, useSelector } from 'react-redux';
+import { setPostCount } from "../../store/userPostSlice.js";
+import { clearNotification, setNotification } from "../../store/uiSlice.js";
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-content": {
@@ -63,7 +65,7 @@ const StyledMenu = memo(styled((props) => (
         fontSize: 18,
         color: theme.palette.text.secondary,
         marginRight: theme.spacing(1.5),
-      },
+      },                                                            
       "&:active": {
         backgroundColor: alpha(
           theme.palette.primary.main,
@@ -107,26 +109,24 @@ export default function MyPosts() {
   ]);
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [forumBanner, setForumBanner] = useState({});
-  const [message, setMessage] = useState();
   const [menuAnchor, setMenuAnchor] = useState(null);  // Track the anchor element for the menu
   const [activeIndex, setActiveIndex] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-
+  const [refresh, setrefresh] = useState(false);
+  
+  const isLoading = useSelector(state => state.loading.isLoading);
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const getForumTopics = useCallback(async () => {
     try {
-      setLoading(true);
-      const myTopics = await axios.get(`http://localhost:8080/topic/my-topics`, { withCredentials: true });
+      const myTopics = await axiosInstance.get(`/topic/my-topics`);
       const myTopicsData = myTopics.data.data;
-
-      const forumsList = await Promise.all(
-        myTopicsData.map(forumTopic =>
-          axios.get(`http://localhost:8080/forum/${forumTopic.forum_id}`, { withCredentials: true })
-        )
-      );
+      dispatch(setPostCount({
+        userPostCount:myTopicsData.length
+      }))
+      const forumsList = await Promise.all(myTopicsData.map(forumTopic => axiosInstance.get(`/forum/${forumTopic.forum_id}`)));
 
       const forumNames = forumsList.map(creator => creator.data.data.name);
       const forumIds = forumsList.map(creator => creator.data.data.forum_id);
@@ -143,9 +143,9 @@ export default function MyPosts() {
       await Promise.all(
         updatedForumTopics.map(async (topic) => {
           try {
-            const response = await axios.get(
-              `http://localhost:8080/forum/banner/${topic.forum_id}`,
-              { withCredentials: true, responseType: "blob" }
+            const response = await axiosInstance.get(
+              `/forum/banner/${topic.forum_id}`,
+              { responseType: "blob" }
             );
 
             if (response.data) {
@@ -163,17 +163,14 @@ export default function MyPosts() {
           }
         })
       );
-
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching topics:", error);
-      setLoading(false);
     }
-  }, []);
+  }, [dispatch,refresh]);
 
   useEffect(() => {
     getForumTopics();
-  }, [getForumTopics]);
+  }, [getForumTopics,dispatch]);
 
 
   const handleMenuClick = useCallback((event, index) => {
@@ -189,31 +186,28 @@ export default function MyPosts() {
   const handleDeleteTopic = async () => {
     if (activeIndex !== null) {
       try {
-        const response = await axios.delete(`http://localhost:8080/topic/${activeIndex}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true
-        });
-
-        setMessage('Post deleted');
+        await axiosInstance.delete(`/topic/${activeIndex}`);
+        dispatch(setNotification({message:'Post deleted', type:null}))
         setTimeout(() => {
-          setMessage(null);
-          window.location.reload();
+          dispatch(clearNotification())
+          setrefresh(prev=>!prev)
         }, 1000);
       } catch (error) {
         console.error("Error deleting post:", error);
-        setMessage('Failed to delete post');
+        dispatch(setNotification({message:'Failed to delete post', type:'error'}))
+        setTimeout(() => {
+          dispatch(clearNotification())
+        }, 1500);
       }
     }
     handleDialogClose();
   };
 
 
-  const handleEditTopic = (event, id) => {
+  const handleEditTopic = (event, id, name) => {
     handleCloseMenu()
     event.preventDefault();
-    navigate(`/post/edit/${id}`)
+    navigate(`/post/edit/${id}`, { state: { forumName: name, forumId: id } })
   }
 
   const handleExpandClick = (i) => {
@@ -259,7 +253,7 @@ export default function MyPosts() {
     </Dialog>
   )
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Grid size={12} sx={{ width: "100%", px: 3, mt: 10 }}>
         {[1, 2, 3].map((_, index) => (
@@ -288,7 +282,6 @@ export default function MyPosts() {
   return (
     <>
       <Grid size={12} sx={{ width: "100%", px: 3, mt: 10, alignSelf: "start" }}>
-        {message && <PositionedSnackbar message={message} />}
         {forumTopics.map((topic, index) => (
           <Box key={index} mb={2}>
             <Card>
@@ -314,7 +307,7 @@ export default function MyPosts() {
                       onClose={handleCloseMenu}
                     >
                       <MenuItem
-                        onClick={(event) => handleEditTopic(event, topic.id)}
+                        onClick={(event) => handleEditTopic(event, topic.id, topic.forumname)}
                         disableRipple>
                         <EditIcon />
                         Edit

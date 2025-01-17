@@ -3,36 +3,52 @@ import { useEffect, useRef, useState } from "react";
 import CustomButton from "../../components/Button";
 import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import TextInputField from "./Components/TextInput.jsx";
-import axios from "axios";
 import Button from "@mui/material/Button";
-import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SelectList from "./Components/SelectList.jsx";
 import Stack from '@mui/material/Stack';
-import { Card } from "@mui/material";
+import { Card, CircularProgress } from "@mui/material";
+import axiosInstance from "../../../utils/axiosInstance.js";
+import { useDispatch } from 'react-redux';
+import { clearNotification, setNotification } from "../../store/uiSlice.js";
 
 const CreatePost = ({isEdit}) => {
-  const topicData = useLoaderData();
+  const [topicData, setTopicData] = useState();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // only used to show error for the fields of the form
+  const [selectedForum, setSelectedForum] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const titleInput = useRef();
   const bodyInput = useRef();
   const location = useLocation();
-  const {forumName, forumId} = location.state || null || topicData.topic.forum_id
+  const params = useParams();
+  const {forumName, forumId} = location.state // || topicData.topic.forum_id
 
   const navigate = useNavigate();
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errors, setErrors] = useState({});
-  const [selectedForum, setSelectedForum] = useState(null);
-
+  const dispatch=useDispatch()
+  
   useEffect(() => {
-    if (forumName !== null && forumId !== null) {
+    if (!isEdit && forumName !== null && forumId !== null) {
       setSelectedForum(forumId)
     }
-  }, []);
+
+    if (isEdit) {
+      topicDetailsLoader(params.id).then(() => setLoading(false));
+    }
+  }, [params.id]);
+
+  const topicDetailsLoader = async (topicId) => {
+    if (topicId) {
+      const response = await axiosInstance.get(`http://localhost:8080/topic/${topicId}`, {withCredentials: true});    
+      setTopicData(response.data.data);
+    }
+    else {
+      return null;
+    }
+  }
 
   const getSelectedForumFromList = (selectedForumFromList) => {
-    // console.log(selectedForumFromList);
     setSelectedForum(selectedForumFromList ?? forumId); 
   };
 
@@ -52,27 +68,24 @@ const CreatePost = ({isEdit}) => {
       content: enteredBody, 
       forum_id: selectedForum 
     };
-    console.log(formData);
 
     setErrorMessage("");
-    setErrors({});
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post("http://localhost:8080/topic", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true
-      });
-      setSuccessMessage(response.data.message);
-      navigate(-1); 
+      const response = await axiosInstance.post("/topic", formData);
+      
+      dispatch(setNotification({message:response.data.message, type:"success"}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+        navigate(`/post/${response.data.data.id}`); 
+      }, 1500);
     } catch (error) {
       setIsSubmitting(false);
-      console.error("Error:", error);
-      setErrorMessage(
-        error.response?.data?.errors[0].msg || "An error occurred. Please try again later."
-      );
+      dispatch(setNotification({message:error.response?.data?.errors?.[0]?.msg || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     }
   }
 
@@ -85,36 +98,38 @@ const CreatePost = ({isEdit}) => {
     const formData = {title:enteredTitle, content: enteredBody};
     
     setErrorMessage("");
-    setErrors({});
 
     try {
       setIsSubmitting(true);
       
-      const response = await axios.patch(`http://localhost:8080/topic/${id}`, formData, {
+      const response = await axiosInstance.patch(`http://localhost:8080/topic/${id}`, formData, {
         "Content-Type": "application/json",
         withCredentials: true
       });
       
-      setSuccessMessage(response.data.message);
+      dispatch(setNotification({message:response.data.message, type:"success"}))
       setIsSubmitting(false);
       setTimeout(() => {
+        dispatch(clearNotification())
         navigate(`/post/my-posts`)
       }, 1000);
     } catch (error) {
       setIsSubmitting(false);
-      console.error("Error:", error);
-      setErrorMessage(
-        error.response?.data?.message || "An error occurred. Please try again later."
-      );
+      dispatch(setNotification({message:error.response?.data?.message || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1500);
     }
   }
 
   return (
+    loading && isEdit ? <CircularProgress/> : 
     <Card variant="outlined" sx={{ m: 2, p: 3, justifyContent: 'left' }}>
       <h3 className={classes["heading"]}>{isEdit? 'Edit': 'Create'} Post</h3>
       <form onSubmit={isEdit? (event)=>editPostHandler(event, topicData.topic.id):  addPostHandler} noValidate>
 
         {!isEdit && <SelectList selectedForumName={forumName} getForum={getSelectedForumFromList}/>}
+        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
 
         <TextInputField
           label="Title"
@@ -135,9 +150,6 @@ const CreatePost = ({isEdit}) => {
           value={isEdit ? topicData.topic.content : null}
         />
 
-        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-        {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-
         <Stack spacing={2} direction="row" sx={{ m: 1, pt: 2, justifyContent: 'right' }}>
           <CustomButton
             type="submit"
@@ -155,10 +167,10 @@ const CreatePost = ({isEdit}) => {
 
 export default CreatePost;
 
-export const topicDetailsLoader = async ({request, params}) => {
+export const topicDetailsLoader = async ({params}) => {
   const topicId = params.id
   if (topicId) {
-    const response = await axios.get(`http://localhost:8080/topic/${topicId}`, {withCredentials: true});    
+    const response = await axiosInstance.get(`http://localhost:8080/topic/${topicId}`, {withCredentials: true});    
     return response.data.data;
   }
   else {

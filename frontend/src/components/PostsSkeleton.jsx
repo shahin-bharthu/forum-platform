@@ -28,7 +28,7 @@ export default function TopicSkeleton() {
                     <Skeleton variant="text" width="60%" animation="wave"/>
                 </CardContent>
                 <CardActions>
-                    <Skeleton variant="circular" width={40} height={40} animation="wave"/>
+                    <Skeleton variant="circular" width={40} height={40} sx={{ml: 1}} animation="wave"/>
                     <Skeleton variant="circular" width={40} height={40} animation="wave"/>
                 </CardActions>
             </Card>

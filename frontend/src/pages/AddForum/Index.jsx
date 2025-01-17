@@ -1,41 +1,63 @@
+/* eslint-disable react/prop-types */
 import classes from "../../components/AuthForm.module.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TextInputField from "./Components/TextInput.jsx";
 import TextAreaInputField from "./Components/TextAreaInput.jsx";
 import CustomButton from "../../components/Button";
-import axios from "axios";
 import Button from "@mui/material/Button";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { Card, Stack } from "@mui/material";
+import { Card, CircularProgress, Stack } from "@mui/material";
 import ForumBannerUpload from "./Components/BannerUpload.jsx";
+import axiosInstance from "../../../utils/axiosInstance.js";
+import { useDispatch } from "react-redux";
+import { clearNotification, setNotification } from "../../store/uiSlice.js";
 
 const Index = ({isEdit}) => {
-  const forumData = useLoaderData();
+  const [forumData, setForumData] = useState();
   const nameInput = useRef();
   const purposeInput = useRef();
-
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [isPublic, setIsPublic] = useState(forumData ? forumData.isPublic : true); 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const params = useParams();
+  const dispatch = useDispatch()
+  
+  useEffect(() => {
+    async function forumDetailsLoader(forum_id) {
+      if (forum_id) {
+        const response = await axiosInstance.get(`/forum/forum-id/${forum_id}`);  
+        setForumData(response.data.data);
+      }
+      else {
+        dispatch(setNotification({message: "Error fetching forum details. Please try again later!", type: "error"}));
+        setTimeout(() => {
+          dispatch(clearNotification());
+        }, 5000);
+      }
+    }
+
+    if (isEdit) {
+      forumDetailsLoader(params.forum_id).then(() => setLoading(false));
+    }
+
+  }, [params.forum_id, isEdit]);
 
   const handleInputChange = (event) => {
     const { name } = event.target;
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
   };
 
   const handleInputFocus = (event) => {
     const { name } = event.target;
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-    setErrorMessage("");
   };
 
   const handleSwitchToggle = (event) => { 
+    // eslint-disable-next-line no-unused-vars
     setIsPublic(prevState => event.target.checked);
   };
 
@@ -48,26 +70,24 @@ const Index = ({isEdit}) => {
 
     const formData = { name: enteredName, purpose: enteredPurpose, isPublic: forumIsPublic };
     
-    setErrorMessage("");
     setErrors({});
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post("http://localhost:8080/forum", formData, {
-        "Content-Type": "application/json",
-        withCredentials: true
-      });
-      setSuccessMessage(response.data.message);
+      const response = await axiosInstance.post("/forum", formData);
+      dispatch(setNotification({message:response.data.message, type:'success'}))
       setIsSubmitting(false);
       setTimeout(() => {
+        dispatch(clearNotification())
         navigate('/user/my-forums')
       }, 1000);
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error:", error);
-      setErrorMessage(
-        error.response?.data?.errors[0].msg || "An error occurred. Please try again later."
-      );
+      dispatch(setNotification({message:error.response?.data?.errors[0].msg || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1000);
     }
   }
 
@@ -79,27 +99,25 @@ const Index = ({isEdit}) => {
 
     const formData = { purpose: enteredPurpose, isPublic: forumIsPublic };
 
-    setErrorMessage("");
     setErrors({});
 
     try {
       setIsSubmitting(true);
-      const response = await axios.patch(`http://localhost:8080/forum/${id}`, formData, {
-        "Content-Type": "application/json",
-        withCredentials: true
-      });
+      const response = await axiosInstance.patch(`/forum/${id}`, formData);
       
-      setSuccessMessage(response.data.message);
       setIsSubmitting(false);
+      dispatch(setNotification({message:response.data.message, type:'success'}))
       setTimeout(() => {
+        dispatch(clearNotification())
         navigate(`/forum/${forum_id}`)
       }, 1000);
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error:", error);
-      setErrorMessage(
-        error.response?.data?.message || "An error occurred. Please try again later."
-      );
+      dispatch(setNotification({message:error.response?.data?.errors[0].msg || "An error occurred. Please try again later.", type:'error'}))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 1000);
     }
   }
 
@@ -109,17 +127,12 @@ const Index = ({isEdit}) => {
     nameInput.current.value = null;
   }
 
-  return ( 
+  return (
+    loading && isEdit ? <CircularProgress/> : 
     <Card variant="outlined" sx={{ m:2,p:3,justifyContent: 'left' }}>
       <h3 className={classes["heading"]}>{isEdit? 'Edit': 'Create'} Forum</h3>
       {isEdit && <ForumBannerUpload forumId={forumData.id}></ForumBannerUpload>}
       <form onSubmit={ isEdit? (event) => editForumHandler(event, forumData.id, forumData.forum_id) : createForumHandler } noValidate> 
-        {successMessage && (
-          <div className={classes["success-message"]}>{successMessage}</div>
-        )}
-        {errorMessage && (
-          <div className={classes["error-message"]}>{errorMessage}</div>
-        )}
         {errors.name && <p className={classes["error-message"]}>{errors.name}</p>}
         <TextInputField
           label="Name"
@@ -164,15 +177,3 @@ const Index = ({isEdit}) => {
 };
 
 export default Index;
-
-export async function forumDetailsLoader({params}) {
-  const forum_id = params.forum_id
-  if (forum_id) {
-    const response = await axios.get(`http://localhost:8080/forum/forum-id/${forum_id}`, {withCredentials: true});  
-    
-    return response.data.data
-  }
-  else {
-    return null;
-  }
-}

@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import axios from 'axios';
 import Grid from "@mui/material/Grid2";
 import ProfileCard from "./Components/ProfileCard";
 import SettingsCard from "./Components/SettingsCard";
-
+import axiosInstance from "../../../utils/axiosInstance.js";
+import { formatDate } from "../../../utils/timestamp.js";
+import { useSelector } from "react-redux";
+import userBackdrop from "../../assets/UserProfileBackdrop.png"
 export default function Index() {
   const [text, setText] = useState("");
+  const { userPostCount } = useSelector(state => state.userPosts.userPostCount);
   const [user, setUser] = useState({
     firstname: ' ',
     lastname: ' ',
@@ -47,11 +50,7 @@ export default function Index() {
 
   const fetchUserDetails = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/user/${userId}`,
-        {
-          withCredentials: true
-        }
-      ); 
+      const response = await axiosInstance.get(`/user/${userId}`); 
       
       const data = response.data.user;
       setUser({
@@ -63,8 +62,8 @@ export default function Index() {
         gender: data.gender || 'male',
         email: data.email,
         username: data.username,
-        dt1: 10,
-        dt2: 20,
+        dt1: userPostCount || 0,
+        dt2: formatDate(data.createdAt),
         dt3: 30,
       });
 
@@ -72,12 +71,6 @@ export default function Index() {
       console.error("Failed to fetch user details:", error);
     }
   };
-
-  // useEffect(() => {
-  //   console.log("second useeffect");
-    
-  //   console.log("USER: ", user);
-  // }, [user]);
   
   const fullName = `${user.firstname} ${user.lastname}`;
 
@@ -92,7 +85,7 @@ export default function Index() {
             objectFit: "cover",
             objectPosition: "50% 50%",
           }}
-          src="https://iconerecife.com.br/wp-content/plugins/uix-page-builder/uixpb_templates/images/UixPageBuilderTmpl/default-cover-6.jpg"
+          src={userBackdrop}
         />
       </Grid>
 

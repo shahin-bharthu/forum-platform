@@ -1,13 +1,16 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid2';
-import axios from 'axios';
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import MediaCard from '../MyForums/Components/Card';
-import { useState } from 'react';
-import PositionedSnackbar from '../../components/SnackBar.jsx';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import axiosInstance from '../../../utils/axiosInstance.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearNotification, setNotification } from '../../store/uiSlice.js';
+import { setSubscribableForums, setSubscribedForums } from '../../store/allForumsSlice.js';
+import axios from 'axios';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -37,14 +40,36 @@ function a11yProps(index) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
-export default function AllForums() {
 
-  const { subscribedForums, subscribableForums, subscribableEmpty, subscribedEmpty } = useLoaderData();
+export default function AllForums() {
   const navigate = useNavigate();
-  const [subscribableForumsState, setSubscribableForumsState] = useState(subscribableForums);
-  const [message, setMessage] = useState();
-  const [counter, setCounter] = useState(0);
+  const subscribableForums = useSelector(state => state.allForums.subscribableForums);
+  const subscribedForums = useSelector(state => state.allForums.subscribedForums);
+  const [subscribedEmpty, setSubscribedEmpty] = useState(false);
+  const [subscribableEmpty, setSubscribableEmpty] = useState(false);
   const [value, setValue] = useState(0);
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    async function allForumLoader() {
+      try {
+        const subscribedForums = await axiosInstance.get('/forum/subscribed-forums');
+        const subscribedForumsData = subscribedForums.data.data;
+        dispatch(setSubscribedForums(subscribedForumsData));
+    
+        const subscribableForums = await axiosInstance.get('/forum/can-subscribe-to');
+        const subscribableForumsData = subscribableForums.data.data;
+        dispatch(setSubscribableForums(subscribableForumsData));
+
+        setSubscribableEmpty(subscribableForumsData.length === 0);
+        setSubscribedEmpty(subscribedForumsData.length === 0);
+      } catch (error) {
+        console.log("error in loader fetching all forums: ", error.message);
+      }
+    }
+
+    allForumLoader();
+  }, [dispatch]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -53,27 +78,18 @@ export default function AllForums() {
   const handleSubscribe = async (event, forumId) => {
     event.preventDefault();
     try {
-      const response = await axios.post(
-        `http://localhost:8080/forum/subscribe/${forumId}`,
-        null,
-        {
-          "Content-Type": "application/json",
-          withCredentials: true,
-        }
-      );
+      const response = await axios.post(`http://localhost:8080/forum/subscribe/${forumId}`,null, {withCredentials: true});
 
-      setMessage(`Subscribed to ${response.data.data.name}`);
-      setSubscribableForumsState((prevState) =>
-        prevState.filter((id) => id !== forumId)
-      );
+      dispatch(setNotification({message:`Subscribed to ${response.data.data.name}`, type: null}));
+      const updatedSubscribableForums = subscribableForums.filter((forum) => forum.id !== response.data.data.id); 
+      const updatedSubscribedForums = [...subscribedForums, response.data.data];
 
       setTimeout(() => {
-        setMessage(null);
-        // window.location.reload();
-        setCounter((val) => val + 1);
+        dispatch(setSubscribableForums(updatedSubscribableForums));
+        dispatch(setSubscribedForums(updatedSubscribedForums));
+        dispatch(clearNotification())
         navigate('/user/forums')
       }, 1000);
-
 
     } catch (error) {
       console.error("Error: ", error);
@@ -104,9 +120,6 @@ export default function AllForums() {
           <Tab label="More Forums" {...a11yProps(1)} />
         </Tabs>
       </Box>
-      {message && (
-        <PositionedSnackbar message={message} />
-      )}
       <CustomTabPanel value={value} index={0}>
         {subscribedEmpty && <p>Subscribe to forums to see here.</p> }
         {!subscribedEmpty && <Grid size={12} >
@@ -159,35 +172,4 @@ export default function AllForums() {
       </CustomTabPanel>
     </Box>
   );
-}
-
-export async function allForumLoader() {
-  try {
-    const subscribedForums = await axios.get('http://localhost:8080/forum/subscribed-forums', {
-      withCredentials: true
-    });
-    const subscribedForumsData = subscribedForums.data.data
-
-    const subscribableForums = await axios.get("http://localhost:8080/forum/can-subscribe-to", {
-      withCredentials: true,
-    });
-    const subscribableForumsData = subscribableForums.data.data
-
-    return {
-      subscribedForums: subscribedForumsData,
-      subscribableForums: subscribableForumsData,
-      subscribableEmpty: subscribableForumsData.length === 0,
-      subscribedEmpty: subscribedForumsData.length === 0
-    };
-
-  } catch (error) {
-    console.log("error in loader");
-    console.log(error.message);
-    return {
-      subscribedForums: [],
-      subscribableForums: [],
-      subscribableEmpty: true,
-      subscribedEmpty: true
-    };
-  }
 }

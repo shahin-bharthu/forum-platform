@@ -1,6 +1,4 @@
-import React from 'react';
-import { 
-  Box, 
+import {  
   Card, 
   CardActions, 
   CardContent, 
@@ -12,7 +10,8 @@ import {
   Tooltip, 
   Chip,
   useMediaQuery,
-  useTheme
+  useTheme,
+  tooltipClasses
 } from '@mui/material';
 import {
   CakeOutlined as CakeOutlinedIcon,
@@ -40,53 +39,74 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
   };
 
   return (
-    <Card sx={{ 
-      mb: 2, 
+    <Card sx={{
+      mb: 2,
       width: '100%',
       maxWidth: 600,
       margin: 'auto'
     }}>
       <CardContent>
         <Link href={`/forum/${forum.forum_id}`} color="inherit" underline="hover">
-          <Typography
-            variant="h6"
-            fontWeight="medium"
-            component="div"
-            sx={{ 
-              textAlign: "left", 
-              mb: 1,
-              fontSize: { xs: '1.1rem', sm: '1.25rem' }
+          <Tooltip
+            title={forum.name}
+            placement="top-start"
+            slotProps={{
+              popper: {
+                sx: {
+                  [`&.${tooltipClasses.popper}[data-popper-placement*="top"] .${tooltipClasses.tooltip}`]:
+                  {
+                    marginBottom: '0px',
+                  },
+                },
+              },
             }}
+            arrow
           >
-            {forum.name}
-          </Typography>
+            <Typography
+              variant="h6"
+              fontWeight="medium"
+              component="div"
+              sx={{
+                textAlign: "left",
+                mb: 1,
+                fontSize: { xs: '1.1rem', sm: '1.25rem' },
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                width: "90%"
+              }}
+            >
+              {forum.name}
+            </Typography>
+          </Tooltip>
         </Link>
 
         <Typography
           variant="body2"
-          sx={{ 
-            color: "text.secondary", 
-            mb: 1.5, 
+          sx={{
+            color: "text.secondary",
+            mb: 1.5,
             textAlign: "left",
-            fontSize: { xs: '0.75rem', sm: '0.875rem' }
+            fontSize: { xs: '0.75rem', sm: '0.875rem' },
+            wordBreak: "break-word"
           }}
         >
           {forum.purpose}
         </Typography>
 
-        <Stack 
-          spacing={1} 
-          direction="row" 
-          alignItems="center" 
+        <Stack
+          spacing={1}
+          direction="row"
+          alignItems="center"
           sx={{ my: 2 }}
         >
-          <CakeOutlinedIcon 
-            sx={{ 
-              fontSize: { xs: '1rem', sm: '1.25rem' } 
-            }} 
+          <CakeOutlinedIcon
+            sx={{
+              fontSize: { xs: '1rem', sm: '1.25rem' }
+            }}
           />
-          <Typography 
-            variant="body2" 
+          <Typography
+            variant="body2"
             fontWeight="medium"
             sx={{
               fontSize: { xs: '0.75rem', sm: '0.875rem' }
@@ -99,11 +119,11 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
         <Stack
           direction="row"
           spacing={1}
-          sx={{ 
-            justifyContent: 'space-between', 
+          sx={{
+            justifyContent: postLength ? 'space-between' : 'flex-start',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: 1 
+            gap: postLength ? 1 : 3
           }}
         >
           <Chip
@@ -119,11 +139,11 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
               }
             }}
           />
-          
-          <Tooltip title="Number of posts">
-            <Chip 
-              icon={<NumbersRoundedIcon />} 
-              label={postLength} 
+
+          {postLength>=0 && <Tooltip title="Number of posts">
+            <Chip
+              icon={<NumbersRoundedIcon />}
+              label={postLength}
               sx={{
                 '& .MuiChip-icon': {
                   fontSize: { xs: '1rem', sm: '1.25rem' }
@@ -133,8 +153,8 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
                 }
               }}
             />
-          </Tooltip>
-          
+          </Tooltip>}
+
           <Tooltip title="Number of subscribers">
             <Chip
               icon={<GroupsOutlinedIcon />}
@@ -155,28 +175,28 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
       <Divider />
 
       <CardActions>
-        <Stack 
-          sx={{ 
-            mx:1,
-            width: '100%', 
-            alignItems: 'center' 
+        <Stack
+          sx={{
+            mx: 1,
+            width: '100%',
+            alignItems: 'center'
           }}
         >
           <Typography
             variant="body1"
             fontWeight="medium"
-            sx={{ 
-              textAlign: 'left', 
-              width: '100%', 
-              mb: 1 
+            sx={{
+              textAlign: 'left',
+              width: '100%',
+              mb: 1
             }}
           >
             Admins
           </Typography>
 
-          <Stack 
-            direction="row" 
-            alignItems="center" 
+          <Stack
+            direction="row"
+            alignItems="center"
             spacing={1}
             sx={{ width: '100%', mb: 2 }}
           >
@@ -202,123 +222,3 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
     </Card>
   );
 }
-
-// import * as React from "react";
-// import Box from "@mui/material/Box";
-// import Card from "@mui/material/Card";
-// import CardActions from "@mui/material/CardActions";
-// import CardContent from "@mui/material/CardContent";
-// import Button from "@mui/material/Button";
-// import Typography from "@mui/material/Typography";
-// import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
-// import { Divider, Link, Stack, Tooltip } from "@mui/material";
-// import LanguageIcon from "@mui/icons-material/Language";
-// import FaceOutlinedIcon from "@mui/icons-material/FaceOutlined";
-// import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
-// import EmailIcon from "@mui/icons-material/Email";
-// import NumbersRoundedIcon from "@mui/icons-material/NumbersRounded";
-// import PublicIcon from "@mui/icons-material/Public";
-// import VpnLockIcon from "@mui/icons-material/VpnLock";
-// import Chip from "@mui/material/Chip";
-
-// export default function ForumInfoCard({
-//   forum,
-//   creator,
-//   postLength,
-//   setIsPrivate,
-// }) {
-//   return (
-//     <Card sx={{ mb: 2 }}>
-//       <CardContent>
-//       <Link href={`/forum/${forum.forum_id}`} color="inherit" underline="hover">
-//         <Typography
-//           variant="h6"
-//           fontWeight="fontWeightMedium"
-//           component="div"
-//           sx={{ textAlign: "left" }}
-//         >
-//           {forum.name}
-//         </Typography>
-//         </Link>
-//         <Typography
-//           fontWeight={450}
-//           sx={{ color: "text.secondary", mb: 1.5, textAlign: "left" }}
-//         >
-//           {forum.purpose}
-//         </Typography>
-//         <Typography variant="body2" component="div" sx={{ my: 2 }}>
-//           <Stack spacing={2} direction="row">
-//             <CakeOutlinedIcon />
-//             <Box fontWeight="fontWeightMedium" sx={{ alignContent: "end" }}>
-//               Created
-//             </Box>
-//             <Box fontWeight="fontWeightMedium" sx={{ alignContent: "end" }}>
-//               {new Date(forum.createdAt)
-//                 .toLocaleDateString("en-GB", {
-//                   day: "2-digit",
-//                   month: "2-digit",
-//                   year: "numeric",
-//                 })
-//                 .split("/")
-//                 .join("-")}
-//             </Box>
-//           </Stack>
-//         </Typography>
-//         <Stack
-//           spacing={2}
-//           direction="row"
-//           sx={{ justifyContent: "space-between", mx:1 }}
-//         >
-//           {forum.isPublic === false ? (
-//               <Chip icon={<VpnLockIcon />} label="Private" sx={{pl:1}} />
-//           ) : (
-//             <Chip icon={<PublicIcon />} label="Public" sx={{pl:1}} />
-//           )}
-//           {
-//             <Tooltip title='Number of posts'>
-//               <Chip icon={<NumbersRoundedIcon />} label={postLength} sx={{paddingLeft:1}} />    
-//             </Tooltip>
-//           }
-//           {
-//             <Tooltip title='Number of subscribers'>
-//             <Chip
-//               icon={<GroupsOutlinedIcon />}
-//               label={forum.subscriber_count}
-//               sx={{pl:1}}
-//               />
-//             </Tooltip>
-//           }
-//         </Stack>
-//       </CardContent>
-//       <Divider />
-//       <CardActions sx={{ alignContent: "center" }}>
-//         <Stack sx={{ mx: 1, width: "100%" }}>
-//           <Typography
-//             fontWeight="fontWeightMedium"
-//             variant="body1"
-//             sx={{ textAlign: "left" }}
-//           >
-//             Admins
-//           </Typography>
-//           <Stack spacing={2} direction="row" sx={{ py: 2 }}>
-//             <FaceOutlinedIcon />
-//             <Box fontWeight="fontWeightMedium" sx={{ alignContent: "end" }}>
-//               {creator}
-//             </Box>
-//             <p>(creator)</p>
-//           </Stack>
-//           <Box sx={{ textAlign: "center" }}>
-//             <Button
-//               variant="contained"
-//               startIcon={<EmailIcon />}
-//               sx={{ mx: "auto" }}
-//               size="small"
-//             >
-//               Message Admin
-//             </Button>
-//           </Box>
-//         </Stack>
-//       </CardActions>
-//     </Card>
-//   );
-// }

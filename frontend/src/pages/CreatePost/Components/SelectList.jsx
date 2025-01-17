@@ -42,7 +42,11 @@ export default function SelectList({ selectedForumName, getForum }) {
           label="Select Forum"
           onChange={handleChange}
           >
-          {forums.map((val) => <MenuItem value={val.id}>{val.name}</MenuItem>)}
+          {forums.map((forum) => {
+            if (forum.isActive) {
+              return <MenuItem key={forum.id} value={forum.id}>{forum.name}</MenuItem>
+            }
+          })}
           </Select>
           </>
         }

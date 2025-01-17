@@ -18,6 +18,8 @@ export default function CustomInput(props) {
         required={props.req}
         type={props.type}
         select={props.select}
+        helperText={props.help}
+        error={props.error}
       >
         {props.content}
       </TextField>

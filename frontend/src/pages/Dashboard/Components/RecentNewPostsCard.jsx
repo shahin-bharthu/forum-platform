@@ -8,15 +8,15 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import axios from 'axios';
-import { Box, Button, Link, Skeleton } from '@mui/material';
+import { Box, Button, Link } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../../../../utils/timestamp';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import TopicSkeleton from '../../../components/PostsSkeleton';
+import axiosInstance from '../../../../utils/axiosInstance.js';
+import { useSelector } from 'react-redux';
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
     '.MuiCardHeader-content': {
@@ -60,20 +60,15 @@ export default function MyPosts() {
     const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', forum: { name: 'username', id: null } }]);
     const [expanded, setExpanded] = useState([{ isExpanded: false }]);
     const [forumBanner, setForumBanner] = useState({})
-    const [isLoading, setIsLoading] = useState(true);
+
+    const isLoading = useSelector(state => state.loading.isLoading);
 
     const navigate = useNavigate()
 
     const fetchForumBanners = useCallback(async (topics) => {
         const bannerPromises = topics.map(async (topic) => {
             try {
-                const response = await axios.get(
-                    `http://localhost:8080/forum/banner/${topic.forum_id}`,
-                    {
-                        withCredentials: true,
-                        responseType: "blob",
-                    }
-                );
+                const response = await axiosInstance.get(`/forum/banner/${topic.forum_id}`,{responseType: "blob"});
 
                 if (response.data) {
                     return new Promise((resolve) => {
@@ -109,10 +104,7 @@ export default function MyPosts() {
 
     const fetchForumTopics = useCallback(async () => {
         try {
-            setIsLoading(true);
-            const myTopics = await axios.get(`http://localhost:8080/topic/recent-topics`, {
-                withCredentials: true,
-            });
+            const myTopics = await axiosInstance.get(`/topic/recent-topics`);
             const myTopicsData = myTopics.data.data || [];
 
             setForumTopics(myTopicsData);
@@ -125,9 +117,7 @@ export default function MyPosts() {
         } catch (error) {
             console.error('Error fetching forum topics:', error);
             setForumTopics([]);
-        } finally {
-            setIsLoading(false);
-        }
+        } 
     }, [fetchForumBanners]);
 
     useEffect(() => {
@@ -139,7 +129,6 @@ export default function MyPosts() {
         array[i].isExpanded = !array[i].isExpanded;
         setExpanded(array);
     };
-
 
     // Loading state
     if (isLoading) {
@@ -176,11 +165,6 @@ export default function MyPosts() {
                                         </Avatar>
                                     </Link>
                                 }
-                                // action={
-                                //     <IconButton aria-label="settings">
-                                //         <MoreVertIcon />
-                                //     </IconButton>
-                                // }
                                 title={< Link href={`/forum/${topic.forum.forum_id}`} color="inherit" underline="hover">{topic.forum.name}</Link>}
                                 subheader={formatDate(topic.createdAt)}
                             />

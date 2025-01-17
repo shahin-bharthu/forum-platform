@@ -9,7 +9,7 @@ const AuthFormHeader = ({ authHeading, authPara }) => {
         <LockOutlinedIcon data-testid="LockOutlinedIcon" />
       </Avatar>
       <h3>{authHeading}</h3>
-      <p>Welcome user, please {authPara} to continue</p>
+      <p>Welcome, please {authPara} to continue</p>
     </>
   );
 };

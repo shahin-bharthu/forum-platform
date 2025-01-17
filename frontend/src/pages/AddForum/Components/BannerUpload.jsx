@@ -1,113 +1,84 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  Card,
   Typography,
   Avatar,
   Badge,
-  Button,
   Box,
   Modal,
   IconButton,
-  Stack,
-  Divider,
 } from "@mui/material";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { styled } from "@mui/material/styles";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
+import axiosInstance from "../../../../utils/axiosInstance";
+import { useDispatch } from "react-redux";
+import { clearNotification, setNotification } from "../../../store/uiSlice";
+import defaultForumBanner from "../../../assets/defaultForumbanner.png";
+import ImageUploadStepper from "../../../components/ImageUploadStepper";
 
 const ForumBannerUpload = ({ forumId }) => {
   const [open, setOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [updateMessage, setUpdateMessage] = useState("");
   const [bannerUrl, setBannerUrl] = useState(null);
-  const [banner, setBanner] = useState(null);
+  const [refresh, setRefresh] = useState(false) // used to reload the profile image compoent instead of window.location.reload() to avoid change of any other inputs
+
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchAvatar = async () => {
-      const data = await handleFileRead();
+      await handleFileRead();
     };
 
     fetchAvatar().catch(console.error);
-  }, []);
+  }, [refresh]);
 
   // Handle opening and closing the modal
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setSelectedFile(null);
     setPreviewUrl(null);
-  };
-
-  // Preview the selected image before upload
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   // Handle file upload
   const handleFileUpload = useCallback(
     async (event) => {
       event.preventDefault();
-      if (!selectedFile) return;
+      const file = event.target.files[0];
+      console.log(file);
+      
+      if (!file) return;
 
       const formData = new FormData();
-      formData.append("banner", selectedFile);
-      // formData.append("email", userEmail);
+      formData.append('banner', file);
 
       try {
-        const response = await axios.put(
-          `http://localhost:8080/forum/banner/${forumId}`,
-          formData,
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await axiosInstance.put(`/forum/banner/${forumId}`, formData);
+
         handleClose();
-        setUpdateMessage(response.data.message);
+        dispatch(setNotification({ message: response.data.message, type: 'success' }))
         setTimeout(() => {
-          window.location.reload(); // Reload the page to reflect the changes
+          dispatch(clearNotification())
+          setRefresh(true) // to reload the forum banner image after upload
         }, 1500);
       } catch (error) {
-        setUpdateMessage(error.response.data.message);
+        dispatch(setNotification({ message: error?.response.data.message, type: 'error' }))
         setTimeout(() => {
+          dispatch(clearNotification())
           navigate('/user/dashboard');
         }, 3000);
       }
     },
-    [forumId, selectedFile]
+    [forumId, refresh ,handleClose, navigate, dispatch]
   );
 
   const handleFileRead = async () => {
-    const file = await axios.get(`http://localhost:8080/forum/banner/${forumId}`, {
-      withCredentials: true,
-      responseType: "blob",
-    });
+    const file = await axiosInstance.get(`/forum/banner/${forumId}`,
+      {
+        responseType: "blob",
+      }
+    );
 
     if (file.data) {
-      setBanner(file.data);
       const reader = new FileReader();
       reader.onloadend = () => {
         setBannerUrl(reader.result);
@@ -118,7 +89,7 @@ const ForumBannerUpload = ({ forumId }) => {
 
   return (
     <div>
-      {/* FORUM BANNER */}
+      {/* PROFILE PHOTO */}
       <Badge
         overlap="circular"
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -141,27 +112,23 @@ const ForumBannerUpload = ({ forumId }) => {
           sx={{ width: 100, height: 100, mb: 1.5 }}
           src={
             bannerUrl ||
-            "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=338&ext=jpg&ga=GA1.1.1887574231.1729123200&semt=ais_hybrid"
+            defaultForumBanner
           }
         ></Avatar>
       </Badge>
 
-      {/* <Button
-        variant="outlined"
-        onClick={handleOpen}
-        startIcon={<CloudUploadIcon />}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="upload-modal-title"
       >
-        Upload Banner
-      </Button> */}
-
-      <Modal open={open} onClose={handleClose} aria-labelledby="upload-modal-title">
         <Box
           sx={{
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: 600,
             bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
@@ -188,53 +155,11 @@ const ForumBannerUpload = ({ forumId }) => {
               />
             </Box>
           )}
-
-          <form onSubmit={handleFileUpload}>
-            <Stack spacing={2} alignItems="center">
-              <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-                <VisuallyHiddenInput
-                  type="file"
-                  accept="image/*"
-                  id="file-input"
-                  onChange={handleFileSelect}
-                />
-                <label htmlFor="file-input">
-                  <Button
-                    component="span"
-                    variant="outlined"
-                    startIcon={<CloudUploadIcon />}
-                  >
-                    Choose File
-                  </Button>
-                </label>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={!selectedFile}
-                >
-                  Upload Banner
-                </Button>
-              </Box>
-
-              {selectedFile && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 1 }}
-                >
-                  Selected: {selectedFile.name}
-                </Typography>
-              )}
-            </Stack>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <ImageUploadStepper handleFileUpload={handleFileUpload} />
           </form>
-
         </Box>
       </Modal>
-      {updateMessage && (
-        <Typography variant="body2" color="info" sx={{ mt: 2 }}>
-          {updateMessage}
-        </Typography>
-      )}
     </div>
   );
 };

@@ -1,18 +1,21 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid2';
 import MediaCard from './Components/Card';
-import axios from 'axios';
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
-import { useState } from 'react';
-import PositionedSnackbar from '../../components/SnackBar';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import PublicIcon from '@mui/icons-material/Public';
 import VpnLockIcon from '@mui/icons-material/VpnLock';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import axiosInstance from '../../../utils/axiosInstance.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearNotification, setNotification } from '../../store/uiSlice.js';
+import { setPublicForums, setPrivateForums, setArchivedForums } from '../../store/userForumsSlice.js';
+import axios from 'axios';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -58,25 +61,46 @@ export function FloatingActionButtons({ onClick }) {
 }
 
 export default function MyForum() {
-  const { privateForums, publicForums, archivedForums, empty } = useLoaderData();
-
-  const [message, setMessage] = useState();
   const [value, setValue] = useState(0);
+  const publicForums = useSelector(state => state.userForums.publicForums);
+  const privateForums = useSelector(state => state.userForums.privateForums);
+  const archivedForums = useSelector(state => state.userForums.archivedForums);
+  const [empty, setEmpty] = useState(false);
+  const location = useLocation();
+  
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const navigate = useNavigate()
+  useEffect(() => {
+    async function forumLoader() {
+      try {
+        const response = await axiosInstance.get('/forum/my-forums'); 
+        
+        const publicForums = response.data.publicUserForums || [];
+        const privateForums = response.data.privateUserForums || [];
+        const archivedForums = response.data.archivedUserForums || [];
+        const empty = publicForums.length === 0 && privateForums.length === 0 && archivedForums.length === 0;
+
+        setEmpty(empty);
+        dispatch(setPublicForums(publicForums));
+        dispatch(setPrivateForums(privateForums));
+        dispatch(setArchivedForums(archivedForums));
+      } catch (error) {
+        console.log(error.message);
+      }
+    }  
+    forumLoader();
+  }, [location.key]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
 
   const handleCreate = () => {
     navigate('/user/add-forum')
   }
 
   if (empty) {
-    console.log('in empty');
-
     return (
       <>
         <Box>
@@ -100,34 +124,28 @@ export default function MyForum() {
 
   const handleArchiveForum = async (event, id, archiving) => {
     event.preventDefault();
-    const response = await axios.patch(`http://localhost:8080/forum/archive/${id}`, null, {
-      withCredentials: true
-    })
+    const response = await axios.patch(`http://localhost:8080/forum/archive/${id}`, null, {withCredentials: true})
 
     if (archiving) {
-      setMessage(`Archived forum ${response.data.data.name}`);
+      dispatch(setNotification({ message: `Archived forum ${response.data.data.name}`, type: null }));
     }
     else {
-      setMessage(`Unarchived forum ${response.data.data.name}`);
+      dispatch(setNotification({ message: `Unarchived forum ${response.data.data.name}`, type: null }));
     }
     setTimeout(() => {
-      setMessage(null);
-      navigate('/user/my-forums')
+      dispatch(clearNotification());
+      navigate('/user/my-forums');
     }, 1000);
   }
-
-
+  
   return (
     <>
       <Box sx={{ flexGrow: 1, mt: 8, width: '100%', mx: 2, alignSelf: 'start' }}>
-        {message && (
-          <PositionedSnackbar message={message} />
-        )}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', position: 'sticky', }}>
           <Tabs value={value} onChange={handleChange} centered>
-            <Tab icon={<PublicIcon />} iconPosition="start" label="Public" {...a11yProps(0)} wrapped/>
-            <Tab icon={<VpnLockIcon />} iconPosition="start" label="Private" {...a11yProps(1)} wrapped/>
-            <Tab icon={<ArchiveIcon />} iconPosition="start" label="Archived" {...a11yProps(2)} wrapped/>
+            <Tab icon={<PublicIcon />} iconPosition="start" label="Public" {...a11yProps(0)} wrapped />
+            <Tab icon={<VpnLockIcon />} iconPosition="start" label="Private" {...a11yProps(1)} wrapped />
+            <Tab icon={<ArchiveIcon />} iconPosition="start" label="Archived" {...a11yProps(2)} wrapped />
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
@@ -173,7 +191,6 @@ export default function MyForum() {
                 ))}
               </Grid>
             </Grid>
-
           )}
         </CustomTabPanel>
 
@@ -271,27 +288,4 @@ export default function MyForum() {
       <FloatingActionButtons onClick={handleCreate} />
     </>
   );
-}
-
-export async function forumLoader() {
-  try {
-    const response = await axios.get('http://localhost:8080/forum/my-forums', {
-      withCredentials: true
-    });
-    const publicForums = response.data.publicUserForums || [];
-    const privateForums = response.data.privateUserForums || [];
-    const archivedForums = response.data.archivedUserForums || [];
-
-    const empty = publicForums.length === 0 && privateForums.length === 0 && archivedForums.length === 0;
-    
-    return {
-      publicForums,
-      privateForums,
-      archivedForums,
-      empty
-    };
-
-  } catch (error) {
-    console.log(error.message);
-  }
 }

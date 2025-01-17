@@ -46,7 +46,7 @@ const updateTopic = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.params;
     const {title, content} = req.body;
     const topic = await topicServices.updateTopic(userId, id, title, content);
-    return res.status(200).json({message: "Topic edited successfully", data: topic});
+    return res.status(200).json({message: "Post edited successfully", data: topic});
 })
 
 

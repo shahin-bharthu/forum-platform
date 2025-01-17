@@ -5,12 +5,13 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import menuList from '../../../../utils/sidebarlist';
 import { useNavigate, useLocation } from 'react-router-dom';
-import deleteCookie from '../../../../utils/deleteCookie';
-import axios from 'axios';
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
+import { useDispatch } from 'react-redux';
+import { clearUserProfile, setUserProfile } from '../../../store/userSlice';
+import axiosInstance from '../../../../utils/axiosInstance';
 
 const drawerWidth = 200;
 
@@ -18,13 +19,13 @@ export default function ClippedDrawer() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState("Your Username");
-  const [profilePhoto, setProfilePhoto] = useState();
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -35,34 +36,28 @@ export default function ClippedDrawer() {
 
     async function getCurrentUser() {
       try {
-      const currentUser = await axios.get('http://localhost:8080/user', {
-        withCredentials: true
-      });
-      setCurrentUser(currentUser.data.user.username)
-
-      const response = await axios.get(
-          `http://localhost:8080/user/avatar/${currentUser.data.user.id}`,
-          {
-              withCredentials: true,
-              responseType: "blob",
-          }
-      )
+      const currentUser = await axiosInstance.get('/user');
+      
+      const response = await axiosInstance.get(`/user/avatar/${currentUser.data.user.id}`,{responseType: "blob"});
       
       if (response.data) {
           const reader = new FileReader()
           reader.onloadend = () => {
-            setProfilePhoto(reader.result)          
+            dispatch(setUserProfile({
+              userName:currentUser.data.user.username,
+              profilePhoto:reader.result
+            }))
           }
           reader.readAsDataURL(response.data)
+        }
       }
-    }
-    catch (error) {
-      console.error('Error fetching username or profile photo: ', error);
-    }
+      catch (error) {
+        console.error('Error fetching username or profile photo: ', error);
+      }
     }
 
     getCurrentUser();
-  }, [location.pathname]);
+  }, [dispatch]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -70,18 +65,16 @@ export default function ClippedDrawer() {
 
   const handleLogout = useCallback(async () => {
     try {
-      deleteCookie();
-      const response = await axios.post("http://localhost:8080/auth/logout", {
-        "Content-Type": "application/json",
-        withCredentials: true
-      });
-      // console.log(response);
       setDialogOpen(false);
-      navigate('/login/201');
+      await axiosInstance.post('/auth/logout')
+      // setTimeout(() => {
+        navigate('/login/201', {replace: true});
+        dispatch(clearUserProfile())
+      // }, 1500);
     } catch (error) {
       console.error("couldn't log user out", error);
     }
-  }, []);
+  }, [dispatch,navigate]);
 
   const handleMenuItemClick = (path) => {
     if (path === 'logout') {
@@ -104,18 +97,18 @@ export default function ClippedDrawer() {
   const logoutDialog = (
     <Dialog open={dialogOpen} onClose={handleDialogClose}>
       <DialogContent>
-        <DialogTitle sx={{px:0}}>
+        <DialogTitle sx={{ px: 0 }}>
           Are you sure you want to log out?
         </DialogTitle>
         <DialogContentText>
-          You'll need to sign back in to continue participating in discussions.
+          You&apos;ll need to sign back in to continue participating in discussions.
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleDialogClose} color="error">
           Cancel
         </Button>
-        <Button onClick={handleLogout} color="primary">
+        <Button type='button' onClick={handleLogout} color="primary">
           Yes, Log Out
         </Button>
       </DialogActions>
@@ -155,7 +148,7 @@ export default function ClippedDrawer() {
     <>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <CombinedAppBar currentUser={currentUser} profilePhoto={profilePhoto} handleDrawerToggle={handleDrawerToggle} />
+        <CombinedAppBar handleDrawerToggle={handleDrawerToggle} />
         {/* Drawer for small screens */}
         {isSmallScreen ? (
           <Drawer
