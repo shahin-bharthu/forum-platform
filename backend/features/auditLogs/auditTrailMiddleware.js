@@ -11,7 +11,7 @@ export const logAuditTrails = (req,res,next) => {
     try{
         const originalJson = res.json;
 
-        res.json = async function (body){
+        res.json = async function (body) {
             const statusCode = res.statusCode; 
             const resourceName = req.originalUrl.split("/").pop(); 
             const activity = `${methodMappers[req.method]} ${resourceName} (Status: ${statusCode})`;

@@ -54,7 +54,7 @@ const getRecentTopics = async (id) => {
         const topics = await db.Topic.findAll({where: {forum_id: subscription.forum_id, createdBy: {[Op.ne]: id}}, order: [['createdAt', 'DESC']], limit: 2, include: 'forum'})
         return topics
     }));
- 
+
     return recentTopics.flat();
 }
 
