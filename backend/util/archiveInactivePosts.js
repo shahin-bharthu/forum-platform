@@ -24,6 +24,7 @@ const archivePost = async () => {
             return differenceInDays > 30;
         });
 
+        // changing the isActive status of the topic to 0
         const archivedPosts = await Promise.all(
             olderComments.map(async (comment) => {
                 const topic = await db.Topic.findByPk(comment[0].topic_id);
