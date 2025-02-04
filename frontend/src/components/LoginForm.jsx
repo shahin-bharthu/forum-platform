@@ -28,6 +28,8 @@ const LoginForm = () => {
 
   const dispatch = useDispatch()
 
+  console.log(message);
+  
   useEffect(() => {
     if (message === null) {
       navigate("/login/201");
@@ -153,7 +155,7 @@ const LoginForm = () => {
         className={classes["auth-form"]}
         noValidate
       >
-        {message && <PositionedSnackbar message={message} />}
+        {message && <PositionedSnackbar message={message}/>}
         <Button
           startIcon={<GoogleIcon/>}
           onClick = {googleLogin}
