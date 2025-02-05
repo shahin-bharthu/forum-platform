@@ -91,7 +91,7 @@ const updateForumBanner = async (id, userId, { logo }) => {
 
 const getTopicByForumId = async (forumId) => {
     const forum = await db.Forum.findOne({where: {forum_id: forumId}})
-    const topics = await db.Topic.findAll({where: {forum_id: forum.id}, include: 'user'});
+    const topics = await db.Topic.findAll({where: {forum_id: forum.id}, include: 'user', order: [['createdAt', 'DESC']]});
     if (!topics) {
         throw new CustomError('No topics found for given forum', 404)
     }
