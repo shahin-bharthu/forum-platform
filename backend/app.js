@@ -11,6 +11,7 @@ import {check} from "./config/connection.js";
 import { globalErrorHandler } from "./util/globalErrorHandler.js";
 import { logAuditTrails } from "./features/auditLogs/auditTrailMiddleware.js";
 import { authMiddleware } from "./features/auth/authMiddleware.js";
+import client from "./lib/openSearchConnection.js";
 
 const port = process.env.PORT;
 
@@ -30,6 +31,8 @@ app.use('/user', authMiddleware, logAuditTrails, userRoutes);
 app.use('/forum', authMiddleware, logAuditTrails, forumRoutes);
 app.use('/topic', authMiddleware, logAuditTrails, topicRoutes);
 app.use('/comment', authMiddleware, logAuditTrails, commentRoutes);
+
+client.info().then().catch(console.error);
 
 app.use(globalErrorHandler);
 
