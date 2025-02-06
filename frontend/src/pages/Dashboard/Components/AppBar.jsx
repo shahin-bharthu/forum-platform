@@ -1,13 +1,55 @@
 import { useState, useCallback, memo } from 'react';
-import { AppBar, Box, Toolbar, IconButton, Typography, MenuItem, Menu, Avatar } from '@mui/material';
-import { Menu as MenuIcon, Add as AddIcon, MoreVert as MoreIcon, AutoStories } from '@mui/icons-material';
+import { AppBar, Box, Toolbar, IconButton, Typography, MenuItem, Menu, Avatar, styled, alpha, InputBase } from '@mui/material';
+import { Menu as MenuIcon, Add as AddIcon, MoreVert as MoreIcon, AutoStories, Search as SearchIcon } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { useSelector } from 'react-redux';
+import axiosInstance from '../../../../utils/axiosInstance.js';
+import { Grid2 as Grid, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
+
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(2),
+    width: 'auto',
+  },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      width: '40ch',
+    },
+  },
+}));
 
 function CombinedAppBar({ handleDrawerToggle }) {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
 
   const { userName, profilePhoto } = useSelector((state) => state.user);
@@ -21,7 +63,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
   const handleCreatePost = useCallback(() => {
     handleMobileMenuClose();
     navigate('/user/create-post', { state: { forumName: null, forumId: null } })
-  }, [handleMobileMenuClose,navigate]);
+  }, [handleMobileMenuClose, navigate]);
 
   const handleMobileMenuOpen = useCallback((event) => {
     setMobileMoreAnchorEl(event.currentTarget);
@@ -32,6 +74,15 @@ function CombinedAppBar({ handleDrawerToggle }) {
     navigate('/user/profile');
   }, [navigate, handleMobileMenuClose])
 
+  const handleSearchForums = async (e, searchText) => {
+    e.preventDefault();
+    const searchQuery = searchText.trim();
+    if (searchQuery) {
+      const searchResult = await axiosInstance.get(`/forum/search/${searchQuery}`);
+      console.log(searchResult.data);
+      setSearchResults(searchResult.data);
+    }
+  }
 
   const menuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
@@ -73,13 +124,33 @@ function CombinedAppBar({ handleDrawerToggle }) {
       <MenuItem onClick={handleEditProfile}>
         <Avatar src={profilePhoto}
           sx={{ width: 30, height: 30, mx: 1 }} />
-        <Typography sx={{textAlign:'center',m:1}}> Hi, {userName}</Typography>
+        <Typography sx={{ textAlign: 'center', m: 1 }}> Hi, {userName}</Typography>
       </MenuItem>
     </Menu>
   );
 
   return (
     <>
+      {searchResults.length > 0 && (
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
+              Search Results
+            </Typography>
+            <List dense={true}>
+              {searchResults.map((result, index) => (
+                <ListItem key={index} button component={Link} to={`/forum/${result.id}`}>
+                  <ListItemAvatar>
+                    <Avatar>{result.name.charAt(0).toUpperCase()}</Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={result.name} secondary={result.purpose || "No description"} />
+                </ListItem>
+              ))}
+            </List>
+          </Grid>
+        </Grid>
+      )}
+
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <IconButton
@@ -106,15 +177,20 @@ function CombinedAppBar({ handleDrawerToggle }) {
           </Tooltip>
 
           <Box sx={{ flexGrow: 1 }} />
-          {/* <Search>
+          <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  handleSearchForums(event, event.target.value);
+                }
+              }}
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
             />
-          </Search> */}
+          </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Tooltip title="Create Post" arrow>

@@ -1,4 +1,3 @@
-import { log } from "console";
 import client from "../lib/openSearchConnection.js";
 
 export default async function createForumIndex() {
@@ -13,11 +12,9 @@ export default async function createForumIndex() {
         },
         mappings: {
             properties: {
+                id: { type: 'keyword' },
                 name: { type: 'text' },
-                purpose: { type: 'text' },
-                createdBy: { type: 'keyword' },
-                // created_at: { type: 'date' },
-                // updated_at: { type: 'date' }
+                purpose: { type: 'text' }            
             }
         }
     };

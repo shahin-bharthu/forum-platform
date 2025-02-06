@@ -162,9 +162,13 @@ const unSubscribeForum = async (user_id, forum_id) => {
 const searchForums = async (query) => {
     try {
         const results = await searchForumIndex(query);
-        console.log(results);
-        const forumNames = results.map(result => result._source.name);
-        return forumNames;
+        const forumData = results.map((result) => {
+            return ({
+                id: result._source.id,
+                name: result._source.name,
+            });
+        });
+        return forumData;
     } catch (error) {
         throw new CustomError("Error searching forums", 500);
     }

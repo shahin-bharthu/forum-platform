@@ -6,9 +6,9 @@ export const addDocumentsToForumIndex = async () => {
 
     for (const forum of allForums) {
         const document = {
+            id: forum.id,
             name: forum.name,
             purpose: forum.purpose,
-            createdBy: forum.createdBy,
         };
 
         await addDocumentToForumIndex(document);
