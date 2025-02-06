@@ -146,6 +146,12 @@ const getRecentForums = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: 'Fetched recent forums', data: forums})
 })
 
+const searchForums = asyncErrorHandler(async (req,res,next) => {
+    const {forumName} = req.params;
+    const forums = await forumServices.searchForums(forumName);
+    return res.status(200).json({message: 'Fetched forums', data: forums})
+});
+
 export {
   getForums,
   createForum,
@@ -163,4 +169,5 @@ export {
   getForumByForumId,
   getIsSubscribed,
   getRecentForums,
+  searchForums
 };

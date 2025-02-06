@@ -1,3 +1,5 @@
+import { addDocumentToForumIndex } from '../../opensearch-indices/forumIndex.js';
+
 export default (sequelize, Sequelize) => {
     const Forum = sequelize.define("forum", {
         id: {
@@ -50,8 +52,18 @@ export default (sequelize, Sequelize) => {
     {
         tableName:'forums',
         timeStamps: true,
-    }
-);
+        hooks: {
+            afterCreate: async (forum, options) => {
+                const document = {
+                    name: forum.name,
+                    purpose: forum.purpose,
+                    createdBy: forum.createdBy,
+                }
+                await addDocumentToForumIndex(document);
+                console.log(`Forum created: ${forum.name}`);
+            }
+        }
+    });
 
-  return Forum;
+    return Forum;
 };

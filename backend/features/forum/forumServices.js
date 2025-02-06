@@ -3,6 +3,7 @@ import * as forumRepository from "./forumRepository.js";
 import * as userRepository from "../user/userRepository.js"
 import { db } from "../../config/connection.js";
 import { getImage } from "../../util/getImage.js";
+import { searchForumIndex } from "../../opensearch-indices/forumIndex.js";
 
 const createForum = async (forumData) => {
     const forum_id = forumData.name.replace(/\s+/g, '_').toLowerCase();
@@ -158,6 +159,17 @@ const unSubscribeForum = async (user_id, forum_id) => {
     return forum;
 }
 
+const searchForums = async (query) => {
+    try {
+        const results = await searchForumIndex(query);
+        console.log(results);
+        const forumNames = results.map(result => result._source.name);
+        return forumNames;
+    } catch (error) {
+        throw new CustomError("Error searching forums", 500);
+    }
+}
+
 export {
   getForums,
   createForum,
@@ -172,5 +184,6 @@ export {
   getRecentForums, 
   getForumBanner,
   subscribeToForum,
-  unSubscribeForum
+  unSubscribeForum,
+  searchForums
 };

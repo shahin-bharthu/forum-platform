@@ -1,3 +1,4 @@
+import { log } from "console";
 import client from "../lib/openSearchConnection.js";
 
 export default async function createForumIndex() {
@@ -12,11 +13,11 @@ export default async function createForumIndex() {
         },
         mappings: {
             properties: {
-                title: { type: 'text' },
-                content: { type: 'text' },
-                author: { type: 'keyword' },
-                created_at: { type: 'date' },
-                updated_at: { type: 'date' }
+                name: { type: 'text' },
+                purpose: { type: 'text' },
+                createdBy: { type: 'keyword' },
+                // created_at: { type: 'date' },
+                // updated_at: { type: 'date' }
             }
         }
     };
@@ -46,21 +47,23 @@ export async function addDocumentToForumIndex(document) {
     }
 }
 
-export async function searchForumIndex(query) {
+export async function searchForumIndex(searchText) {
     const indexName = 'forum';
 
     try {
         const response = await client.search({
             index: indexName,
             body: {
-                query: {
-                    match: {
-                        content: query
-                    }
+            query: {
+                multi_match: {
+                query: searchText,
+                fields: ['name', 'purpose']
                 }
             }
+            }
         });
-        console.log('Search results:', JSON.stringify(response, null, 2));
+        return response.body.hits.hits;
+        // console.log('Search results:', JSON.stringify(response, null, 2));
     } catch (error) {
         console.error('Error searching index:', error);
     }

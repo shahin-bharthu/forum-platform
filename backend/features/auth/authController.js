@@ -23,8 +23,7 @@ const userSignUp = asyncErrorHandler(async (req,res,next) => {
 
 
 const userLogin = asyncErrorHandler(async (req, res, next) => {
-    const userData = req.body;
-
+    const userData = req.body;    
     const user = await authServices.userLogin(userData);
 
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });

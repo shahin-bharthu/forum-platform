@@ -8,6 +8,7 @@ import Sequelize from "sequelize";
 import userMembershipModel from "../features/forum/userMembershipModel.js";
 import commentModel from "../features/comments/commentModel.js";
 import createForumIndex, {addDocumentToForumIndex, searchForumIndex} from "../opensearch-indices/forumIndex.js";
+import { addDocumentsToForumIndex } from "../features/forum/addDocumentsToIndex.js";
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -33,14 +34,6 @@ db.Topic = topicModel(sequelize, Sequelize);
 db.UserMembership = userMembershipModel(sequelize, Sequelize);
 db.Comment = commentModel(sequelize, Sequelize);
 
-const document = {
-  title: 'JavaScript Discussion Forum',
-  content: 'This is a forum for discussing JavaScript and its various topics',
-  author: 'user123',
-  created_at: new Date(),
-  updated_at: new Date()
-};
-
 const check = async () => {
     try {
       await sequelize.authenticate();
@@ -49,7 +42,8 @@ const check = async () => {
       console.log("All models were synchronized successfully.");
       // await createForumIndex();
       // await addDocumentToForumIndex(document);
-      await searchForumIndex('JavaScript');
+      // await addDocumentsToForumIndex();
+      // await searchForumIndex('anne');
     } catch (error) {
       console.error("Unable to connect to the database:", error);
       throw error
