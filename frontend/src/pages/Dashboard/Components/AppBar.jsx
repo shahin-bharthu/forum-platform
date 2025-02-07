@@ -1,4 +1,4 @@
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo, useEffect } from 'react';
 import { AppBar, Box, Toolbar, IconButton, Typography, MenuItem, Menu, Avatar, styled, alpha, InputBase } from '@mui/material';
 import { Menu as MenuIcon, Add as AddIcon, MoreVert as MoreIcon, AutoStories, Search as SearchIcon } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { useSelector } from 'react-redux';
 import axiosInstance from '../../../../utils/axiosInstance.js';
 import { Grid2 as Grid, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
+import Popover from '@mui/material/Popover';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -49,12 +50,28 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 function CombinedAppBar({ handleDrawerToggle }) {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState([{ name: 'No results found', purpose: 'Try searching for something else' }]);  
   const navigate = useNavigate();
-
   const { userName, profilePhoto } = useSelector((state) => state.user);
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  // const handleClick = (event) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
+  useEffect(() => {
+    console.log('searchResults', searchResults);
+  }, [searchResults]);
 
   const handleMobileMenuClose = useCallback(() => {
     setMobileMoreAnchorEl(null);
@@ -80,7 +97,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
     if (searchQuery) {
       const searchResult = await axiosInstance.get(`/forum/search/${searchQuery}`);
       console.log(searchResult.data);
-      setSearchResults(searchResult.data);
+      setSearchResults(searchResult.data.data);
     }
   }
 
@@ -131,25 +148,37 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   return (
     <>
-      {searchResults.length > 0 && (
-        <Grid container spacing={2}>
+    
+      {searchResults.length > 0 && 
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        <Grid container spacing={2} sx={{ mx:3 }}>
           <Grid item xs={12} md={6}>
             <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
               Search Results
             </Typography>
             <List dense={true}>
               {searchResults.map((result, index) => (
-                <ListItem key={index} button component={Link} to={`/forum/${result.id}`}>
+                // <ListItem key={index} button component={Link} to={`/forum/${result.id}`}>
+                <ListItem key={index} button>
                   <ListItemAvatar>
                     <Avatar>{result.name.charAt(0).toUpperCase()}</Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary={result.name} secondary={result.purpose || "No description"} />
+                  <ListItemText primary={result.name} secondary="No description" />
                 </ListItem>
               ))}
             </List>
           </Grid>
         </Grid>
-      )}
+      </Popover> }
 
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
@@ -185,6 +214,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
                   handleSearchForums(event, event.target.value);
+                  setAnchorEl(event.currentTarget);
                 }
               }}
               placeholder="Search…"
