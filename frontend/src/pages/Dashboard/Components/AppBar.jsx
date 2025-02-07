@@ -149,7 +149,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
   return (
     <>
     
-      {searchResults.length > 0 && 
+      {searchResults.length >= 0 && 
       <Popover
         id={id}
         open={open}
@@ -166,15 +166,20 @@ function CombinedAppBar({ handleDrawerToggle }) {
               Search Results
             </Typography>
             <List dense={true}>
-              {searchResults.map((result, index) => (
+              {searchResults.length >= 1 ? searchResults.map((result, index) => (
                 // <ListItem key={index} button component={Link} to={`/forum/${result.id}`}>
                 <ListItem key={index} button>
                   <ListItemAvatar>
-                    <Avatar>{result.name.charAt(0).toUpperCase()}</Avatar>
+                    <Avatar>{result.name.charAt(0).toUpperCase() || 'X'}</Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary={result.name} secondary="No description" />
+                  <ListItemText primary={result.name} secondary={result.purpose || "No description"} />
                 </ListItem>
-              ))}
+              )) : <ListItem button>
+              <ListItemAvatar>
+                <Avatar>{searchResults.name.charAt(0).toUpperCase() || 'X'}</Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={searchResults.name} secondary={searchResults.purpose || "No description"} />
+            </ListItem>}
             </List>
           </Grid>
         </Grid>

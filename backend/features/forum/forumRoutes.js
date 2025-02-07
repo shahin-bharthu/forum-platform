@@ -16,7 +16,8 @@ import {
   getForumByForumId,
   getIsSubscribed,
   getRecentForums,
-  searchForums
+  searchForums,
+  createForums
 } from "./forumController.js";
 import { validateForumCreation } from './forumValidator.js';
 import upload from '../../util/uploadForumBanner.js';
@@ -25,6 +26,7 @@ const router = Router();
 
 router.get('/', getForums);
 router.post('/', validateForumCreation(), createForum);
+router.post('/create-forums', validateForumCreation(), createForums);
 router.get('/my-forums', getForumsByCreator);
 router.get('/subscribed-forums', getSubscribedForums);
 router.get('/can-subscribe-to', getForumsToSubscribe);

@@ -161,16 +161,35 @@ const unSubscribeForum = async (user_id, forum_id) => {
 
 const searchForums = async (query) => {
     try {
+        // const results = await db.Forum.findAll({
+        //     where: {
+        //     [db.Sequelize.Op.or]: [
+        //         {
+        //         name: {
+        //             [db.Sequelize.Op.like]: `%${query}%`
+        //         }
+        //         },
+        //         {
+        //         purpose: {
+        //             [db.Sequelize.Op.like]: `%${query}%`
+        //         }
+        //         }
+        //     ]
+        //     }
+        // });
+
+        // return results;
         const results = await searchForumIndex(query);
         const forumData = results.map((result) => {
             return ({
                 id: result._source.id,
                 name: result._source.name,
+                purpose: result._source.purpose
             });
         });
         return forumData;
     } catch (error) {
-        throw new CustomError("Error searching forums", 500);
+        throw new CustomError(`Error searching forums: ${error}`, 500);
     }
 }
 

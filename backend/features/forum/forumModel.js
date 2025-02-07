@@ -53,7 +53,7 @@ export default (sequelize, Sequelize) => {
         tableName:'forums',
         timeStamps: true,
         hooks: {
-            afterCreate: async (forum, options) => {
+            afterCreate: async (forum) => {
                 const document = {
                     name: forum.name,
                     purpose: forum.purpose,
