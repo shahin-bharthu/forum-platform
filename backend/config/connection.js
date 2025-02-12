@@ -41,9 +41,7 @@ const check = async () => {
       await db.sequelize.sync({ alter: false, force: false });   // alter: true, force: false
       console.log("All models were synchronized successfully.");
       // await createForumIndex();
-      // await addDocumentToForumIndex(document);
       // await addDocumentsToForumIndex();
-      // await searchForumIndex('anne');
     } catch (error) {
       console.error("Unable to connect to the database:", error);
       throw error

@@ -55,9 +55,9 @@ export default (sequelize, Sequelize) => {
         hooks: {
             afterCreate: async (forum) => {
                 const document = {
+                    id: forum.id,
                     name: forum.name,
                     purpose: forum.purpose,
-                    createdBy: forum.createdBy,
                 }
                 await addDocumentToForumIndex(document);
                 console.log(`Forum created: ${forum.name}`);

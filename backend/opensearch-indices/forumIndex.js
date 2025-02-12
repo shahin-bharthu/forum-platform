@@ -59,14 +59,14 @@ export async function searchForumIndex(searchText) {
                 // }
                 multi_match: {
                     query: `*${searchText}*`,
-                    fields: ['name', 'purpose'],
+                    fields: ['name^4', 'purpose'],
                     type: 'phrase_prefix'
                 }
             }
             }
         });
+        console.log('Search results:', JSON.stringify(response, null, 2));
         return response.body.hits.hits;
-        // console.log('Search results:', JSON.stringify(response, null, 2));
     } catch (error) {
         console.error('Error searching index:', error);
     }
