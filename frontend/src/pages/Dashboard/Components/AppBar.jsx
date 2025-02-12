@@ -159,10 +159,15 @@ function CombinedAppBar({ handleDrawerToggle }) {
           vertical: 'bottom',
           horizontal: 'left',
         }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        sx={{ maxWidth:845 , maxHeight: 500}}
       >
-        <Grid container spacing={2} sx={{ mx:3 }}>
+        <Grid container spacing={2} sx={{ mx:3 , my: 2}}>
           <Grid item xs={12} md={6}>
-            <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
+            <Typography sx={{ mt: 1, mb: 2 }} variant="h6" component="div">
               Search Results
             </Typography>
             <List dense={true}>

@@ -12,7 +12,7 @@ const createForum = async (forumData) => {
     const forumExists = await forumRepository.getForumByForumId(forum_id);
 
     if (forumExists) {
-        throw new CustomError("A forum with this name already exists. Please try another name.", 400);
+        throw new CustomError(`A forum with this name - ${forumExists.name} already exists. Please try another name.`, 400);
     }
 
     return await forumRepository.createForum(forumData);
@@ -161,24 +161,24 @@ const unSubscribeForum = async (user_id, forum_id) => {
 
 const searchForums = async (query) => {
     try {
-        // const results = await db.Forum.findAll({
-        //     where: {
-        //     [db.Sequelize.Op.or]: [
-        //         {
-        //         name: {
-        //             [db.Sequelize.Op.like]: `%${query}%`
-        //         }
-        //         },
-        //         {
-        //         purpose: {
-        //             [db.Sequelize.Op.like]: `%${query}%`
-        //         }
-        //         }
-        //     ]
-        //     }
-        // });
+    //     const results = await db.Forum.findAll({
+    //         where: {
+    //         [db.Sequelize.Op.or]: [
+    //             {
+    //             name: {
+    //                 [db.Sequelize.Op.like]: `%${query}%`
+    //             }
+    //             },
+    //             {
+    //             purpose: {
+    //                 [db.Sequelize.Op.like]: `%${query}%`
+    //             }
+    //             }
+    //         ]
+    //         }
+    //     });
 
-        // return results;
+    //     return results;
         const results = await searchForumIndex(query);
         const forumData = results.map((result) => {
             return ({

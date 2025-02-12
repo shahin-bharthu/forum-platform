@@ -52,9 +52,15 @@ export async function searchForumIndex(searchText) {
             index: indexName,
             body: {
             query: {
+                // for exact match
+                // multi_match: {
+                // query: searchText,
+                // fields: ['name', 'purpose']
+                // }
                 multi_match: {
-                query: searchText,
-                fields: ['name', 'purpose']
+                    query: `*${searchText}*`,
+                    fields: ['name', 'purpose'],
+                    type: 'phrase_prefix'
                 }
             }
             }
