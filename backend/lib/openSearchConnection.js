@@ -1,10 +1,10 @@
 import {Client} from '@opensearch-project/opensearch';
 
 const client = new Client({
-    node: 'https://localhost:9200',
+    node: `https://localhost:${process.env.OPENSEARCH_NODE_PORT}`,
     auth: {
-        username: 'admin',
-        password: 'ForumProject@2024'
+        username: process.env.OPENSEARCH_USERNAME,
+        password: process.env.OPENSEARCH_PASSWORD
     },
     ssl: {
         rejectUnauthorized: false
