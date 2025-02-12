@@ -6,6 +6,7 @@ import axiosInstance from "../../../utils/axiosInstance";
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setRecentForums } from '../../store/dashboardSlice';
+import AnimatedLayout from '../../components/AnimatedLayout';
 
 export default function Dashboard() {
     const recentForums = useSelector(state => state.dashboard.recentForums);
@@ -67,7 +68,7 @@ export default function Dashboard() {
     
     return (
         <>
-            <Grid container spacing={{xs:1,md:5}} size={12} direction="row" sx={{ width: '100%', px: 0, mx: 3, alignSelf: 'start' }}>
+            <AnimatedLayout container spacing={{xs:1,md:5}} size={12} direction="row" sx={{ width: '100%', px: 0, mx: 3, alignSelf: 'start' }}>
 
                 <Grid size={{ xs: 12, md: 9 }} sx={{ mt: 10, alignSelf: 'start' }}>
                     <Typography fontWeight='fontWeightMedium' variant="body2" sx={{ mb:2,mt: 1, mx:1, textAlign: "left", color: 'text.secondary' }}>
@@ -82,7 +83,7 @@ export default function Dashboard() {
                     {empty && <Typography sx={{textAlign: 'left', ml: 1}}>No recent forums</Typography>}
                     {!empty && <RecentNewForumsCard recentForumData={recentForums} />}
                 </Grid>
-            </Grid>
+            </AnimatedLayout>
         </>
     );
 }

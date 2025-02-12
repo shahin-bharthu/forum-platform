@@ -21,6 +21,7 @@ import axiosInstance from "../../../utils/axiosInstance.js";
 import { useDispatch, useSelector } from 'react-redux';
 import { setPostCount } from "../../store/userPostSlice.js";
 import { clearNotification, setNotification } from "../../store/uiSlice.js";
+import AnimatedLayout from "../../components/AnimatedLayout.jsx";
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
   ".MuiCardHeader-content": {
@@ -255,18 +256,18 @@ export default function MyPosts() {
 
   if (isLoading) {
     return (
-      <Grid size={12} sx={{ width: "100%", px: 3, mt: 10 }}>
+      <AnimatedLayout size={12} sx={{ width: "100%", px: 3, mt: 10 }}>
         {[1, 2, 3].map((_, index) => (
           <TopicSkeleton key={index}/>
         ))}
-      </Grid>
+      </AnimatedLayout>
     );
   }
 
   if (forumTopics.length === 0) {
     return (
       <>
-        <Box mb={2}>
+        <AnimatedLayout mb={2}>
           <Typography
             variant="h5"
             component="div"
@@ -274,14 +275,14 @@ export default function MyPosts() {
           >
             No Posts Yet!
           </Typography>
-        </Box>
+        </AnimatedLayout>
       </>
     );
   }
 
   return (
     <>
-      <Grid size={12} sx={{ width: "100%", px: 3, mt: 10, alignSelf: "start" }}>
+      <AnimatedLayout size={12} sx={{ width: "100%", px: 3, mt: 10, alignSelf: "start" }}>
         {forumTopics.map((topic, index) => (
           <Box key={index} mb={2}>
             <Card>
@@ -375,7 +376,7 @@ export default function MyPosts() {
           </Box>
         ))}
         {dialogOpen && logoutDialog}
-      </Grid>
+      </AnimatedLayout>
     </>
   );
 }

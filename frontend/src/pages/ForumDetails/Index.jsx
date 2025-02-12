@@ -39,7 +39,7 @@ export default function IntroDivider() {
     return (
         loading ? <CircularProgress /> : 
         <>
-            <Grid container spacing={3} direction="column" sx={{ px: 2, width:{ xs:'90%', sm:'95%',md:'80%'}, mt: 10, alignSelf: 'start' }}>
+            <Grid container spacing={3} direction="column" sx={{ px: 1, width:{ xs:'90%', sm:'95%',md:'80%'}, mt: 10, alignSelf: 'start' }}>
                 <Grid size={12} sx={{ borderRadius: 2 }}>
                     <ForumHeaderCard forum={forumDetails} setIsSubbed={setIsSubbed} />
                 </Grid>
