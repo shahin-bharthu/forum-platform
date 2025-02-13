@@ -51,6 +51,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 function CombinedAppBar({ handleDrawerToggle }) {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [searchResults, setSearchResults] = useState([{ name: 'No results found', purpose: 'Try searching for something else' }]);  
+  const [searchTopicsResults, setSearchTopicsResults] = useState([{ title: 'No results found', content: 'Try searching for something else' }]);
   const navigate = useNavigate();
   const { userName, profilePhoto } = useSelector((state) => state.user);
 
@@ -95,9 +96,16 @@ function CombinedAppBar({ handleDrawerToggle }) {
     e.preventDefault();
     const searchQuery = searchText.trim();
     if (searchQuery) {
-      const searchResult = await axiosInstance.get(`/forum/search/${searchQuery}`);
-      console.log(searchResult.data);
-      setSearchResults(searchResult.data.data);
+      const searchResultForums = await axiosInstance.get(`/forum/search/${searchQuery}`);
+      const searchResultTopics = await axiosInstance.get(`/topic/search/${searchQuery}`);
+      console.log(searchResultForums.data);
+      // const searchRes = searchResultForums.data.data.concat(searchResultTopics.data.data);
+      if (searchResultForums.data.data.length > 0) {
+        setSearchResults(searchResultForums.data.data);
+      }
+      if (searchResultTopics.data.data.length > 0) {
+      setSearchTopicsResults(searchResultTopics.data.data);
+      }
     }
   }
 
@@ -148,7 +156,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   return (
     <>
-    
       {searchResults.length >= 0 && 
       <Popover
         id={id}
@@ -163,16 +170,15 @@ function CombinedAppBar({ handleDrawerToggle }) {
           vertical: 'top',
           horizontal: 'left',
         }}
-        sx={{ maxWidth:845 , maxHeight: 500}}
+        sx={{ maxWidth: 845, maxHeight: 500 }}
       >
-        <Grid container spacing={2} sx={{ mx:3 , my: 2}}>
+        <Grid container spacing={2} sx={{ mx: 3, my: 2 }}>
           <Grid item xs={12} md={6}>
             <Typography sx={{ mt: 1, mb: 2 }} variant="h6" component="div">
               Search Results
             </Typography>
             <List dense={true}>
               {searchResults.length >= 1 ? searchResults.map((result, index) => (
-                // <ListItem key={index} button component={Link} to={`/forum/${result.id}`}>
                 <ListItem key={index} button>
                   <ListItemAvatar>
                     <Avatar>{result.name.charAt(0).toUpperCase() || 'X'}</Avatar>
@@ -180,15 +186,35 @@ function CombinedAppBar({ handleDrawerToggle }) {
                   <ListItemText primary={result.name} secondary={result.purpose || "No description"} />
                 </ListItem>
               )) : <ListItem button>
-              <ListItemAvatar>
-                <Avatar>{searchResults.name.charAt(0).toUpperCase() || 'X'}</Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={searchResults.name} secondary={searchResults.purpose || "No description"} />
-            </ListItem>}
+                <ListItemAvatar>
+                  <Avatar>{searchResults.name.charAt(0).toUpperCase() || 'X'}</Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={searchResults.name} secondary={searchResults.purpose || "No description"} />
+              </ListItem>}
+            </List>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Typography sx={{ mt: 1, mb: 2 }} variant="h6" component="div">
+              More results in posts...
+            </Typography>
+            <List dense={true}>
+              {searchTopicsResults.length >= 1 ? searchTopicsResults.map((result, index) => (
+                <ListItem key={index} button>
+                  <ListItemAvatar>
+                    <Avatar>{result.title.charAt(0).toUpperCase() || 'X'}</Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={result.title} secondary={result.content || "No description"} />
+                </ListItem>
+              )) : <ListItem button>
+                <ListItemAvatar>
+                  <Avatar>{searchTopicsResults.title.charAt(0).toUpperCase() || 'X'}</Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={searchTopicsResults.title} secondary={searchTopicsResults.content || "No description"} />
+              </ListItem>}
             </List>
           </Grid>
         </Grid>
-      </Popover> }
+      </Popover>}
 
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
@@ -239,17 +265,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
               </Button>
             </Tooltip>
 
-            {/* <Tooltip title="Notifications" arrow>
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
-            >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            </Tooltip> */}
             <Tooltip title="Go to your profile" arrow>
               <Button
                 variant="contained"
@@ -281,7 +296,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {/* {renderMenu} */}
     </>
   );
 }
