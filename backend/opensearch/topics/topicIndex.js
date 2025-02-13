@@ -1,8 +1,8 @@
 import client from "../../lib/openSearchConnection.js";
-import * as forumRepository from "../../features/forum/forumRepository.js";
+import * as topicRepository from "../../features/topics/topicRepository.js";
 
-export async function createForumIndex() {
-    const indexName = 'forum';
+export async function createTopicIndex() {
+    const indexName = 'topic';
 
     const indexSettings = {
         settings: {
@@ -14,8 +14,8 @@ export async function createForumIndex() {
         mappings: {
             properties: {
                 id: { type: 'keyword' },
-                name: { type: 'text' },
-                purpose: { type: 'text' }            
+                title: { type: 'text' },
+                content: { type: 'text' }            
             }
         }
     };
@@ -32,8 +32,8 @@ export async function createForumIndex() {
 }
 
 
-export async function addDocumentToForumIndex(document) {
-    const indexName = 'forum';
+export async function addDocumentToTopicIndex(document) {
+    const indexName = 'topic';
 
     try {
         const response = await client.index({
@@ -47,23 +47,23 @@ export async function addDocumentToForumIndex(document) {
 }
 
 
-export const addDocumentsToForumIndex = async () => {
-    const allForums = await forumRepository.getForums();
+export const addDocumentsToTopicIndex = async () => {
+    const allTopics = await topicRepository.getTopics();
 
-    for (const forum of allForums) {
+    for (const topic of allTopics) {
         const document = {
-            id: forum.id,
-            name: forum.name,
-            purpose: forum.purpose,
+            id: topic.id,
+            title: topic.title,
+            content: topic.content,
         };
 
-        await addDocumentToForumIndex(document);
+        await addDocumentToTopicIndex(document);
     }
 };
 
 
-export async function searchForumIndex(searchText) {
-    const indexName = 'forum';
+export async function searchTopicIndex(searchText) {
+    const indexName = 'topic';
 
     try {
         const response = await client.search({
@@ -79,7 +79,7 @@ export async function searchForumIndex(searchText) {
                 // for partial match, prefix match, name field has higher weight
                 multi_match: {
                     query: `*${searchText}*`,
-                    fields: ['name^4', 'purpose'],
+                    fields: ['title^2', 'content'],
                     type: 'phrase_prefix'
                 }
             }

@@ -59,7 +59,11 @@ export default (sequelize, Sequelize) => {
                     name: forum.name,
                     purpose: forum.purpose,
                 }
-                await addDocumentToForumIndex(document);
+                try {
+                    await addDocumentToForumIndex(document);
+                } catch (error) {
+                    console.error(`Failed to add document to forum index: ${error.message}`);
+                }
                 console.log(`Forum created: ${forum.name}`);
             }
         }

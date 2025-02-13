@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic } from './topicController.js';
+import { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics } from './topicController.js';
 import { validateTopicCreation, validateTopicUpdate } from './topicValidator.js';
 
 const router = Router();
@@ -11,5 +11,6 @@ router.get('/recent-topics', getRecentTopics);
 router.get('/:id', getTopicById)
 router.patch('/:id', validateTopicUpdate(), updateTopic);
 router.delete('/:id', deleteTopic);
+router.get('/search/:topicQuery', searchTopics);
 
 export default router;

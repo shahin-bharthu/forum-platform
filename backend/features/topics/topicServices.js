@@ -1,3 +1,4 @@
+import { searchTopicIndex } from "../../opensearch/topics/topicIndex.js";
 import { CustomError } from "../../util/customError.js";
 import * as topicRepository from "./topicRepository.js";
 
@@ -43,4 +44,22 @@ const deleteTopic = async (userId, topicId) => {
     return await topicRepository.deleteTopic(topicExists.topic);
 }
 
-export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic }
+
+const searchTopics = async (query) => {
+    try {
+        const results = await searchTopicIndex(query);
+        const topicData = results.map((result) => {
+            return ({
+                id: result._source.id,
+                title: result._source.title,
+                content: result._source.content
+            });
+        });
+        return topicData;
+    } catch (error) {
+        throw new CustomError(`Error searching topics: ${error}`, 500);
+    }
+}
+
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics }
