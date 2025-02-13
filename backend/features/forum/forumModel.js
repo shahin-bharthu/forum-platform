@@ -1,4 +1,4 @@
-import { addDocumentToForumIndex } from '../../opensearch-indices/forumIndex.js';
+import { addDocumentToForumIndex } from '../../opensearch/forums/forumIndex.js';
 
 export default (sequelize, Sequelize) => {
     const Forum = sequelize.define("forum", {

@@ -1,6 +1,7 @@
-import client from "../lib/openSearchConnection.js";
+import client from "../../lib/openSearchConnection.js";
+import * as forumRepository from "../../features/forum/forumRepository.js";
 
-export default async function createForumIndex() {
+export async function createForumIndex() {
     const indexName = 'forum';
 
     const indexSettings = {
@@ -30,6 +31,7 @@ export default async function createForumIndex() {
     }
 }
 
+
 export async function addDocumentToForumIndex(document) {
     const indexName = 'forum';
 
@@ -44,6 +46,22 @@ export async function addDocumentToForumIndex(document) {
     }
 }
 
+
+export const addDocumentsToForumIndex = async () => {
+    const allForums = await forumRepository.getForums();
+
+    for (const forum of allForums) {
+        const document = {
+            id: forum.id,
+            name: forum.name,
+            purpose: forum.purpose,
+        };
+
+        await addDocumentToForumIndex(document);
+    }
+};
+
+
 export async function searchForumIndex(searchText) {
     const indexName = 'forum';
 
@@ -57,6 +75,8 @@ export async function searchForumIndex(searchText) {
                 // query: searchText,
                 // fields: ['name', 'purpose']
                 // }
+
+                // for partial match, prefix match, name field has higher weight
                 multi_match: {
                     query: `*${searchText}*`,
                     fields: ['name^4', 'purpose'],

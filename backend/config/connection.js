@@ -1,14 +1,12 @@
+import Sequelize from "sequelize";
 import userModel from "../features/user/userModel.js";
 import tokenModel from "../features/auth/tokenModel.js";
 import auditTrailModel from "../features/auditLogs/auditTrailModel.js";
 import forumModel from "../features/forum/forumModel.js";
 import topicModel from "../features/topics/topicModel.js";
-
-import Sequelize from "sequelize";
 import userMembershipModel from "../features/forum/userMembershipModel.js";
 import commentModel from "../features/comments/commentModel.js";
-import createForumIndex, {addDocumentToForumIndex, searchForumIndex} from "../opensearch-indices/forumIndex.js";
-import { addDocumentsToForumIndex } from "../features/forum/addDocumentsToIndex.js";
+import {createForumIndex, addDocumentsToForumIndex} from "../opensearch/forums/forumIndex.js";
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,

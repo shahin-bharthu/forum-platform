@@ -3,7 +3,7 @@ import * as forumRepository from "./forumRepository.js";
 import * as userRepository from "../user/userRepository.js"
 import { db } from "../../config/connection.js";
 import { getImage } from "../../util/getImage.js";
-import { searchForumIndex } from "../../opensearch-indices/forumIndex.js";
+import { searchForumIndex } from "../../opensearch/forums/forumIndex.js";
 
 const createForum = async (forumData) => {
     const forum_id = forumData.name.replace(/\s+/g, '_').toLowerCase();
