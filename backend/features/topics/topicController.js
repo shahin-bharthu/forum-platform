@@ -21,7 +21,8 @@ const getTopics = asyncErrorHandler(async (req,res,next) => {
 
 const getTopicById = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.params;
-    const topic = await topicServices.getTopicById(id);
+    const user = req.user;
+    const topic = await topicServices.getTopicById(id, user.id);
     return res.status(200).json({message: "Topic fetched successfully", data: topic});
 })
 

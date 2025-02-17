@@ -15,7 +15,7 @@ export async function createForumIndex() {
             properties: {
                 id: { type: 'keyword' },
                 name: { type: 'text' },
-                purpose: { type: 'text' }            
+                purpose: { type: 'text' },
             }
         }
     };
@@ -85,7 +85,7 @@ export async function searchForumIndex(searchText) {
             }
             }
         });
-        console.log(`Search results for ${searchText} in ${indexName} index:`, JSON.stringify(response, null, 2));
+        // console.log(`Search results for ${searchText} in ${indexName} index:`, JSON.stringify(response, null, 2));
         return response.body.hits.hits;
     } catch (error) {
         console.error('Error searching index:', error);

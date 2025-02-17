@@ -147,7 +147,8 @@ const getRecentForums = asyncErrorHandler(async (req,res,next) => {
 
 const searchForums = asyncErrorHandler(async (req,res,next) => {
     const {forumName} = req.params;
-    const forums = await forumServices.searchForums(forumName);
+    const {id} = req.user;
+    const forums = await forumServices.searchForums(forumName, id);
     return res.status(200).json({message: `Fetched ${forums.length} forums`, data: forums})
 });
 

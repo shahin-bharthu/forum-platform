@@ -85,7 +85,7 @@ export async function searchTopicIndex(searchText) {
             }
             }
         });
-        console.log(`Search results for ${searchText} in ${indexName} index:`, JSON.stringify(response, null, 2));
+        // console.log(`Search results for ${searchText} in ${indexName} index:`, JSON.stringify(response, null, 2));
         return response.body.hits.hits;
     } catch (error) {
         console.error('Error searching index:', error);

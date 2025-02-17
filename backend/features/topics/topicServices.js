@@ -1,6 +1,7 @@
 import { searchTopicIndex } from "../../opensearch/topics/topicIndex.js";
 import { CustomError } from "../../util/customError.js";
 import * as topicRepository from "./topicRepository.js";
+import * as forumRepository from "../forum/forumRepository.js";
 
 const createTopic = async (topicData) => {
     return await topicRepository.createTopic(topicData);
@@ -10,8 +11,18 @@ const getTopics = async () => {
     return await topicRepository.getTopics();
 }
 
-const getTopicById = async (id) => {
-    return await topicRepository.getTopicById(id);
+const getTopicById = async (id, userId) => {
+    const topic = await topicRepository.getTopicById(id);
+    if (!topic) {
+        throw new CustomError(`Topic not found`, 404);
+    }
+    if(topic.forum.isPublic === false) {
+        const membershipExists = await forumRepository.getIsSubscribed(userId, topic.topic.forum_id);
+        if (!membershipExists) {
+            throw new CustomError(`User not authorized to view this topic`, 403);
+        }
+    }
+    return topic;
 }
 
 const getMyTopics = async (id) => {
