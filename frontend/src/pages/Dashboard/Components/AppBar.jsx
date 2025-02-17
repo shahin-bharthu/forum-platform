@@ -1,57 +1,88 @@
-import { useState, useCallback, memo, useEffect } from 'react';
-import { AppBar, Box, Toolbar, IconButton, Typography, MenuItem, Menu, Avatar, styled, alpha, InputBase } from '@mui/material';
-import { Menu as MenuIcon, Add as AddIcon, MoreVert as MoreIcon, AutoStories, Search as SearchIcon } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import { useSelector } from 'react-redux';
-import axiosInstance from '../../../../utils/axiosInstance.js';
-import { Grid2 as Grid, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
-import Popover from '@mui/material/Popover';
+import { useState, useCallback, memo, useEffect } from "react";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  MenuItem,
+  Menu,
+  Avatar,
+  styled,
+  alpha,
+  InputBase,
+} from "@mui/material";
+import {
+  Menu as MenuIcon,
+  Add as AddIcon,
+  MoreVert as MoreIcon,
+  AutoStories,
+  Search as SearchIcon,
+} from "@mui/icons-material";
+import { Link, useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
+import { useSelector } from "react-redux";
+import axiosInstance from "../../../../utils/axiosInstance.js";
+import {
+  Grid2 as Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+} from "@mui/material";
+import Popper from "@mui/material/Popper";
+import Fade from "@mui/material/Fade";
+import Paper from "@mui/material/Paper";
+import ClickAwayListener from "react-click-away-listener";
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
+  "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
     marginLeft: theme.spacing(2),
-    width: 'auto',
+    width: "auto",
   },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
+const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
+  color: "inherit",
+  "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '40ch',
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("md")]: {
+      width: "40ch",
     },
   },
 }));
 
 function CombinedAppBar({ handleDrawerToggle }) {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-  const [searchResults, setSearchResults] = useState([{ name: 'No results found', purpose: 'Try searching for something else' }]);  
-  const [searchTopicsResults, setSearchTopicsResults] = useState([{ title: 'No results found', content: 'Try searching for something else' }]);
+  const [searchForumsResults, setSearchForumsResults] = useState([
+    { name: "No results found", purpose: "Try searching for something else" },
+  ]);
+  const [searchTopicsResults, setSearchTopicsResults] = useState([
+    { title: "No results found", content: "Try searching for something else" },
+  ]);
   const navigate = useNavigate();
   const { userName, profilePhoto } = useSelector((state) => state.user);
 
@@ -59,20 +90,16 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const [anchorEl, setAnchorEl] = useState(null);
 
-  // const handleClick = (event) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  // const id = open ? "simple-popover" : undefined;
 
   useEffect(() => {
-    console.log('searchResults', searchResults);
-  }, [searchResults]);
+    console.log("searchResults", searchForumsResults);
+  }, [searchForumsResults]);
+
+  const handleClickAway = () => {
+    setAnchorEl(false);
+  };
 
   const handleMobileMenuClose = useCallback(() => {
     setMobileMoreAnchorEl(null);
@@ -80,7 +107,9 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const handleCreatePost = useCallback(() => {
     handleMobileMenuClose();
-    navigate('/user/create-post', { state: { forumName: null, forumId: null } })
+    navigate("/user/create-post", {
+      state: { forumName: null, forumId: null },
+    });
   }, [handleMobileMenuClose, navigate]);
 
   const handleMobileMenuOpen = useCallback((event) => {
@@ -89,47 +118,47 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const handleEditProfile = useCallback(() => {
     handleMobileMenuClose();
-    navigate('/user/profile');
-  }, [navigate, handleMobileMenuClose])
+    navigate("/user/profile");
+  }, [navigate, handleMobileMenuClose]);
 
-  const handleSearchForums = async (e, searchText) => {
+  const handleSearch = async (e, searchText) => {
     e.preventDefault();
     const searchQuery = searchText.trim();
     if (searchQuery) {
-      const searchResultForums = await axiosInstance.get(`/forum/search/${searchQuery}`);
-      const searchResultTopics = await axiosInstance.get(`/topic/search/${searchQuery}`);
-      console.log(searchResultForums.data);
-      // const searchRes = searchResultForums.data.data.concat(searchResultTopics.data.data);
+      const [searchResultForums, searchResultTopics] = await Promise.all([
+        axiosInstance.get(`/forum/search/${searchQuery}`),
+        axiosInstance.get(`/topic/search/${searchQuery}`),
+      ]);
       if (searchResultForums.data.data.length > 0) {
-        setSearchResults(searchResultForums.data.data);
+        setSearchForumsResults(searchResultForums.data.data);
       }
       if (searchResultTopics.data.data.length > 0) {
-      setSearchTopicsResults(searchResultTopics.data.data);
+        setSearchTopicsResults(searchResultTopics.data.data);
       }
     }
-  }
+  };
 
-  const menuId = 'primary-search-account-menu';
-  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const menuId = "primary-search-account-menu";
+  const mobileMenuId = "primary-search-account-menu-mobile";
 
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
       anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
+        vertical: "top",
+        horizontal: "right",
       }}
       id={mobileMenuId}
       keepMounted
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
+        vertical: "top",
+        horizontal: "right",
       }}
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
       <MenuItem onClick={handleCreatePost}>
-        <IconButton size="large" color="inherit" >
+        <IconButton size="large" color="inherit">
           <AddIcon />
         </IconButton>
         <p>Create Post</p>
@@ -147,76 +176,21 @@ function CombinedAppBar({ handleDrawerToggle }) {
         <p>Notifications</p>
       </MenuItem> */}
       <MenuItem onClick={handleEditProfile}>
-        <Avatar src={profilePhoto}
-          sx={{ width: 30, height: 30, mx: 1 }} />
-        <Typography sx={{ textAlign: 'center', m: 1 }}> Hi, {userName}</Typography>
+        <Avatar src={profilePhoto} sx={{ width: 30, height: 30, mx: 1 }} />
+        <Typography sx={{ textAlign: "center", m: 1 }}>
+          {" "}
+          Hi, {userName}
+        </Typography>
       </MenuItem>
     </Menu>
   );
 
   return (
     <>
-      {searchResults.length >= 0 && 
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-        sx={{ maxWidth: 845, maxHeight: 500 }}
+      <AppBar
+        position="fixed"
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
-        <Grid container spacing={2} sx={{ mx: 3, my: 2 }}>
-          <Grid item xs={12} md={6}>
-            <Typography sx={{ mt: 1, mb: 2 }} variant="h6" component="div">
-              Search Results
-            </Typography>
-            <List dense={true}>
-              {searchResults.length >= 1 ? searchResults.map((result, index) => (
-                <ListItem key={index} button>
-                  <ListItemAvatar>
-                    <Avatar>{result.name.charAt(0).toUpperCase() || 'X'}</Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={result.name} secondary={result.purpose || "No description"} />
-                </ListItem>
-              )) : <ListItem button>
-                <ListItemAvatar>
-                  <Avatar>{searchResults.name.charAt(0).toUpperCase() || 'X'}</Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={searchResults.name} secondary={searchResults.purpose || "No description"} />
-              </ListItem>}
-            </List>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography sx={{ mt: 1, mb: 2 }} variant="h6" component="div">
-              More results in posts...
-            </Typography>
-            <List dense={true}>
-              {searchTopicsResults.length >= 1 ? searchTopicsResults.map((result, index) => (
-                <ListItem key={index} button>
-                  <ListItemAvatar>
-                    <Avatar>{result.title.charAt(0).toUpperCase() || 'X'}</Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={result.title} secondary={result.content || "No description"} />
-                </ListItem>
-              )) : <ListItem button>
-                <ListItemAvatar>
-                  <Avatar>{searchTopicsResults.title.charAt(0).toUpperCase() || 'X'}</Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={searchTopicsResults.title} secondary={searchTopicsResults.content || "No description"} />
-              </ListItem>}
-            </List>
-          </Grid>
-        </Grid>
-      </Popover>}
-
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <IconButton
             size="large"
@@ -224,18 +198,26 @@ function CombinedAppBar({ handleDrawerToggle }) {
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerToggle}
-            sx={{ mr: 0, display: { xs: 'flex', md: 'none' } }}
+            sx={{ mr: 0, display: { xs: "flex", md: "none" } }}
           >
             <MenuIcon />
           </IconButton>
-          <AutoStories sx={{ display: 'flex', mr: 2 }} />
+          <AutoStories sx={{ display: "flex", mr: 2 }} />
           <Tooltip title="Go to Home Page" placement="right" arrow>
             <Typography
               variant="h6"
               noWrap
               component={Link}
               to="dashboard"
-              sx={{ display: { xs: 'none', md: 'flex' }, mr: 2, fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem', textDecoration: 'none', color: 'inherit' }}
+              sx={{
+                display: { xs: "none", md: "flex" },
+                mr: 2,
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                textDecoration: "none",
+                color: "inherit",
+              }}
             >
               BookNook
             </Typography>
@@ -248,23 +230,147 @@ function CombinedAppBar({ handleDrawerToggle }) {
             </SearchIconWrapper>
             <StyledInputBase
               onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  handleSearchForums(event, event.target.value);
-                  setAnchorEl(event.currentTarget);
+                if (event.key === "Enter") {
+                  handleSearch(event, event.target.value);
+                  setAnchorEl(true);
                 }
               }}
               placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
+              inputProps={{ "aria-label": "search" }}
             />
+            <ClickAwayListener onClickAway={handleClickAway}>
+              {searchForumsResults.length >= 0 && (
+                <Popper
+                  sx={{width: '35%', height:'75%', mx:50, zIndex: "3100", mt: 5, overflow: 'scroll', scrollbarColor: 'red', scrollbarWidth: 'thin'}}
+                  open={open}
+                  anchorEl={anchorEl}
+                  placement={"bottom-start"}
+                  keepMounted
+                  transition
+                  // disablePortal
+                >
+                  {({ TransitionProps }) => (
+                    <Fade {...TransitionProps} timeout={350}>
+                      <Paper>
+                        <Grid container spacing={2} sx={{ mx: 3, my: 2 }}>
+                          <Grid item xs={12} md={6}>
+                            <Typography
+                              sx={{ mt: 1, mb: 2 }}
+                              variant="h6"
+                              component="div"
+                            >
+                              Search Results
+                            </Typography>
+                            <List dense={true}>
+                              {searchForumsResults.length >= 1 ? (
+                                searchForumsResults.map((result, index) => (
+                                  <ListItem key={index} button>
+                                    <ListItemAvatar>
+                                      <Avatar>
+                                        {result.name.charAt(0).toUpperCase() ||
+                                          "X"}
+                                      </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                      primary={result.name}
+                                      secondary={
+                                        result.purpose || "No description"
+                                      }
+                                    />
+                                  </ListItem>
+                                ))
+                              ) : (
+                                <ListItem button>
+                                  <ListItemAvatar>
+                                    <Avatar>
+                                      {searchForumsResults.name
+                                        .charAt(0)
+                                        .toUpperCase() || "X"}
+                                    </Avatar>
+                                  </ListItemAvatar>
+                                  <ListItemText
+                                    primary={searchForumsResults.name}
+                                    secondary={
+                                      searchForumsResults.purpose ||
+                                      "No description"
+                                    }
+                                  />
+                                </ListItem>
+                              )}
+                            </List>
+                          </Grid>
+                          <Grid item xs={12} md={6}>
+                            <Typography
+                              sx={{ mt: 1, mb: 2 }}
+                              variant="subtitle1"
+                              component="div"
+                            >
+                              More results in posts...
+                            </Typography>
+                            <List dense={true}>
+                              {searchTopicsResults.length >= 1 ? (
+                                searchTopicsResults.map((result, index) => (
+                                  <ListItem key={index} button>
+                                    <ListItemAvatar>
+                                      <Avatar>
+                                        {result.title.charAt(0).toUpperCase() ||
+                                          "X"}
+                                      </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText onClick={() => {navigate(`/post/${result.id}`)}} primary={result.title} />
+                                    {/* secondary={result.content || "No description"} */}
+                                  </ListItem>
+                                ))
+                              ) : (
+                                <ListItem button>
+                                  <ListItemAvatar>
+                                    <Avatar>
+                                      {searchTopicsResults.title
+                                        .charAt(0)
+                                        .toUpperCase() || "X"}
+                                    </Avatar>
+                                  </ListItemAvatar>
+                                  <ListItemText
+                                    primary={searchTopicsResults.title}
+                                  />
+                                  {/* secondary={searchTopicsResults.content || "No description"}  */}
+                                </ListItem>
+                              )}
+                            </List>
+                          </Grid>
+                        </Grid>
+                      </Paper>
+                    </Fade>
+                  )}
+                </Popper>
+              )}
+            </ClickAwayListener>
           </Search>
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <Tooltip title="Create Post" arrow>
-              <Button onClick={handleCreatePost} variant="contained" startIcon={<AddIcon />} sx={{ borderRadius: 28 }} disableElevation>
+              <Button
+                onClick={handleCreatePost}
+                variant="contained"
+                startIcon={<AddIcon />}
+                sx={{ borderRadius: 28 }}
+                disableElevation
+              >
                 Create
               </Button>
             </Tooltip>
 
+            {/* <Tooltip title="Notifications" arrow>
+            <IconButton
+              size="large"
+              aria-label="show 17 new notifications"
+              color="inherit"
+            >
+              <Badge badgeContent={17} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+            </Tooltip> */}
             <Tooltip title="Go to your profile" arrow>
               <Button
                 variant="contained"
@@ -275,13 +381,15 @@ function CombinedAppBar({ handleDrawerToggle }) {
                 onClick={handleEditProfile}
                 disableElevation
               >
-                <Avatar src={profilePhoto}
-                  sx={{ width: 30, height: 30, mx: 1 }} />
+                <Avatar
+                  src={profilePhoto}
+                  sx={{ width: 30, height: 30, mx: 1 }}
+                />
                 Hi, {userName}
               </Button>
             </Tooltip>
           </Box>
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+          <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
               aria-label="show more"
@@ -296,6 +404,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
+      {/* {renderMenu} */}
     </>
   );
 }
