@@ -16,7 +16,7 @@ const getTopicById = async (id, userId) => {
     if (!topic) {
         throw new CustomError(`Topic not found`, 404);
     }
-    if(topic.forum.isPublic === false) {
+    if (topic.forum.isPublic === false) {
         const membershipExists = await forumRepository.getIsSubscribed(userId, topic.topic.forum_id);
         if (!membershipExists) {
             throw new CustomError(`User not authorized to view this topic`, 403);
@@ -34,42 +34,51 @@ const getRecentTopics = async (id) => {
     return topics
 }
 
+
 const updateTopic = async (userId, topicId, title, content) => {
     const topicExists = await topicRepository.getTopicById(topicId);
-    
-    if (!topicExists || topicExists.topic.createdBy !== userId) {
-        throw new CustomError("Topic not found or User not authorized to edit this topic", 404);
+    if (!topicExists) {
+        throw new CustomError("Topic not found", 404);
     }
-
+    if (topicExists.topic.createdBy !== userId) {
+        throw new CustomError("Unauthorized to edit this topic", 403);
+    }
     return await topicRepository.updateTopic(topicExists.topic, title, content);
 }
 
 
 const deleteTopic = async (userId, topicId) => {
     const topicExists = await topicRepository.getTopicById(topicId);
-    
-    if (!topicExists || topicExists.topic.createdBy !== userId) {
-        throw new CustomError("Topic not found or User not authorized to delete this topic", 404);
+    if (!topicExists) {
+        throw new CustomError("Topic not found", 404);
     }
-    
+    if (topicExists.topic.createdBy !== userId) {
+        throw new CustomError("Unauthorized to delete this topic", 403);
+    }
     return await topicRepository.deleteTopic(topicExists.topic);
 }
 
 
-const searchTopics = async (query) => {
-    try {
-        const results = await searchTopicIndex(query);
-        const topicData = results.map((result) => {
-            return ({
-                id: result._source.id,
-                title: result._source.title,
-                content: result._source.content
-            });
-        });
-        return topicData;
-    } catch (error) {
-        throw new CustomError(`Error searching topics: ${error}`, 500);
-    }
+const searchTopics = async (query, userId) => {
+    const results = await searchTopicIndex(query);
+    const topicData = await Promise.all(results.map(async (result) => {
+        const topic = await topicRepository.getTopicById(result._source.id);
+        if (topic.forum.isActive === false) {
+            return [];
+        }
+        if (topic.forum.isPublic === false) {
+            const membership = await forumRepository.getIsSubscribed(userId, topic.forum.id);
+            if (!membership) {
+                return [];
+            }
+        }
+        return [{
+            id: result._source.id,
+            title: result._source.title,
+            content: result._source.content
+        }];
+    }));
+    return topicData.flat();
 }
 
 

@@ -8,6 +8,7 @@ import userMembershipModel from "../features/forum/userMembershipModel.js";
 import commentModel from "../features/comments/commentModel.js";
 import {createForumIndex, addDocumentsToForumIndex} from "../opensearch/forums/forumIndex.js";
 import { createTopicIndex, addDocumentsToTopicIndex } from "../opensearch/topics/topicIndex.js";
+import { createCommentIndex, addDocumentsToCommentIndex } from "../opensearch/comments/commentIndex.js"
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -45,6 +46,9 @@ const check = async () => {
 
       // await createTopicIndex();
       // await addDocumentsToTopicIndex();
+
+      // await createCommentIndex();
+      // await addDocumentsToCommentIndex();
     } catch (error) {
       console.error("Unable to connect to the database:", error);
       throw error

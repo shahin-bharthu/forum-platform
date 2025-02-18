@@ -1,8 +1,8 @@
 import client from "../../lib/openSearchConnection.js";
-import * as topicRepository from "../../features/topics/topicRepository.js";
+import * as commentRepository from "../../features/comments/commentRepository.js";
 
-export async function createTopicIndex() {
-    const indexName = 'topic';
+export async function createCommentIndex() {
+    const indexName = 'comment';
 
     const indexSettings = {
         settings: {
@@ -14,7 +14,6 @@ export async function createTopicIndex() {
         mappings: {
             properties: {
                 id: { type: 'keyword' },
-                title: { type: 'text' },
                 content: { type: 'text' }            
             }
         }
@@ -32,8 +31,8 @@ export async function createTopicIndex() {
 }
 
 
-export async function addDocumentToTopicIndex(document) {
-    const indexName = 'topic';
+export async function addDocumentToCommentIndex(document) {
+    const indexName = 'comment';
 
     try {
         const response = await client.index({
@@ -47,45 +46,35 @@ export async function addDocumentToTopicIndex(document) {
 }
 
 
-export const addDocumentsToTopicIndex = async () => {
-    const allTopics = await topicRepository.getTopics();
+export const addDocumentsToCommentIndex = async () => {
+    const allComments = await commentRepository.getComments();
 
-    for (const topic of allTopics) {
+    for (const comment of allComments) {
         const document = {
-            id: topic.id,
-            title: topic.title,
-            content: topic.content,
+            id: comment.id,
+            content: comment.content,
         };
 
-        await addDocumentToTopicIndex(document);
+        await addDocumentToCommentIndex(document);
     }
 };
 
 
-export async function searchTopicIndex(searchText) {
-    const indexName = 'topic';
+export async function searchCommentIndex(searchText) {
+    const indexName = 'comment';
 
     try {
         const response = await client.search({
             index: indexName,
             body: {
-            query: {
-                // for exact match
-                // multi_match: {
-                // query: searchText,
-                // fields: ['title', 'content']
-                // }
-
-                // for partial match, prefix match, title field has higher weight
-                multi_match: {
-                    query: `*${searchText}*`,
-                    fields: ['title^2', 'content'],
-                    type: 'phrase_prefix'
+                query: {
+                    match_phrase_prefix: {
+                        content: `${searchText}`
+                    }
                 }
             }
-            }
         });
-        // console.log(`Search results for ${searchText} in ${indexName} index:`, JSON.stringify(response, null, 2));
+        console.log(`Search results for ${searchText} in ${indexName} index: ${JSON.stringify(response.body.hits.hits, null, 2)}`);
         return response.body.hits.hits;
     } catch (error) {
         console.error('Error searching index:', error);

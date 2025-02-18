@@ -38,4 +38,12 @@ const getReplies = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: `Replies fetched successfully`, data: replies});
 })
 
-export { createComment, getCommentsByPostId, deleteComment, getReplies }
+
+const searchComments = asyncErrorHandler(async (req,res,next) => {
+    const {searchText} = req.params;
+    const {id} = req.user;
+    const comments = await commentServices.searchComments(searchText, id);
+    return res.status(200).json({message: `Fetched comments`, data: comments})
+});
+
+export { createComment, getCommentsByPostId, deleteComment, getReplies, searchComments }

@@ -60,7 +60,8 @@ const deleteTopic = asyncErrorHandler(async (req,res,next) => {
 
 const searchTopics = asyncErrorHandler(async (req,res,next) => {
     const {topicQuery} = req.params;
-    const topics = await topicServices.searchTopics(topicQuery);
+    const {id} = req.user;
+    const topics = await topicServices.searchTopics(topicQuery, id);
     return res.status(200).json({message: `Fetched ${topics.length} topics`, data: topics})
 });
 

@@ -160,7 +160,6 @@ const unSubscribeForum = async (user_id, forum_id) => {
 }
 
 const searchForums = async (query, userId) => {
-    try {
     //     const results = await db.Forum.findAll({
     //         where: {
     //         [db.Sequelize.Op.or]: [
@@ -186,28 +185,21 @@ const searchForums = async (query, userId) => {
                 throw new CustomError('Forum not found', 404);
             }
             if(forum.isActive === false) {
-                return;
+                return [];
             }
             if (forum.isPublic === false) {
                 const membership = await forumRepository.getIsSubscribed(userId, forum.id);
                 if (!membership) {
-                    return;
+                    return [];
                 }  
             }    
-            return ({
+            return [{
                 id: result._source.id,
                 name: result._source.name,
                 purpose: result._source.purpose,
-            });
+            }];
         }));
-
-        const filteredForumData = forumData.filter(forum => forum !== undefined);
-        console.log(filteredForumData);
-        
-        return filteredForumData;
-    } catch (error) {
-        throw new CustomError(`Error searching forums: ${error}`, 500);
-    }
+        return forumData.flat();
 }
 
 export {
