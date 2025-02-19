@@ -11,6 +11,7 @@ import {
   styled,
   alpha,
   InputBase,
+  Stack,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -83,19 +84,19 @@ function CombinedAppBar({ handleDrawerToggle }) {
   const [searchTopicsResults, setSearchTopicsResults] = useState([
     { title: "No results found", content: "Try searching for something else" },
   ]);
-  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState();
+  const [searchQuery, setSearchQuery] = useState('');
   const { userName, profilePhoto } = useSelector((state) => state.user);
 
+  const navigate = useNavigate();
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const [anchorEl, setAnchorEl] = useState(null);
-
   const open = Boolean(anchorEl);
-  // const id = open ? "simple-popover" : undefined;
 
   useEffect(() => {
-    console.log("searchResults", searchForumsResults);
-  }, [searchForumsResults]);
+    console.log("Search Results for Forums", searchForumsResults);
+    console.log("Search Results for Posts", searchTopicsResults);
+    console.log("Search Query", searchQuery);
+  }, [searchForumsResults, searchTopicsResults, searchQuery]);
 
   const handleClickAway = () => {
     setAnchorEl(false);
@@ -124,6 +125,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
   const handleSearch = async (e, searchText) => {
     e.preventDefault();
     const searchQuery = searchText.trim();
+    setSearchQuery(searchQuery);
     if (searchQuery) {
       const [searchResultForums, searchResultTopics] = await Promise.all([
         axiosInstance.get(`/forum/search/${searchQuery}`),
@@ -132,11 +134,26 @@ function CombinedAppBar({ handleDrawerToggle }) {
       if (searchResultForums.data.data.length > 0) {
         setSearchForumsResults(searchResultForums.data.data);
       }
+      else {
+        setSearchForumsResults([{ name: "No results found", purpose: "Try searching for something else" }]);
+      }
       if (searchResultTopics.data.data.length > 0) {
         setSearchTopicsResults(searchResultTopics.data.data);
       }
+      else {
+        setSearchTopicsResults([{ title: "No results found", content: "Try searching for something else" }]);
+      }
     }
   };
+
+  const handleAdvancedSearch = async (e, searchQuery, forums, posts) => {
+    e.preventDefault();
+    console.log("SEARCH QUERY:", searchQuery);
+    console.log("FORUMS RESULT:", forums);
+    console.log("POSTS RESULT:", posts);
+    setAnchorEl(false);
+    navigate(`/search/${searchQuery}`);
+  }
 
   const menuId = "primary-search-account-menu";
   const mobileMenuId = "primary-search-account-menu-mobile";
@@ -247,97 +264,90 @@ function CombinedAppBar({ handleDrawerToggle }) {
                   placement={"bottom-start"}
                   keepMounted
                   transition
-                  // disablePortal
                 >
                   {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={350}>
                       <Paper>
-                        <Grid container spacing={2} sx={{ mx: 3, my: 2 }}>
-                          <Grid item xs={12} md={6}>
-                            <Typography
-                              sx={{ mt: 1, mb: 2 }}
-                              variant="h6"
-                              component="div"
-                            >
-                              Search Results
-                            </Typography>
-                            <List dense={true}>
-                              {searchForumsResults.length >= 1 ? (
-                                searchForumsResults.map((result, index) => (
-                                  <ListItem key={index} button>
-                                    <ListItemAvatar>
-                                      <Avatar>
-                                        {result.name.charAt(0).toUpperCase() ||
-                                          "X"}
-                                      </Avatar>
-                                    </ListItemAvatar>
+                        <Grid container spacing={2} sx={{ mx: 3, my: 2 }} >
+                          <Stack>
+                            <Grid item xs={12} md={6}>
+                              <Typography
+                                sx={{ mt: 1 }}
+                                variant="subtitle1"
+                                component="div"
+                              >
+                                Forums
+                              </Typography>
+                              <List dense={true}>
+                                {searchForumsResults.length >= 1 ? (
+                                  searchForumsResults.map((result, index) => (
+                                    <ListItem key={index} button>
+                                      <ListItemText
+                                        sx={{cursor: 'pointer'}}
+                                        onClick={(e) => {
+                                          handleNavigateToForum(e, result)
+                                          setAnchorEl(false);
+                                          if (result.id) {
+                                            navigate(`/forum/${result.name.replace(/\s+/g, '_').toLowerCase()}`)
+                                          }
+                                        }}
+                                        primary={result.name}
+                                        secondary={
+                                          result.purpose || "No description"
+                                        }
+                                      />
+                                    </ListItem>
+                                  ))
+                                ) : (
+                                  <ListItem button>
                                     <ListItemText
-                                      primary={result.name}
+                                      primary={searchForumsResults.name}
                                       secondary={
-                                        result.purpose || "No description"
+                                        searchForumsResults.purpose ||
+                                        "No description"
                                       }
                                     />
                                   </ListItem>
-                                ))
-                              ) : (
-                                <ListItem button>
-                                  <ListItemAvatar>
-                                    <Avatar>
-                                      {searchForumsResults.name
-                                        .charAt(0)
-                                        .toUpperCase() || "X"}
-                                    </Avatar>
-                                  </ListItemAvatar>
-                                  <ListItemText
-                                    primary={searchForumsResults.name}
-                                    secondary={
-                                      searchForumsResults.purpose ||
-                                      "No description"
-                                    }
-                                  />
-                                </ListItem>
-                              )}
-                            </List>
-                          </Grid>
-                          <Grid item xs={12} md={6}>
-                            <Typography
-                              sx={{ mt: 1, mb: 2 }}
-                              variant="subtitle1"
-                              component="div"
-                            >
-                              More results in posts...
-                            </Typography>
-                            <List dense={true}>
-                              {searchTopicsResults.length >= 1 ? (
-                                searchTopicsResults.map((result, index) => (
-                                  <ListItem key={index} button>
-                                    <ListItemAvatar>
-                                      <Avatar>
-                                        {result.title.charAt(0).toUpperCase() ||
-                                          "X"}
-                                      </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText onClick={() => {navigate(`/post/${result.id}`)}} primary={result.title} />
-                                    {/* secondary={result.content || "No description"} */}
+                                )}
+                              </List>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                              <Typography
+                                sx={{ mt: 1}}
+                                variant="subtitle1"
+                                component="div"
+                              >
+                                Posts
+                              </Typography>
+                              <List dense={true}>
+                                {searchTopicsResults.length >= 1 ? (
+                                  searchTopicsResults.map((result, index) => (
+                                    <ListItem key={index} button>
+                                      <ListItemText 
+                                        onClick={() => {
+                                          setAnchorEl(false);
+                                          if (result.id) {
+                                            navigate(`/post/${result.id}`)
+                                          }
+                                        }} 
+                                        primary={result.title} />
+                                    </ListItem>
+                                  ))
+                                ) : (
+                                  <ListItem button>
+                                    <ListItemText
+                                      primary={searchTopicsResults.title}
+                                    />
                                   </ListItem>
-                                ))
-                              ) : (
-                                <ListItem button>
-                                  <ListItemAvatar>
-                                    <Avatar>
-                                      {searchTopicsResults.title
-                                        .charAt(0)
-                                        .toUpperCase() || "X"}
-                                    </Avatar>
-                                  </ListItemAvatar>
-                                  <ListItemText
-                                    primary={searchTopicsResults.title}
-                                  />
-                                  {/* secondary={searchTopicsResults.content || "No description"}  */}
-                                </ListItem>
-                              )}
-                            </List>
-                          </Grid>
+                                )}
+                              </List>
+                            </Grid>
+                            <Box textAlign='end' marginBottom={1}>
+                              <Button color="black" size="small" onClick={(event) => handleAdvancedSearch(event, searchQuery, searchForumsResults, searchTopicsResults)}>
+                                See more results...
+                              </Button>
+                            </Box>
+                          </Stack>
                         </Grid>
                       </Paper>
                     </Fade>
