@@ -15,6 +15,20 @@ const createComment = async (topic_id, content, parent_comment_id, createdBy) =>
     }
 }
 
+const getCommentById = async (id, userId) => {
+    const {comment, topic, forum} = await commentRepository.getCommentById(id);
+    if (forum.isActive === false) {
+        return null;
+    }
+    if (forum.isPublic === false) {
+        const membership = await forumRepository.getIsSubscribed(userId, forum.id);
+        if (!membership) {
+            return null;
+        }
+    }
+    return {comment, topic, forum};
+}
+
 const getCommentsByPostId = async (postId) => {
     return await commentRepository.getCommentsByPostId(postId);
 }
@@ -57,13 +71,15 @@ const searchComments = async(searchText, userId) => {
             }
         }
         return [{
-            id: comment.id,
+            id: comment.comment.id,
+            content: comment.comment.content,
             topic_id: comment.topic.id,
             forum_id: comment.forum.id
         }];
     }));
+
     return commentData.flat();
 }
 
 
-export { createComment, getCommentsByPostId, deleteComment, getReplies, searchComments }
+export { createComment, getCommentsByPostId, deleteComment, getReplies, searchComments, getCommentById }

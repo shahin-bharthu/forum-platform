@@ -146,13 +146,13 @@ function CombinedAppBar({ handleDrawerToggle }) {
     }
   };
 
-  const handleAdvancedSearch = async (e, searchQuery, forums, posts) => {
+  const handleAdvancedSearch = async (e, searchText, forums, posts) => {
     e.preventDefault();
-    console.log("SEARCH QUERY:", searchQuery);
+    console.log("SEARCH QUERY:", searchText);
     console.log("FORUMS RESULT:", forums);
     console.log("POSTS RESULT:", posts);
     setAnchorEl(false);
-    navigate(`/search/${searchQuery}`);
+    navigate(`/search/${searchText}`, { state: { forumResults: forums, postResults: posts }});
   }
 
   const menuId = "primary-search-account-menu";
@@ -225,7 +225,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
               variant="h6"
               noWrap
               component={Link}
-              to="dashboard"
+              to="/user/dashboard"
               sx={{
                 display: { xs: "none", md: "flex" },
                 mr: 2,
@@ -285,7 +285,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
                                       <ListItemText
                                         sx={{cursor: 'pointer'}}
                                         onClick={(e) => {
-                                          handleNavigateToForum(e, result)
                                           setAnchorEl(false);
                                           if (result.id) {
                                             navigate(`/forum/${result.name.replace(/\s+/g, '_').toLowerCase()}`)

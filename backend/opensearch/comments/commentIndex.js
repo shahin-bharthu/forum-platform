@@ -74,7 +74,7 @@ export async function searchCommentIndex(searchText) {
                 }
             }
         });
-        console.log(`Search results for ${searchText} in ${indexName} index: ${JSON.stringify(response.body.hits.hits, null, 2)}`);
+        // console.log(`Search results for ${searchText} in ${indexName} index: ${JSON.stringify(response.body.hits.hits, null, 2)}`);
         return response.body.hits.hits;
     } catch (error) {
         console.error('Error searching index:', error);

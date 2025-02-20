@@ -115,7 +115,7 @@ const router = createBrowserRouter([
     id: "search",
     children: [
       { index: true, element: <Navigate to="/user/dashboard" /> },
-      { path: ":searchQuery", element:<SearchResults/> }
+      { path: ":searchText", element:<SearchResults/> }
     ],
   },
 ]);

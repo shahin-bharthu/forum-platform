@@ -19,7 +19,9 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../../utils/axiosInstance.js';
 import { useDispatch } from 'react-redux';
 import { clearNotification, setNotification } from '../../../store/uiSlice.js';
-import forumDetailsBackdrop from "../../../assets/ForumDetailsBackdrop.webp"
+import forumDetailsBackdrop from "../../../assets/ForumDetailsBackdrop.webp";
+
+
 export default function ForumHeaderCard({ forum, setIsSubbed }) {
   const navigate = useNavigate();
   const theme = useTheme();
