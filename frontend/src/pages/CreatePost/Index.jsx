@@ -11,22 +11,31 @@ import { Card, CircularProgress } from "@mui/material";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { useDispatch } from 'react-redux';
 import { clearNotification, setNotification } from "../../store/uiSlice.js";
-
+import QuillEditor from "./Components/QuillEditor.jsx";
+import 'quill/dist/quill.snow.css';
+import TitleIcon from '@mui/icons-material/Title';
+import ToggleButton from '@mui/material/ToggleButton';
+import { Delta } from 'quill/core';
+import quill from 'quill';
 const CreatePost = ({isEdit}) => {
   const [topicData, setTopicData] = useState();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // only used to show error for the fields of the form
   const [selectedForum, setSelectedForum] = useState(null);
   const [loading, setLoading] = useState(true);
+  // const [bodyMode, setBodyMode] = useState("textarea");// textarea or quill
 
   const titleInput = useRef();
-  const bodyInput = useRef();
+  // const bodyInput = useRef();
+  const quillRef = useRef();
+
   const location = useLocation();
   const params = useParams();
   const {forumName, forumId} = location.state // || topicData.topic.forum_id
 
   const navigate = useNavigate();
   const dispatch=useDispatch()
+
   
   useEffect(() => {
     if (!isEdit && forumName !== null && forumId !== null) {
@@ -56,7 +65,7 @@ const CreatePost = ({isEdit}) => {
     event.preventDefault();
 
     const enteredTitle = titleInput.current.value.trim();
-    const enteredBody = bodyInput.current.value
+    const enteredBody= quillRef.current.root.innerHTML;
 
     if (!selectedForum) {
       setErrorMessage("Please select a forum.");
@@ -93,8 +102,8 @@ const CreatePost = ({isEdit}) => {
     event.preventDefault();
     
     const enteredTitle = titleInput.current.value.trim();
-    const enteredBody = bodyInput.current.value
-
+    const enteredBody = quillRef.current.root.innerHTML;
+      
     const formData = {title:enteredTitle, content: enteredBody};
     
     setErrorMessage("");
@@ -120,11 +129,11 @@ const CreatePost = ({isEdit}) => {
         dispatch(clearNotification())
       }, 1500);
     }
-  }
+  }  
 
   return (
     loading && isEdit ? <CircularProgress/> : 
-    <Card variant="outlined" sx={{ m: 2, p: 3, justifyContent: 'left' }}>
+    <Card variant="outlined" sx={{ m: 2, mt:8, p: 3, justifyContent: 'left' }}>
       <h3 className={classes["heading"]}>{isEdit? 'Edit': 'Create'} Post</h3>
       <form onSubmit={isEdit? (event)=>editPostHandler(event, topicData.topic.id):  addPostHandler} noValidate>
 
@@ -141,13 +150,9 @@ const CreatePost = ({isEdit}) => {
           value={isEdit ? topicData.topic.title : null}
         />
 
-        <TextAreaInputField
-          label="Body"
-          type="text"
-          name="Body"
-          placeholder={isEdit? null : 'Post Body'}
-          reference={bodyInput}
-          value={isEdit ? topicData.topic.content : null}
+        <QuillEditor
+        defaultValue={isEdit ? topicData.topic.content : null}
+        ref={quillRef}          
         />
 
         <Stack spacing={2} direction="row" sx={{ m: 1, pt: 2, justifyContent: 'right' }}>

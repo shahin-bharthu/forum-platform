@@ -1,4 +1,8 @@
 import { useState, useCallback, memo, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../../../../utils/axiosInstance.js";
+// Material UI components
 import {
   AppBar,
   Box,
@@ -11,30 +15,35 @@ import {
   styled,
   alpha,
   InputBase,
+  DialogTitle,
+  Button,
+  Tooltip,
+  Grid2 as Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Popper,
+  Fade,
+  Paper,
+  ClickAwayListener,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
 } from "@mui/material";
+// Material UI icons
 import {
   Menu as MenuIcon,
   Add as AddIcon,
   MoreVert as MoreIcon,
   AutoStories,
   Search as SearchIcon,
+  Logout as LogoutIcon,
+  Edit as EditIcon,
 } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import { useSelector } from "react-redux";
-import axiosInstance from "../../../../utils/axiosInstance.js";
-import {
-  Grid2 as Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-} from "@mui/material";
-import Popper from "@mui/material/Popper";
-import Fade from "@mui/material/Fade";
-import Paper from "@mui/material/Paper";
-import ClickAwayListener from "react-click-away-listener";
+// Redux actions
+import { clearUserProfile } from "../../../store/userSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -76,22 +85,28 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 function CombinedAppBar({ handleDrawerToggle }) {
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+
   const [searchForumsResults, setSearchForumsResults] = useState([
     { name: "No results found", purpose: "Try searching for something else" },
   ]);
   const [searchTopicsResults, setSearchTopicsResults] = useState([
     { title: "No results found", content: "Try searching for something else" },
   ]);
+
   const navigate = useNavigate();
   const { userName, profilePhoto } = useSelector((state) => state.user);
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null); //for search popper
 
-  const open = Boolean(anchorEl);
-  // const id = open ? "simple-popover" : undefined;
+  const open = Boolean(anchorEl); //for search popper
+  const isMenuOpen = Boolean(menuAnchorEl);
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     console.log("searchResults", searchForumsResults);
@@ -101,9 +116,18 @@ function CombinedAppBar({ handleDrawerToggle }) {
     setAnchorEl(false);
   };
 
+  const handleProfileMenuOpen = useCallback((event) => {
+    setMenuAnchorEl(event.currentTarget);
+  }, []);
+
   const handleMobileMenuClose = useCallback(() => {
     setMobileMoreAnchorEl(null);
   }, []);
+
+  const handleMenuClose = useCallback(() => {
+    setMenuAnchorEl(null);
+    handleMobileMenuClose();
+  }, [handleMobileMenuClose]);
 
   const handleCreatePost = useCallback(() => {
     handleMobileMenuClose();
@@ -118,6 +142,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const handleEditProfile = useCallback(() => {
     handleMobileMenuClose();
+    handleMenuClose();
     navigate("/user/profile");
   }, [navigate, handleMobileMenuClose]);
 
@@ -138,14 +163,87 @@ function CombinedAppBar({ handleDrawerToggle }) {
     }
   };
 
+  const handleLogout = useCallback(async () => {
+    try {
+      setDialogOpen(false);
+      handleMenuClose();
+      await axiosInstance.post("/auth/logout");
+      // setTimeout(() => {
+      navigate("/login/201", { replace: true });
+      dispatch(clearUserProfile());
+      // }, 1500);
+    } catch (error) {
+      console.error("couldn't log user out", error);
+    }
+  }, [dispatch, navigate]);
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    handleMenuClose();
+  };
+
+  const handleUpdateClick = () => {
+    setDialogOpen(true);
+  };
+  
+
+  const logoutDialog = (
+    <Dialog open={dialogOpen} onClose={handleDialogClose}>
+      <DialogContent>
+        <DialogTitle sx={{ px: 0 }}>
+          Are you sure you want to log out?
+        </DialogTitle>
+        <DialogContentText>
+          You&apos;ll need to sign back in to continue participating in
+          discussions.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleDialogClose} color="error">
+          Cancel
+        </Button>
+        <Button type="button" onClick={handleLogout} color="primary">
+          Yes, Log Out
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   const menuId = "primary-search-account-menu";
   const mobileMenuId = "primary-search-account-menu-mobile";
+
+  const renderMenu = (
+    <Menu
+      anchorEl={menuAnchorEl}
+      id={menuId}
+      keepMounted
+      ransformOrigin={{ horizontal: "right", vertical: "top" }}
+      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+    >
+      <MenuItem onClick={handleEditProfile}>
+        <IconButton size="medium" color="inherit" sx={{ mr: 1 }}>
+          <EditIcon />
+        </IconButton>
+        Edit Profile
+      </MenuItem>
+
+      <MenuItem onClick={handleUpdateClick}>
+        <IconButton size="medium" color="inherit" sx={{ mr: 1 }}>
+          <LogoutIcon />
+        </IconButton>
+        Logout
+      </MenuItem>
+      {logoutDialog}
+    </Menu>
+  );
 
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
       anchorOrigin={{
-        vertical: "top",
+        vertical: "bottom",
         horizontal: "right",
       }}
       id={mobileMenuId}
@@ -163,19 +261,8 @@ function CombinedAppBar({ handleDrawerToggle }) {
         </IconButton>
         <p>Create Post</p>
       </MenuItem>
-      {/* <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem> */}
-      <MenuItem onClick={handleEditProfile}>
+
+      <MenuItem onClick={handleProfileMenuOpen}>
         <Avatar src={profilePhoto} sx={{ width: 30, height: 30, mx: 1 }} />
         <Typography sx={{ textAlign: "center", m: 1 }}>
           {" "}
@@ -208,7 +295,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
               variant="h6"
               noWrap
               component={Link}
-              to="dashboard"
+              to="user/dashboard"
               sx={{
                 display: { xs: "none", md: "flex" },
                 mr: 2,
@@ -241,18 +328,34 @@ function CombinedAppBar({ handleDrawerToggle }) {
             <ClickAwayListener onClickAway={handleClickAway}>
               {searchForumsResults.length >= 0 && (
                 <Popper
-                  sx={{width: '35%', height:'75%', mx:50, zIndex: "3100", mt: 5, overflow: 'scroll', scrollbarColor: 'red', scrollbarWidth: 'thin'}}
+                  sx={{
+                    width: "30%",
+                    height: "75%",
+                    mx: 53,
+                    zIndex: "1300",
+                    mt: 5,
+                  }}
                   open={open}
                   anchorEl={anchorEl}
                   placement={"bottom-start"}
                   keepMounted
                   transition
-                  // disablePortal
                 >
                   {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={350}>
-                      <Paper>
-                        <Grid container spacing={2} sx={{ mx: 3, my: 2 }}>
+                      <Paper
+                        sx={{
+                          mt: 1.4,
+                          p: 1.5,
+                          width: "100%",
+                          maxHeight: "100%",
+                          overflow: "scroll",
+                          "&::-webkit-scrollbar": {
+                            display: "none",
+                          },
+                        }}
+                      >
+                        <Grid container spacing={2} sx={{ mx: 3, mb: 2 }}>
                           <Grid item xs={12} md={6}>
                             <Typography
                               sx={{ mt: 1, mb: 2 }}
@@ -317,7 +420,13 @@ function CombinedAppBar({ handleDrawerToggle }) {
                                           "X"}
                                       </Avatar>
                                     </ListItemAvatar>
-                                    <ListItemText onClick={() => {navigate(`/post/${result.id}`)}} primary={result.title} />
+                                    <ListItemText
+                                      onClick={() => {
+                                        setAnchorEl(false);
+                                        navigate(`/post/${result.id}`);
+                                      }}
+                                      primary={result.title}
+                                    />
                                     {/* secondary={result.content || "No description"} */}
                                   </ListItem>
                                 ))
@@ -360,33 +469,30 @@ function CombinedAppBar({ handleDrawerToggle }) {
               </Button>
             </Tooltip>
 
-            {/* <Tooltip title="Notifications" arrow>
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
+            <Tooltip
+              title={
+                <Typography
+                  variant="button"
+                  sx={{ fontSize: "0.75rem", fontWeight: "bold", color: "white" }}
+                >{userName}</Typography>
+              }
+              arrow
             >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            </Tooltip> */}
-            <Tooltip title="Go to your profile" arrow>
-              <Button
-                variant="contained"
-                sx={{ borderRadius: 28, pl: 1, pr: 2, mx: 1 }}
-                size="medium"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                onClick={handleEditProfile}
-                disableElevation
+              <IconButton
+                aria-label="profile menu"
+                size="small"
+                onClick={handleProfileMenuOpen}
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)", // Optional: add a white background on hover
+                  },
+                  "& .MuiTouchRipple-root": {
+                    color: "white", // Set the ripple color to white
+                  },
+                }}
               >
-                <Avatar
-                  src={profilePhoto}
-                  sx={{ width: 30, height: 30, mx: 1 }}
-                />
-                Hi, {userName}
-              </Button>
+                <Avatar src={profilePhoto} sx={{ width: 30, height: 30 }} />
+              </IconButton>
             </Tooltip>
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
@@ -404,7 +510,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {/* {renderMenu} */}
+      {renderMenu}
     </>
   );
 }
