@@ -53,7 +53,7 @@ export default (sequelize, Sequelize) => {
                     } catch (error) {
                         console.error(`Failed to add document to topic index: ${error.message}`);
                     }
-                    console.log(`Forum created: ${topic.name}`);
+                    console.log(`Topic created: ${topic.id}`);
                 }
             }
         }

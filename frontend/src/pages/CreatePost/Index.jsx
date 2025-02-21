@@ -23,10 +23,10 @@ const CreatePost = ({isEdit}) => {
   const bodyInput = useRef();
   const location = useLocation();
   const params = useParams();
-  const {forumName, forumId} = location.state // || topicData.topic.forum_id
+  const {forumName, forumId} = location.state || {forumName: '', forumId: ''}
 
   const navigate = useNavigate();
-  const dispatch=useDispatch()
+  const dispatch = useDispatch()
   
   useEffect(() => {
     if (!isEdit && forumName !== null && forumId !== null) {
@@ -74,7 +74,7 @@ const CreatePost = ({isEdit}) => {
     try {
       setIsSubmitting(true);
       const response = await axiosInstance.post("/topic", formData);
-      
+  
       dispatch(setNotification({message:response.data.message, type:"success"}))
       setTimeout(() => {
         dispatch(clearNotification())

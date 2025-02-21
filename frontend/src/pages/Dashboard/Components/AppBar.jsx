@@ -92,12 +92,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const open = Boolean(anchorEl);
 
-  useEffect(() => {
-    console.log("Search Results for Forums", searchForumsResults);
-    console.log("Search Results for Posts", searchTopicsResults);
-    console.log("Search Query", searchQuery);
-  }, [searchForumsResults, searchTopicsResults, searchQuery]);
-
   const handleClickAway = () => {
     setAnchorEl(false);
   };
@@ -148,9 +142,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const handleAdvancedSearch = async (e, searchText, forums, posts) => {
     e.preventDefault();
-    console.log("SEARCH QUERY:", searchText);
-    console.log("FORUMS RESULT:", forums);
-    console.log("POSTS RESULT:", posts);
     setAnchorEl(false);
     navigate(`/search/${searchText}`, { state: { forumResults: forums, postResults: posts }});
   }
