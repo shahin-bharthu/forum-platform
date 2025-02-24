@@ -63,57 +63,11 @@ export default function ClippedDrawer() {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleLogout = useCallback(async () => {
-    try {
-      setDialogOpen(false);
-      await axiosInstance.post('/auth/logout')
-      // setTimeout(() => {
-        navigate('/login/201', {replace: true});
-        dispatch(clearUserProfile())
-      // }, 1500);
-    } catch (error) {
-      console.error("couldn't log user out", error);
-    }
-  }, [dispatch,navigate]);
-
   const handleMenuItemClick = (path) => {
-    if (path === 'logout') {
-      handleUpdateClick();
-    } else {
       navigate(path);
       setActiveItem(path);
-    }
     setMobileOpen(false);
   };
-
-  const handleDialogClose = () => {
-    setDialogOpen(false);
-  }
-
-  const handleUpdateClick = () => {
-    setDialogOpen(true);
-  };
-
-  const logoutDialog = (
-    <Dialog open={dialogOpen} onClose={handleDialogClose}>
-      <DialogContent>
-        <DialogTitle sx={{ px: 0 }}>
-          Are you sure you want to log out?
-        </DialogTitle>
-        <DialogContentText>
-          You&apos;ll need to sign back in to continue participating in discussions.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleDialogClose} color="error">
-          Cancel
-        </Button>
-        <Button type='button' onClick={handleLogout} color="primary">
-          Yes, Log Out
-        </Button>
-      </DialogActions>
-    </Dialog>
-  )
 
   const drawer = (
     <div>
@@ -140,7 +94,6 @@ export default function ClippedDrawer() {
           ))}
         </List>
       </Box>
-      {logoutDialog}
     </div>
   );
 

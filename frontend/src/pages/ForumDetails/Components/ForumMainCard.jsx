@@ -8,7 +8,7 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Avatar, Box, Grid2 as Grid } from '@mui/material';
+import { Avatar, Box, Grid2 as Grid, Tooltip } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -17,6 +17,7 @@ import { formatDate } from '../../../../utils/timestamp';
 import TopicSkeleton from '../../../components/PostsSkeleton';
 import axiosInstance from '../../../../utils/axiosInstance';
 import { useSelector } from 'react-redux';
+import { renderHTML } from '../../PostDetails/Components/CodeBlockViewer';
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
   '.MuiCardHeader-content': {
@@ -174,7 +175,14 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
                 </Avatar>
               }
               title={topic.user.username}
-              subheader={formatDate(topic.createdAt)}
+              
+              subheader={<Tooltip title={new Date(topic.createdAt).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+              })} placement="right">
+                {formatDate(topic.createdAt)}
+              </Tooltip>}
             />
 
             <CardContent sx={{ py: 0, px: 3, cursor: 'pointer' }} onClick={() => navigate(`/post/${topic.id}`)}>
@@ -202,7 +210,9 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
             </CardActions>
             <Collapse in={expanded[index].isExpanded} timeout="auto" unmountOnExit>
               <CardContent sx={{ px: 3, cursor: 'pointer' }} onClick={() => navigate(`/post/${topic.id}`)}>
-                <Typography sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word', whiteSpace: "pre-wrap" }}>{topic.content}</Typography>
+                <Typography variant='caption' sx={{ marginBottom: 2, textAlign: 'left', wordBreak: 'break-word', whiteSpace: "pre-wrap" }}>
+                  {renderHTML(topic.content)}
+                </Typography>
               </CardContent>
             </Collapse>
           </Card>

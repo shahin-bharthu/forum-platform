@@ -174,12 +174,12 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
 
       <Divider />
 
-      <CardActions>
+      <CardActions sx={{pb:2}}>
         <Stack
           sx={{
             mx: 1,
             width: '100%',
-            alignItems: 'center'
+            alignItems: 'center',
           }}
         >
           <Typography
