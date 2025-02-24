@@ -16,7 +16,7 @@ const createComment = async (topic_id, content, parent_comment_id, createdBy) =>
 }
 
 const getCommentById = async (id, userId) => {
-    const {comment, topic, forum} = await commentRepository.getCommentById(id);
+    const {comment, topic, forum, user} = await commentRepository.getCommentById(id);
     if (forum.isActive === false) {
         return null;
     }
@@ -26,7 +26,7 @@ const getCommentById = async (id, userId) => {
             return null;
         }
     }
-    return {comment, topic, forum};
+    return {comment, topic, forum, user};
 }
 
 const getCommentsByPostId = async (postId) => {
@@ -74,10 +74,10 @@ const searchComments = async(searchText, userId) => {
             id: comment.comment.id,
             content: comment.comment.content,
             topic_id: comment.topic.id,
-            forum_id: comment.forum.id
+            forum_id: comment.forum.id,
+            user: comment.user.username
         }];
-    }));
-
+    }));    
     return commentData.flat();
 }
 

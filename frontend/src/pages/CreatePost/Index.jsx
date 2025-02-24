@@ -81,7 +81,7 @@ const CreatePost = ({isEdit}) => {
 
     try {
       setIsSubmitting(true);
-      const response = await axiosInstance.post("/topic", formData);
+      const response = await axiosInstance.post("topic/", formData);
   
       dispatch(setNotification({message:response.data.message, type:"success"}))
       setTimeout(() => {

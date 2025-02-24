@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -15,8 +15,11 @@ import axiosInstance from "../../../utils/axiosInstance";
 const SearchResults = () => {
   const params = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const { forumResults, postResults } = location.state || {forumResults: [], postResults: []};
-  const [searchCommentsResults, setSearchCommentsResults] = useState([{comment: {content: 'No results found'}, topic: {}, forum: {}}]);
+  const [searchCommentsResults, setSearchCommentsResults] = useState([{comment: {content: 'No results found'}, topic: {id: ''}, forum: {}, user: {username: ''}}]);
+  const [searchForumsResults, setSearchForumsResults] = useState([{id: '', forum_id: '', name: '', purpose: '', avatarUrl: '', }]);
+  const [value, setValue] = useState(0);
 
   const searchComments = async (searchText) => {
       const response = await axiosInstance.get(`comment/search/${searchText}`);
@@ -29,10 +32,17 @@ const SearchResults = () => {
   }
 
   const getForumAvatars = async (forumsList) => {
-    const forumAvatars = await Promise.all(forumsList.map(async (forum) => {
-      const forumData = await axiosInstance.get(`/forum/banner/${forum.id}`)
-    }))
-    console.log(forumResults);
+    const forumData = await Promise.all(forumsList.map(async (forum) => {
+      const forumAvatarPath = await axiosInstance.get(`/forum/banner/${forum.id}`, { responseType: 'blob' });
+      if (forumAvatarPath.data) {
+        return {
+          ...forum,
+          forum_id: forum.name.replace(/\s+/g, '_').toLowerCase(),
+          avatarUrl: URL.createObjectURL(forumAvatarPath.data)
+        } 
+      }
+    }));
+    setSearchForumsResults(forumData)
   }
 
   useEffect(() => {
@@ -63,45 +73,6 @@ const SearchResults = () => {
     };
   }
 
-      {/* <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 3fr",
-          gridTemplateRows: "repeat(3, 1fr)",
-          gridTemplateAreas: `"header header" "forums posts" "comments comments"`,
-          width: "100vw",
-          height: "90vh",
-          margin: "10px",
-          gap: "5px",
-          marginTop: "50px"
-        }}
-      >
-
-        <h1 style={{ gridArea: "header", border: "1px solid pink" }}>
-          Search Results for {params.searchText}
-        </h1>
-
-        <ul style={{ gridArea: "forums", border: "1px solid pink" }}>
-          {forumResults.map((forum) => {
-            return <li style={{ textAlign: "left" }}>{forum.name}</li>;
-          })}
-        </ul>
-
-        <ul style={{ gridArea: "posts", border: "1px solid pink" }}>
-          {postResults.map((post) => {
-            return <li style={{ textAlign: "left" }}>{post.title}</li>;
-          })}
-        </ul>
-
-        <ul style={{ gridArea: "comments", border: "1px solid pink" }}>
-          {searchCommentsResults.map((result) => {
-            return <li style={{ textAlign: "left" }}>{result.comment.content}</li>;
-          })}
-        </ul>
-
-      </div> */}
-
-  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -118,27 +89,19 @@ const SearchResults = () => {
       </Box>
       <CustomTabPanel value={value} index={0}>
         <List sx={{ width: '100%' }}>
-          {forumResults.map((forum) => {
+          {searchForumsResults.map((forum) => {
             return (
               <>
                 <ListItem alignItems="flex-start" sx={{bgcolor: 'background.paper', borderRadius: 5}}>
                   <ListItemAvatar>
-                    <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                    <Avatar alt={forum.name} src={forum.avatarUrl} />
                   </ListItemAvatar>
                   <ListItemText
+                    sx={{cursor: 'pointer'}}
+                    onClick={() => navigate(`/forum/${forum.forum_id}`)}
                     primary={forum.name}
-                    secondary={
-                      <>
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          sx={{ color: 'text.primary', display: 'inline' }}
-                          >
-                        </Typography>
-                        {forum.purpose}
-                      </>
-                    }
-                    />
+                    secondary={forum.purpose}
+                  />
                 </ListItem>
                 <Divider variant="middle" component="li" sx={{my: 0.5}} />
               </>
@@ -157,18 +120,10 @@ const SearchResults = () => {
                   <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                 </ListItemAvatar>
                 <ListItemText
+                  sx={{cursor: 'pointer'}}
+                  onClick={() => navigate(`/post/${post.id}`)}
                   primary={post.title}
-                  secondary={
-                    <>
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{ color: 'text.primary', display: 'inline' }}
-                        >
-                      </Typography>
-                      {post.content}
-                    </>
-                  }
+                  secondary={post.content}
                   />
               </ListItem>
               <Divider variant="middle" component="li" sx={{my: 0.5}}/>
@@ -180,17 +135,21 @@ const SearchResults = () => {
 
       <CustomTabPanel value={value} index={2}>
         <List sx={{ width: '100%'}}>
-          {searchCommentsResults.map((comment) => {
+          {searchCommentsResults.map((result) => {
             return (
               <>
-                <ListItem alignItems="flex-start" sx={{bgcolor: 'background.paper', borderRadius: 5}}>
-                  <ListItemAvatar>
-                    <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={comment.comment.content}/>
-                </ListItem>
-                <Divider variant="middle" component="li" sx={{my: 0.5}}/>
+              <ListItem alignItems="flex-start" sx={{bgcolor: 'background.paper', borderRadius: 5}}>
+                <ListItemAvatar>
+                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                </ListItemAvatar>
+                <ListItemText
+                  sx={{cursor: 'pointer'}}
+                  onClick={() => navigate(`/post/${result.topic.id}`)}
+                  primary={result.user.username}
+                  secondary={result.comment.content}
+                />
+              </ListItem>
+              <Divider variant="middle" component="li" sx={{my: 0.5}}/>
               </>
             )
           })}

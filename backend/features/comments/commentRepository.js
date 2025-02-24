@@ -18,7 +18,8 @@ const getCommentById = async (id) => {
     const comment = await db.Comment.findByPk(id);
     const topic = await comment.getTopic();
     const forum = await topic.getForum();
-    return {comment, topic, forum}; 
+    const user = await comment.getUser();
+    return {comment, topic, forum, user}; 
 }
 
 const getCommentsByPostId = async (postId) => {

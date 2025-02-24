@@ -21,7 +21,6 @@ import {
   Grid2 as Grid,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemText,
   Popper,
   Fade,
@@ -31,6 +30,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
+  Stack
 } from "@mui/material";
 // Material UI icons
 import {
@@ -107,10 +107,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    console.log("searchResults", searchForumsResults);
-  }, [searchForumsResults]);
 
   const handleClickAway = () => {
     setAnchorEl(false);
