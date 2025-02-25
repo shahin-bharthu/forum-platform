@@ -91,3 +91,81 @@ export async function searchTopicIndex(searchText) {
         console.error('Error searching index:', error);
     }
 }
+
+
+export async function getAllDocumentsOfTopicIndex() {
+    const indexName = 'topic';
+
+    try {
+        const response = await client.search({
+            index: indexName,
+            body: {
+                query: {
+                    match_all: {}
+                }
+            }
+        });
+        console.log(`All documents in ${indexName} index:`, JSON.stringify(response, null, 2));
+    } catch (error) {
+        console.error('Error getting all documents:', error);
+    }
+}
+
+
+export async function updateDocumentOfTopicIndex(document) {
+    const indexName = 'topic';
+
+    try {
+        // Search for the document in the OpenSearch index using the document.id from the database
+        const searchResponse = await client.search({
+            index: indexName,
+            body: {
+                query: {
+                    match: {
+                        id: document.id
+                    }
+                }
+            }
+        });
+
+        // Update the document in the OpenSearch index
+        const response = await client.update({
+            index: indexName,
+            id: searchResponse.body.hits.hits[0]._id,
+            body: {
+                doc: document
+            }
+        });
+        console.log('Document updated:', response);
+    } catch (error) {
+        console.error('Error updating document:', error);
+    }
+}
+
+
+export async function deleteDocumentOfTopicIndex(documentId) {
+    const indexName = 'topic';
+
+    try {
+        // Search for the document in the OpenSearch index using the document.id from the database
+        const searchResponse = await client.search({
+            index: indexName,
+            body: {
+                query: {
+                    match: {
+                        id: documentId
+                    }
+                }
+            }
+        });
+
+        // Delete the document from the OpenSearch index
+        const response = await client.delete({
+            index: indexName,
+            id: searchResponse.body.hits.hits[0]._id
+        });
+        console.log('Document deleted:', response);
+    } catch (error) {
+        console.error('Error deleting document:', error);
+    }
+}

@@ -1,4 +1,4 @@
-import { addDocumentToTopicIndex } from "../../opensearch/topics/topicIndex.js";
+import { addDocumentToTopicIndex, updateDocumentOfTopicIndex, deleteDocumentOfTopicIndex } from "../../opensearch/topics/topicIndex.js";
 
 export default (sequelize, Sequelize) => {
     const Topic = sequelize.define("topic", {
@@ -54,6 +54,27 @@ export default (sequelize, Sequelize) => {
                         console.error(`Failed to add document to topic index: ${error.message}`);
                     }
                     console.log(`Topic created: ${topic.id}`);
+                },
+                afterUpdate: async (topic) => {
+                    const document = {
+                        id: topic.id,
+                        title: topic.title,
+                        content: topic.content,
+                    }
+                    try {
+                        await updateDocumentOfTopicIndex(document);
+                        console.log(`Topic updated: ${topic.id}`);
+                    } catch (error) {
+                        console.error(`Failed to add document to topic index: ${error.message}`);
+                    }
+                },
+                afterDestroy: async (topic) => {
+                    try {
+                        await deleteDocumentOfTopicIndex(topic.id);
+                        console.log(`Topic deleted: ${topic.id}`);
+                    } catch (error) {
+                        console.error(`Failed to delete document from topic index: ${error.message}`);
+                    }
                 }
             }
         }

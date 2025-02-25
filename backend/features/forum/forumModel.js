@@ -1,4 +1,4 @@
-import { addDocumentToForumIndex } from '../../opensearch/forums/forumIndex.js';
+import { addDocumentToForumIndex, updateDocumentOfForumIndex, deleteDocumentOfForumIndex } from '../../opensearch/forums/forumIndex.js';
 
 export default (sequelize, Sequelize) => {
     const Forum = sequelize.define("forum", {
@@ -65,6 +65,24 @@ export default (sequelize, Sequelize) => {
                     console.error(`Failed to add document to forum index: ${error.message}`);
                 }
                 console.log(`Forum created: ${forum.name}`);
+            },
+            afterUpdate: async (forum) => {
+                const document = {
+                    id: forum.id,
+                    purpose: forum.purpose,
+                }
+                try {
+                    await updateDocumentOfForumIndex(document);
+                } catch (error) {
+                    console.error(`Failed to update document of forum index: ${error.message}`);
+                }
+            },
+            afterDestroy: async (forum) => {
+                try {
+                    await deleteDocumentOfForumIndex(forum.id);
+                } catch (error) {
+                    console.error(`Failed to delete document of forum index: ${error.message}`);
+                }
             }
         }
     });
