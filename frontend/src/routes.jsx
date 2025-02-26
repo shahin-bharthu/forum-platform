@@ -19,6 +19,7 @@ import IntroDivider from "./pages/ForumDetails/Index.jsx";
 import MyPosts from "./pages/MyPosts/Index.jsx";
 import PostDetails from "./pages/PostDetails/Index.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import SearchResults from "./pages/SearchResults/Index.jsx";
 
 
 const GoogleWrapper = ({Outlet}) => {
@@ -93,7 +94,6 @@ const router = createBrowserRouter([
         <UserRootPage />
       </ProtectedRoute>
     ),
-    loader: tokenLoader,
     errorElement: <ErrorPage />,
     id: "post",
     children: [
@@ -101,6 +101,21 @@ const router = createBrowserRouter([
       { path: "my-posts", element: <MyPosts/>  },
       { path: "edit/:id", element: <CreatePost isEdit={true}/> },
       { path: ":id", element:<PostDetails/> }
+    ],
+  },
+  {
+    path: "/search",
+    element: (
+      <ProtectedRoute>
+        <UserRootPage />
+      </ProtectedRoute>
+    ),
+    loader: tokenLoader,
+    errorElement: <ErrorPage />,
+    id: "search",
+    children: [
+      { index: true, element: <Navigate to="/user/dashboard" /> },
+      { path: ":searchText", element:<SearchResults/> }
     ],
   },
 ]);

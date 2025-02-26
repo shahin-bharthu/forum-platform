@@ -10,8 +10,16 @@ const createComment = async (topic_id, content, parent_comment_id, createdBy) =>
     })
 };
 
+const getComments = async() => {
+    return await db.Comment.findAll();
+}
+
 const getCommentById = async (id) => {
-    return await db.Comment.findByPk(id);
+    const comment = await db.Comment.findByPk(id);
+    const topic = await comment.getTopic();
+    const forum = await topic.getForum();
+    const user = await comment.getUser();
+    return {comment, topic, forum, user}; 
 }
 
 const getCommentsByPostId = async (postId) => {
@@ -26,4 +34,4 @@ const getReplies = async (parentId) => {
     return await db.Comment.findAll({where: {parent_comment_id: parentId}, include: 'user', order: [['createdAt']]});
 }
 
-export { createComment, getCommentById, getCommentsByPostId, deleteComment, getReplies }
+export { createComment, getCommentById, getCommentsByPostId, deleteComment, getReplies, getComments }

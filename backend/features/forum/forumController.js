@@ -3,7 +3,6 @@ import { validationResult } from "express-validator";
 import * as forumServices from "./forumServices.js";
 import { db } from "../../config/connection.js";
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
-import { CustomError } from "../../util/customError.js";
 
 const createForum = asyncErrorHandler(async (req,res,next) => {
     const errors = validationResult(req);
@@ -146,6 +145,25 @@ const getRecentForums = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: 'Fetched recent forums', data: forums})
 })
 
+const searchForums = asyncErrorHandler(async (req,res,next) => {
+    const {forumName} = req.params;
+    const {id} = req.user;
+    const forums = await forumServices.searchForums(forumName, id);
+    return res.status(200).json({message: `Fetched ${forums.length} forums`, data: forums})
+});
+
+const createForums = asyncErrorHandler(async (req,res,next) => {
+    const forumsData = req.body;
+    const createdBy = req.user.id;
+
+    const createdForums = await Promise.all(forumsData.map(async (forumData) => {
+        const { name, purpose, isPublic } = forumData;
+        return await forumServices.createForum({ name, purpose, isPublic, createdBy });
+    }));
+
+    return res.status(201).json({ message: "Forums created successfully", data: createdForums });
+})
+
 export {
   getForums,
   createForum,
@@ -163,4 +181,6 @@ export {
   getForumByForumId,
   getIsSubscribed,
   getRecentForums,
+  searchForums,
+  createForums
 };

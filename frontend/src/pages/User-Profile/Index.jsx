@@ -7,6 +7,7 @@ import axiosInstance from "../../../utils/axiosInstance.js";
 import { formatDate } from "../../../utils/timestamp.js";
 import { useSelector } from "react-redux";
 import userBackdrop from "../../assets/UserProfileBackdrop.png"
+import AnimatedLayout from "../../components/AnimatedLayout.jsx";
 export default function Index() {
   const [text, setText] = useState("");
   const { userPostCount } = useSelector(state => state.userPosts.userPostCount);
@@ -75,7 +76,7 @@ export default function Index() {
   const fullName = `${user.firstname} ${user.lastname}`;
 
   return (
-    <Grid container direction="column" sx={{alignSelf: 'start', mt:7}}>
+    <AnimatedLayout container direction="column" sx={{alignSelf: 'start', mt:7}}>
       <Grid size={{xs:12, md:12}}>
         <img
           alt="avatar"
@@ -122,6 +123,6 @@ export default function Index() {
           />
         </Grid>
       </Grid>
-    </Grid>
+    </AnimatedLayout>
   );
 }

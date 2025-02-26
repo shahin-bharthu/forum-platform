@@ -14,6 +14,14 @@ const createComment = asyncErrorHandler(async (req,res,next) => {
     return res.status(201).json({message: "Comment created successfully", data: comment});
 })
 
+const getCommentById = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.params;
+    const user = req.user;
+
+    const commentData = await commentServices.getCommentById(id, user.id);
+    return res.status(200).json({message: 'Comment fetched', data: commentData});
+});
+
 
 const getCommentsByPostId = asyncErrorHandler(async (req,res,next) => {
     const {postId} = req.params;
@@ -38,4 +46,12 @@ const getReplies = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: `Replies fetched successfully`, data: replies});
 })
 
-export { createComment, getCommentsByPostId, deleteComment, getReplies }
+
+const searchComments = asyncErrorHandler(async (req,res,next) => {
+    const {searchText} = req.params;
+    const {id} = req.user;
+    const comments = await commentServices.searchComments(searchText, id);
+    return res.status(200).json({message: `Fetched comments`, data: comments})
+});
+
+export { createComment, getCommentsByPostId, deleteComment, getReplies, searchComments, getCommentById }

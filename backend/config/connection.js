@@ -1,12 +1,14 @@
+import Sequelize from "sequelize";
 import userModel from "../features/user/userModel.js";
 import tokenModel from "../features/auth/tokenModel.js";
 import auditTrailModel from "../features/auditLogs/auditTrailModel.js";
 import forumModel from "../features/forum/forumModel.js";
 import topicModel from "../features/topics/topicModel.js";
-
-import Sequelize from "sequelize";
 import userMembershipModel from "../features/forum/userMembershipModel.js";
 import commentModel from "../features/comments/commentModel.js";
+import {createForumIndex, addDocumentsToForumIndex} from "../opensearch/forums/forumIndex.js";
+import { createTopicIndex, addDocumentsToTopicIndex } from "../opensearch/topics/topicIndex.js";
+import { createCommentIndex, addDocumentsToCommentIndex } from "../opensearch/comments/commentIndex.js"
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -38,6 +40,15 @@ const check = async () => {
       console.log("Connection has been established successfully.");
       await db.sequelize.sync({ alter: false, force: false });   // alter: true, force: false
       console.log("All models were synchronized successfully.");
+
+      // await createForumIndex();
+      // await addDocumentsToForumIndex();
+
+      // await createTopicIndex();
+      // await addDocumentsToTopicIndex();
+
+      // await createCommentIndex();
+      // await addDocumentsToCommentIndex();
     } catch (error) {
       console.error("Unable to connect to the database:", error);
       throw error

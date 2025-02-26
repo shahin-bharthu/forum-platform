@@ -1,4 +1,4 @@
-import { Avatar, Box, Card, CardActions, CardContent, CardHeader, IconButton, Typography, styled, Skeleton } from "@mui/material";
+import { Avatar, Box, Card, CardActions, CardContent, CardHeader, IconButton, Typography, styled, Skeleton, Tooltip } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from "react-router-dom";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -9,6 +9,7 @@ import CommentInput from "./CommentInput";
 import ParentComments from "./ParentComments";
 import { formatDate } from "../../../../utils/timestamp";
 import axiosInstance from "../../../../utils/axiosInstance.js";
+import { renderHTML } from "./CodeBlockViewer.jsx";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
     ".MuiCardHeader-content": {
@@ -87,7 +88,13 @@ export default function PostDetailsCard({ post, user, forum }) {
                         </IconButton>
                     }
                     title={user.username}
-                    subheader={formatDate(post.createdAt)}
+                    subheader={<Tooltip title={new Date(post.createdAt).toLocaleDateString('en-US', {
+                                    month: 'long',
+                                    day: 'numeric',
+                                    year: 'numeric'
+                                  })} placement="right">
+                                    {formatDate(post.createdAt)}
+                                  </Tooltip>}
                 />
                 <CardContent sx={{ py: 0, px: 3 }}>
                     <Typography
@@ -106,7 +113,7 @@ export default function PostDetailsCard({ post, user, forum }) {
                             whiteSpace: "pre-wrap"
                         }}
                     >
-                        {post.content}
+                        {renderHTML(post.content)}
                     </Typography>
                 </CardContent>
                 <CardActions sx={{ mx: 1 }}>

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Grid from '@mui/material/Grid2';
 import ForumInfoCard from "../ForumDetails/Components/ForumInfoCard";
 import PostDetailsCard from "./Components/PostDetailsCard";
@@ -13,17 +13,23 @@ export default function PostDetails() {
     const [forum_creator, setForumCreator] = useState();
     const [loading, setLoading] = useState(true);
     const params = useParams();
+    const navigate = useNavigate();
+
+    const postDetailsLoader = async (id) => {
+        const postDetails = await axiosInstance.get(`/topic/${id}`);
+        setTopic(postDetails.data.data.topic);
+        setForum(postDetails.data.data.forum);
+        setUser(postDetails.data.data.user);
+        setForumCreator(postDetails.data.data.forum_creator.username);
+    };
 
     useEffect(() => {
-        const postDetailsLoader = async (id) => {
-            const postDetails = await axiosInstance.get(`/topic/${id}`);
-            setTopic(postDetails.data.data.topic);
-            setForum(postDetails.data.data.forum);
-            setUser(postDetails.data.data.user);
-            setForumCreator(postDetails.data.data.forum_creator.username);
-        }
-
-        postDetailsLoader(params.id).then(() => setLoading(false));
+            postDetailsLoader(params.id)
+            .then(() => setLoading(false))
+            .catch((error) => {
+                console.log("Failed to load post details:", error);
+                navigate("/user/dashboard");
+            });
     }, [params.id]);
 
     return (

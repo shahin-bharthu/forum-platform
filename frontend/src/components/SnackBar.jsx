@@ -28,12 +28,14 @@ const createSnackbarTheme = (type) => createTheme({
 export default function PositionedSnackbar({  
     vertical = 'top', 
     horizontal = 'right',
-    autoHideDuration = 4000 
+    autoHideDuration = 4000,
+    message,
+    type
 }) {
     const notification = useSelector(state=>state.ui.notification)
 
     const [open, setOpen] = useState(true);
-    const theme = createSnackbarTheme(notification.type);
+    const theme = createSnackbarTheme(notification.type || type);
     
 
     const handleClose = useCallback((event, reason) => {
@@ -52,7 +54,7 @@ export default function PositionedSnackbar({
         </IconButton>
     );
 
-    if (!notification.message) return null;
+    if (!notification.message && message===undefined) return null;
 
     return (
         <ThemeProvider theme={theme}>
@@ -61,7 +63,7 @@ export default function PositionedSnackbar({
                 open={open}
                 autoHideDuration={autoHideDuration}
                 onClose={handleClose}
-                message={notification.message}
+                message={notification.message || message}
                 action={action}
                 TransitionComponent={(props) => <Slide {...props} direction="down" />}
             />

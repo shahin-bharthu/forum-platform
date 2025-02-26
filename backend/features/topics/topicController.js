@@ -22,7 +22,8 @@ const getTopics = asyncErrorHandler(async (req,res,next) => {
 
 const getTopicById = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.params;
-    const topic = await topicServices.getTopicById(id);
+    const user = req.user;
+    const topic = await topicServices.getTopicById(id, user.id);
     return res.status(200).json({message: "Topic fetched successfully", data: topic});
 })
 
@@ -58,4 +59,11 @@ const deleteTopic = asyncErrorHandler(async (req,res,next) => {
     return res.status(204).json();
 })
 
-export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic }
+const searchTopics = asyncErrorHandler(async (req,res,next) => {
+    const {topicQuery} = req.params;
+    const {id} = req.user;
+    const topics = await topicServices.searchTopics(topicQuery, id);
+    return res.status(200).json({message: `Fetched ${topics.length} topics`, data: topics})
+});
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics }
