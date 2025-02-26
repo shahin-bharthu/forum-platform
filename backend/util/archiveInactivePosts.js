@@ -2,7 +2,8 @@ import cron from "node-cron";
 import { db } from "../config/connection.js";
 
 const archivePost = async () => {
-    cron.schedule("*/10 * * * * *", async () => {
+    // cron.schedule("*/10 * * * * *", async () => {  // RUNS EVERY 10 SECONDS
+    cron.schedule("0 0 1 */1 *", async () => {
         const allTopics = await db.Topic.findAll({ attributes: ["id"] });
 
         const latestCommentsPerTopic = await Promise.all(

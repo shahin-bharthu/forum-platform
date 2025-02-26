@@ -56,6 +56,9 @@ export default (sequelize, Sequelize) => {
                     console.log(`Topic created: ${topic.id}`);
                 },
                 afterUpdate: async (topic) => {
+                    if (!topic.changed('content')) {
+                        return;
+                    }
                     const document = {
                         id: topic.id,
                         title: topic.title,

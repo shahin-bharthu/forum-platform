@@ -1,6 +1,7 @@
 import { CustomError } from "../../util/customError.js";
 import * as forumRepository from "./forumRepository.js";
-import * as userRepository from "../user/userRepository.js"
+import * as userRepository from "../user/userRepository.js";
+import * as topicRepository from "../topics/topicRepository.js";
 import { db } from "../../config/connection.js";
 import { getImage } from "../../util/getImage.js";
 import { searchForumIndex } from "../../opensearch/forums/forumIndex.js";
@@ -63,7 +64,24 @@ const getForumsByCreator = async (id) => {
 
 
 const archiveForum = async (userId, id) => {
-    return await forumRepository.archiveForum(userId, id);
+    const forum = await forumRepository.archiveForum(userId, id);
+    const forumTopics = await forumRepository.getTopicByForumId(forum.forum_id);
+    if (forum.isActive === false && forumTopics) { 
+        await Promise.all(forumTopics.map(async (topic) => {
+            if (topic.isActive) {
+                await topicRepository.archivePostById(topic.id);
+            }
+        }));   
+    }
+    else { 
+        await Promise.all(forumTopics.map(async (topic) => {
+            if (topic.isActive === false) {
+                await topicRepository.archivePostById(topic.id);
+            }
+        }));   
+    }
+
+    return forum;
 }
 
 const updateForumBanner = async (id, userId, {logo}) => {
@@ -141,7 +159,7 @@ const unSubscribeForum = async (user_id, forum_id) => {
     const forum = await forumRepository.getForumByForumId(forum_id);
     if (!forum) {
         throw new CustomError('Forum not found', 404);
-    }
+    }                                                                                                                       
 
     const user = await userRepository.getUserById(user_id); 
     if (!user) {

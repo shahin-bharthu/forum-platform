@@ -1,7 +1,6 @@
 import { validationResult } from "express-validator";
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
 import * as topicServices from "./topicServices.js";
-import cron from 'node-cron';
 
 const createTopic = asyncErrorHandler(async (req,res,next) => {
     const errors = validationResult(req);
@@ -11,7 +10,6 @@ const createTopic = asyncErrorHandler(async (req,res,next) => {
     const createdBy = req.user.id
     const {title, content, forum_id} = req.body;
     const topic = await topicServices.createTopic({title, content, forum_id, createdBy});
-    
     return res.status(201).json({message: "Topic created successfully", data: topic});
 })
 
@@ -66,4 +64,11 @@ const searchTopics = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: `Fetched ${topics.length} topics`, data: topics})
 });
 
-export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics }
+const archivePostById = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.params;
+    const user = req.user;
+    const topic = await topicServices.archivePostById(id, user.id);
+    return res.status(200).json({message: "Post archived successfully", data: topic});
+})
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics, archivePostById }

@@ -109,7 +109,6 @@ const archiveForum = asyncErrorHandler(async (req,res,next) => {
     const userId = req.user.id;
     const {id} = req.params;
     const archivedForum = await forumServices.archiveForum(userId, id);
-
     return res.status(200).json({message: 'Forum archived', data: archivedForum})
 })
 

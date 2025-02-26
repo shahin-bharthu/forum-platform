@@ -82,4 +82,13 @@ const searchTopics = async (query, userId) => {
 }
 
 
-export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics }
+const archivePostById = async (id, userId) => {
+    const topic = await topicRepository.getTopicById(id);
+    if (topic.topic.createdBy !== userId) {
+        throw new CustomError("Unauthorized to archive this topic", 403);
+    }
+    return await topicRepository.archivePostById(id);
+}
+
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics, archivePostById }

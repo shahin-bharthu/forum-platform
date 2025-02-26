@@ -67,6 +67,9 @@ export default (sequelize, Sequelize) => {
                 console.log(`Forum created: ${forum.name}`);
             },
             afterUpdate: async (forum) => {
+                if (!forum.changed('purpose')) {
+                    return;
+                }
                 const document = {
                     id: forum.id,
                     purpose: forum.purpose,

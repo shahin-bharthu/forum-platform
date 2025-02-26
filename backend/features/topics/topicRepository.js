@@ -71,4 +71,10 @@ const deleteTopic = async(topic) => {
     return await topic.destroy();
 }
 
-export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic}
+const archivePostById = async (id) => {
+    const topic = await db.Topic.findByPk(id);
+    topic.isActive = !topic.isActive;
+    await topic.save();
+}
+
+export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, archivePostById}
