@@ -65,21 +65,21 @@ const getForumsByCreator = async (id) => {
 
 const archiveForum = async (userId, id) => {
     const forum = await forumRepository.archiveForum(userId, id);
-    const forumTopics = await forumRepository.getTopicByForumId(forum.forum_id);
-    if (forum.isActive === false && forumTopics) { 
-        await Promise.all(forumTopics.map(async (topic) => {
-            if (topic.isActive) {
-                await topicRepository.archivePostById(topic.id);
-            }
-        }));   
-    }
-    else { 
-        await Promise.all(forumTopics.map(async (topic) => {
-            if (topic.isActive === false) {
-                await topicRepository.archivePostById(topic.id);
-            }
-        }));   
-    }
+    // const forumTopics = await forumRepository.getTopicByForumId(forum.forum_id);
+    // if (forum.isActive === false && forumTopics) { 
+    //     await Promise.all(forumTopics.map(async (topic) => {
+    //         if (topic.isActive) {
+    //             await topicRepository.archivePostById(topic.id);
+    //         }
+    //     }));   
+    // }
+    // else { 
+    //     await Promise.all(forumTopics.map(async (topic) => {
+    //         if (topic.isActive === false) {
+    //             await topicRepository.archivePostById(topic.id);
+    //         }
+    //     }));   
+    // }
 
     return forum;
 }
@@ -202,15 +202,21 @@ const searchForums = async (query, userId) => {
             if (!forum) {
                 throw new CustomError('Forum not found', 404);
             }
-            if(forum.isActive === false) {
-                return [];
-            }
-            if (forum.isPublic === false) {
+            if (forum.isActive === false || forum.isPublic === false) {
                 const membership = await forumRepository.getIsSubscribed(userId, forum.id);
                 if (!membership) {
                     return [];
-                }  
-            }    
+                }
+            }
+            // if(forum.isActive === false) {
+            //     return [];
+            // }
+            // if (forum.isPublic === false) {
+            //     const membership = await forumRepository.getIsSubscribed(userId, forum.id);
+            //     if (!membership) {
+            //         return [];
+            //     }  
+            // }    
             return [{
                 id: result._source.id,
                 name: result._source.name,

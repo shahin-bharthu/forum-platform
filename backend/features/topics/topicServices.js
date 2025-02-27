@@ -30,8 +30,9 @@ const getMyTopics = async (id) => {
 }
 
 const getRecentTopics = async (id) => {
-    const topics = topicRepository.getRecentTopics(id);
-    return topics
+    const topics = await topicRepository.getRecentTopics(id);
+    const activeRecentTopics = topics.filter((topic) => topic.isActive === true);
+    return activeRecentTopics;
 }
 
 
@@ -39,6 +40,9 @@ const updateTopic = async (userId, topicId, title, content) => {
     const topicExists = await topicRepository.getTopicById(topicId);
     if (!topicExists) {
         throw new CustomError("Topic not found", 404);
+    }
+    if (topicExists.topic.isActive === false) {
+        throw new CustomError("Cannot edit an archived topic", 403);
     }
     if (topicExists.topic.createdBy !== userId) {
         throw new CustomError("Unauthorized to edit this topic", 403);
@@ -63,14 +67,17 @@ const searchTopics = async (query, userId) => {
     const results = await searchTopicIndex(query);
     const topicData = await Promise.all(results.map(async (result) => {
         const topic = await topicRepository.getTopicById(result._source.id);
-        if (topic.forum.isActive === false) {
-            return [];
+        if (!topic) {
+            throw new CustomError("Topic not found", 404);
         }
-        if (topic.forum.isPublic === false) {
+        if (topic.forum.isActive === false || topic.forum.isPublic === false) {
             const membership = await forumRepository.getIsSubscribed(userId, topic.forum.id);
             if (!membership) {
                 return [];
             }
+        }
+        if (!topic.topic.isActive) {
+            return [];
         }
         return [{
             id: result._source.id,

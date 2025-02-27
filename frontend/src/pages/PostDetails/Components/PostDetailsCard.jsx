@@ -124,7 +124,7 @@ export default function PostDetailsCard({ post, user, forum }) {
                         <ChatBubbleOutlineIcon />
                     </IconButton>
                 </CardActions>
-                {forum.isActive && (
+                {forum.isActive && post.isActive && (
                     <CommentInput 
                         postId={post.id} 
                         parentCommentId={null} 

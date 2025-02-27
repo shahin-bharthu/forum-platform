@@ -13,6 +13,7 @@ import axiosInstance from "../../../utils/axiosInstance";
 import { Tooltip } from "@mui/material";
 import highlightText from "../../../utils/highlightText.jsx";
 import { renderHTML } from "../PostDetails/Components/CodeBlockViewer.jsx";
+import ResultsList from "./Components/ResultsList.jsx";
 
 const SearchResults = () => {
   const params = useParams();
@@ -109,58 +110,18 @@ const SearchResults = () => {
   return (
     <Box sx={{ width: '100%', mt: 10, alignSelf: 'start' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', position: 'sticky' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+        <Tabs value={value} onChange={handleChange} centered>
           <Tab label="Forums" {...a11yProps(0)} />
           <Tab label="Posts" {...a11yProps(1)} />
           <Tab label="Comments" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <List sx={{ width: '100%' }}>
-          {searchForumsResults.map((forum) => {
-            return (
-              <>
-                <ListItem alignItems="flex-start" sx={{bgcolor: 'background.paper', borderRadius: 5}}>
-                  <ListItemAvatar>
-                    <Avatar alt={forum.name} src={forum.avatarUrl} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    sx={{cursor: 'pointer', wordBreak: 'break-word'}}
-                    onClick={() => navigate(`/forum/${forum.forum_id}`)}
-                    primary={highlightText(forum.name, params.searchText)}
-                    secondary={highlightText(forum.purpose, params.searchText)}
-                  />
-                </ListItem>
-                <Divider variant="middle" component="li" sx={{my: 0.5}} />
-              </>
-            )
-          })}
-        </List>
+        <ResultsList results={searchForumsResults} searchText={params.searchText} avatarSrc="avatarUrl" avatarAlt="name" tooltipTitle="name" primaryText="name" secondaryText="purpose" route="/forum" navLink="forum_id" />
       </CustomTabPanel>
 
       <CustomTabPanel value={value} index={1}>
-        <List sx={{ width: '100%'}}>
-        {searchPostsResults.map((post) => {
-          return (
-            <>
-              <ListItem alignItems="flex-start" sx={{bgcolor: 'background.paper', borderRadius: 5}}>
-                <Tooltip title={post.username}>
-                  <ListItemAvatar>
-                    <Avatar alt={post.username} src={post.userAvatar} />
-                  </ListItemAvatar>
-                </Tooltip>
-                <ListItemText
-                  sx={{cursor: 'pointer', wordBreak: 'break-word'}}
-                  onClick={() => navigate(`/post/${post.id}`)}
-                  primary={post.title}
-                  secondary={renderHTML(post.content)}
-                  />
-              </ListItem>
-              <Divider variant="middle" component="li" sx={{my: 0.5}}/>
-            </>
-          )
-        })}
-      </List>
+        <ResultsList results={searchPostsResults} searchText={params.searchText} avatarSrc="userAvatar" avatarAlt="username" tooltipTitle="username" primaryText="title" secondaryText="content" route="/post" navLink="id"/>
       </CustomTabPanel>
 
       <CustomTabPanel value={value} index={2}>
@@ -186,6 +147,7 @@ const SearchResults = () => {
             )
           })}
         </List>
+        {/* <ResultsList results={searchCommentsResults} searchText={params.searchText} avatarSrc={} /> */}
       </CustomTabPanel>
       
     </Box>
