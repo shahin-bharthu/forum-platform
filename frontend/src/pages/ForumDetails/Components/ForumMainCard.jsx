@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useCallback } from 'react';
+import { useState, useEffect, memo, useCallback, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -8,7 +8,7 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Avatar, Box, Grid2 as Grid, Tooltip } from '@mui/material';
+import { Avatar, Box, Button, Grid2 as Grid, Tooltip } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -18,6 +18,7 @@ import TopicSkeleton from '../../../components/PostsSkeleton';
 import axiosInstance from '../../../../utils/axiosInstance';
 import { useSelector } from 'react-redux';
 import { renderHTML } from '../../PostDetails/Components/CodeBlockViewer';
+import axios from 'axios';
 
 const StyledCardHeader = memo(styled(CardHeader)(({ theme }) => ({
   '.MuiCardHeader-content': {
@@ -62,7 +63,8 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
   const [forumTopics, setForumTopics] = useState([{ title: 'topic title', content: 'topic content', user: { username: 'username' }, }]);
   const [expanded, setExpanded] = useState([{ isExpanded: false }]);
   const [userAvatar, setUserAvatar] = useState({})
-  const [isLiked, setIsLiked] = useState([{ liked: false }])
+  const [postLikes, setPostLikes] = useState({});
+
   const isLoading = useSelector(state => state.loading.isLoading);
   
   const navigate = useNavigate()
@@ -70,15 +72,21 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
   const fetchForumTopics = useCallback(async () => {
     try {
       const forumTopicsResponse = await axiosInstance.get(`/forum/topics/${forum.forum_id}`);
+      
       const forumTopicsData = forumTopicsResponse.data.data;
 
       // Initialize state arrays
       const expandedState = forumTopicsData.map(() => ({ isExpanded: false }));
-      const likedState = forumTopicsData.map(() => ({ liked: false }));
-
+      let likesMap = {};
+      forumTopicsData.forEach(topic => {
+        likesMap[topic.id] = {
+          count :topic.likes_count,
+          isLiked: topic.isLikedByCurrentUser
+        }
+      });
+      setPostLikes(likesMap);
       setForumTopics(forumTopicsData);
       setExpanded(expandedState);
-      setIsLiked(likedState);
       setPostLength(forumTopicsData.length);
 
       // Fetch user avatars
@@ -132,12 +140,68 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
     });
   }, []);
 
-  const handleLike = useCallback((index) => {
-    setIsLiked(prev => {
-      const newLiked = [...prev];
-      newLiked[index].liked = !newLiked[index].liked;
-      return newLiked;
-    });
+  const handleLike = useCallback( async (event,topicId) => {
+    event.preventDefault()
+    try {
+      const response = await axios.post(`http://localhost:8080/topic/like/${topicId}`,
+        {},
+      {
+        "Content-Type": "application/json",
+        withCredentials: true,
+      });
+      if(response.status === 200){
+        setPostLikes(prevLikes => {   
+          return {
+            ...prevLikes,
+            [topicId]: {
+              count: prevLikes[topicId].count + 1,
+              isLiked: true
+            }
+          }});
+      }
+    } catch (error) {
+      console.error('Error liking topic:', error);
+      setPostLikes(prevLikes => { 
+        return {
+          ...prevLikes,
+          [topicId]: {
+            count: prevLikes[topicId].count - 1,
+            isLiked: false
+          }
+        }});
+    }
+  }, []);
+
+  const handleUnlike = useCallback( async (event, topicId) => {
+    event.preventDefault()
+    try {
+      const response = await axios.delete(`http://localhost:8080/topic/unlike/${topicId}`,
+        {
+          "Content-Type": "application/json",
+          withCredentials: true,
+        }
+      );
+      if(response.status === 200){
+        setPostLikes(prevLikes => {   
+          return {
+            ...prevLikes,
+            [topicId]: {
+              count: prevLikes[topicId].count - 1,
+              isLiked: false
+            }
+          }});
+      }
+    } catch (error) {
+      console.error('Error unliking topic:', error);
+      setPostLikes(prevLikes => { 
+        return {
+          ...prevLikes,
+          [topicId]: {
+            count: prevLikes[topicId].count + 1,
+            isLiked: true
+          }
+        }});
+    }
   }, []);
 
   if (isLoading && !isBlur) {
@@ -191,10 +255,14 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
-              <IconButton onClick={() => handleLike(index)}>
-                {!isLiked[index].liked && <FavoriteBorderIcon fontSize='small' />}
-                {isLiked[index].liked && <FavoriteIcon fontSize='small' color='error' />}
-              </IconButton>
+              <Button 
+                sx={{borderRadius:5}} 
+                onClick={ postLikes[topic.id]?.isLiked ? (event) => handleUnlike(event,topic.id) : (event) => handleLike(event, topic.id)} >
+                {!postLikes[topic.id]?.isLiked ? <FavoriteBorderIcon fontSize='small' /> : <FavoriteIcon fontSize='small' color='error' />}
+                <Typography variant='caption' sx={{ml:1 }}>
+                  {postLikes[topic.id]?.count || topic.likes_count}
+                </Typography>
+              </Button>
               <IconButton onClick={() => navigate(`/post/${topic.id}`)} >
                 <ChatBubbleOutlineIcon fontSize='small' />
               </IconButton>

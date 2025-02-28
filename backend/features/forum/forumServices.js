@@ -4,7 +4,7 @@ import * as userRepository from "../user/userRepository.js"
 import { db } from "../../config/connection.js";
 import { getImage } from "../../util/getImage.js";
 import { searchForumIndex } from "../../opensearch/forums/forumIndex.js";
-
+import * as topicRepository from "../topics/topicRepository.js";
 const createForum = async (forumData) => {
     const forum_id = forumData.name.replace(/\s+/g, '_').toLowerCase();
     forumData["forum_id"] = forum_id
@@ -70,8 +70,18 @@ const updateForumBanner = async (id, userId, {logo}) => {
     return await forumRepository.updateForumBanner(id, userId, {logo});
 }
 
-const getTopicByForumId = async (forumId) => {
-    return await forumRepository.getTopicByForumId(forumId);
+const getTopicByForumId = async (forumId, userId) => {
+    const topics=await forumRepository.getTopicByForumId(forumId);
+    
+    const modifiedTopics = await Promise.all(
+        topics.map(async (topic) => ({
+          ...topic.dataValues,
+          isLikedByCurrentUser: await topicRepository.checkIfAlreadyLiked(userId, topic.id)
+        }))
+      );
+
+    return modifiedTopics;
+    
 }
 
 const getIsSubscribed = async (user_id, forum_id) => {

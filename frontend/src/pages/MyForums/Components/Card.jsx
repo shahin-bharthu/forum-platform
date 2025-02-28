@@ -86,6 +86,7 @@ export default function MediaCard({
   }) {
   const token = useRouteLoaderData("user");
   const [bannerUrl, setBannerUrl] = useState();
+  const [isHovered, setIsHovered] = useState(false);
   const isLoading = useSelector(state => state.loading.isLoading);
 
   useEffect(() => {
@@ -133,22 +134,19 @@ export default function MediaCard({
   }
 
   return (
-    <Card sx={{ maxWidth: 345, height: 300 }}>
-      <CardMedia sx={{ height: 140 }} image={bannerUrl || defaultForumBanner } title={name} />
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div" sx={{width:'90%',textOverflow:'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', px: 2}}>
+    <Card sx={{ maxWidth: 345, height: 300, transition: "transform 0.3s", transform: isHovered ? 'scale(1.03)' : 'scale(1)' , boxShadow: isHovered ? "0 0 10px rgba(0, 0, 0, 0.3)" : "none" }}>
+      <CardMedia sx={{ height: 140, cursor: "pointer" }} image={bannerUrl || defaultForumBanner } title={name} onClick={onViewDetails} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} />
+      <CardContent sx={{cursor: "pointer"}} onClick={onViewDetails} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+        <Tooltip title={name} placement="top" >
+        <Typography gutterBottom variant="h5" component="div" sx={{width:'100%',textOverflow:'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', px: 2}}>
           {name}
         </Typography>
+        </Tooltip>
         <Typography variant="body2" sx={{ color: "text.secondary" , width:'90%',textOverflow:'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', display:'inline-block', px: 2}}>
           {purpose}
         </Typography>
       </CardContent>
       <CardActions sx={{justifyContent: 'right'}}>
-        <Tooltip title="Learn More">
-          <IconButton color="primary" aria-label="info-icon" onClick={onViewDetails}>
-            <InfoIcon />
-          </IconButton>
-        </Tooltip>
         {myForum && (
           <>
           <Tooltip title="Edit Forum">
