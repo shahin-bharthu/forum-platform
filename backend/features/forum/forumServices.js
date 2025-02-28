@@ -5,7 +5,7 @@ import * as topicRepository from "../topics/topicRepository.js";
 import { db } from "../../config/connection.js";
 import { getImage } from "../../util/getImage.js";
 import { searchForumIndex } from "../../opensearch/forums/forumIndex.js";
-import * as topicRepository from "../topics/topicRepository.js";
+
 const createForum = async (forumData) => {
     const forum_id = forumData.name.replace(/\s+/g, '_').toLowerCase();
     forumData["forum_id"] = forum_id
