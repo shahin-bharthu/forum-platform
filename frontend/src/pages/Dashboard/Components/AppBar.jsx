@@ -232,7 +232,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
       anchorEl={menuAnchorEl}
       id={menuId}
       keepMounted
-      ransformOrigin={{ horizontal: "right", vertical: "top" }}
+      transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       open={isMenuOpen}
       onClose={handleMenuClose}

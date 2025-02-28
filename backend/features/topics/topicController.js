@@ -71,4 +71,18 @@ const archivePostById = asyncErrorHandler(async (req,res,next) => {
     return res.status(200).json({message: "Post archived successfully", data: topic});
 })
 
-export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics, archivePostById }
+const likeTopic = asyncErrorHandler(async (req,res,next) => {
+    const userId = req.user.id;
+    const {id} = req.params;
+    const topic = await topicServices.likeTopic(userId, id);
+    return res.status(200).json({message: "Topic liked successfully", data: topic});
+});
+
+const unlikeTopic = asyncErrorHandler(async (req,res,next) => {
+    const userId = req.user.id;
+    const {id} = req.params;
+    const topic = await topicServices.unlikeTopic(userId, id);
+    return res.status(200).json({message: "Topic unliked successfully", data: topic});
+});
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics, archivePostById, likeTopic, unlikeTopic}

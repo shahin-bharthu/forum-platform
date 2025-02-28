@@ -13,20 +13,15 @@ import { useDispatch } from 'react-redux';
 import { clearNotification, setNotification } from "../../store/uiSlice.js";
 import QuillEditor from "./Components/QuillEditor.jsx";
 import 'quill/dist/quill.snow.css';
-import TitleIcon from '@mui/icons-material/Title';
-import ToggleButton from '@mui/material/ToggleButton';
-import { Delta } from 'quill/core';
-import quill from 'quill';
+
 const CreatePost = ({isEdit}) => {
   const [topicData, setTopicData] = useState();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // only used to show error for the fields of the form
   const [selectedForum, setSelectedForum] = useState(null);
   const [loading, setLoading] = useState(true);
-  // const [bodyMode, setBodyMode] = useState("textarea");// textarea or quill
 
   const titleInput = useRef();
-  // const bodyInput = useRef();
   const quillRef = useRef();
 
   const location = useLocation();

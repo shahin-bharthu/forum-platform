@@ -2,6 +2,7 @@ import { searchTopicIndex } from "../../opensearch/topics/topicIndex.js";
 import { CustomError } from "../../util/customError.js";
 import * as topicRepository from "./topicRepository.js";
 import * as forumRepository from "../forum/forumRepository.js";
+import * as userRepository from "../user/userRepository.js"
 
 const createTopic = async (topicData) => {
     return await topicRepository.createTopic(topicData);
@@ -12,7 +13,7 @@ const getTopics = async () => {
 }
 
 const getTopicById = async (id, userId) => {
-    const topic = await topicRepository.getTopicById(id);
+    const topic = await topicRepository.getTopicById(id, userId);
     if (!topic) {
         throw new CustomError(`Topic not found`, 404);
     }
@@ -26,13 +27,25 @@ const getTopicById = async (id, userId) => {
 }
 
 const getMyTopics = async (id) => {
-    return await topicRepository.getMyTopics(id);
+    const myTopics= await topicRepository.getMyTopics(id);
+
+    const myLikedTopics = await Promise.all(myTopics.map(async (topic) => ({
+        ...topic.dataValues,
+        isLiked: await topicRepository.checkIfAlreadyLiked(id, topic.id)
+    })
+    ));    
+    return myLikedTopics;
 }
 
 const getRecentTopics = async (id) => {
     const topics = await topicRepository.getRecentTopics(id);
-    const activeRecentTopics = topics.filter((topic) => topic.isActive === true);
-    return activeRecentTopics;
+    const modifiedTopics = await Promise.all(
+        topics.map(async (topic) => ({
+          ...topic.dataValues,
+          isLiked: await topicRepository.checkIfAlreadyLiked(id, topic.id)
+        }))
+      );
+    return modifiedTopics
 }
 
 
@@ -97,5 +110,52 @@ const archivePostById = async (id, userId) => {
     return await topicRepository.archivePostById(id);
 }
 
+const likeTopic = async (userId, topicId) => {
+    const topic = await topicRepository.getTopicById(topicId,userId);
+    
+    if (!topic) {
+        throw new CustomError('Topic not found', 404);
+    }
 
-export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics, archivePostById }
+    const user = await userRepository.getUserById(userId);
+    if (!user) {
+        throw new CustomError('User not found', 404);
+    }
+    
+    const alreadyLiked = await topicRepository.checkIfAlreadyLiked(userId, topicId);
+    if (alreadyLiked) {
+        throw new CustomError('Topic already liked', 400);
+    }
+
+    await topicRepository.likeTopic(userId, topicId);
+
+    topic.topic.likes_count += 1;
+    await topic.topic.save();
+
+    return topic;
+}
+
+const unlikeTopic = async (userId, topicId) => {
+    const topic = await topicRepository.getTopicById(topicId,userId);
+    if (!topic) {
+        throw new CustomError('Topic not found', 404);
+    }
+
+    const user = await userRepository.getUserById(userId);
+    if (!user) {
+        throw new CustomError('User not found', 404);
+    }
+
+    const alreadyLiked = await topicRepository.getLikeRecord(userId, topicId);
+    if (!alreadyLiked) {
+        throw new CustomError('Topic not liked', 400);
+    }
+    await alreadyLiked.destroy();
+
+    topic.topic.likes_count -= 1;
+    await topic.topic.save();
+
+    return topic
+}
+
+export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics, likeTopic, unlikeTopic, archivePostById }

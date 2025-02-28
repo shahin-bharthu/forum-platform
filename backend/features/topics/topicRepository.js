@@ -35,12 +35,13 @@ const getTopics = async () => {
     return topics;
 }
 
-const getTopicById = async (id) => {
+const getTopicById = async (id,userId) => {
     const topic = await db.Topic.findByPk(id);
     const creator = await topic.getUser();
     const topic_forum = await topic.getForum();
     const forum_creator = await topic_forum.getUser();    
-    
+    const isLikedByCurrentUser = await checkIfAlreadyLiked(userId, id);
+    topic.dataValues.isLikedByCurrentUser = isLikedByCurrentUser
     return {topic, username: creator.username, forum: topic_forum, user: creator, forum_creator};
 };
 
@@ -77,4 +78,24 @@ const archivePostById = async (id) => {
     await topic.save();
 }
 
-export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, archivePostById}
+const checkIfAlreadyLiked = async (userId, topicId) => {
+    const liked= await db.TopicLike.findOne({where: {[Op.and]: {user_id: userId, topic_id: topicId}}});
+
+    if (liked) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+const getLikeRecord = async (userId, topicId) => {
+    const likeRecord = await db.TopicLike.findOne({where: {[Op.and]: {user_id: userId, topic_id: topicId}}});
+    return likeRecord;
+}
+
+const likeTopic = async (userId, topicId) => {
+    await db.TopicLike.create({user_id: userId, topic_id: topicId});
+}
+
+export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, archivePostById, checkIfAlreadyLiked, getLikeRecord, likeTopic}

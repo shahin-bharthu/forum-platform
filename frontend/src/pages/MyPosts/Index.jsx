@@ -22,6 +22,8 @@ import {
   Edit as EditIcon,
   Archive as ArchiveIcon,
   DeleteRounded as DeleteRoundedIcon,
+  FavoriteBorder as FavoriteBorderIcon,
+  Favorite as FavoriteIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import {
@@ -41,7 +43,7 @@ import { setPostCount } from "../../store/userPostSlice.js";
 import { clearNotification, setNotification } from "../../store/uiSlice.js";
 import AnimatedLayout from "../../components/AnimatedLayout.jsx";
 import { renderHTML } from "../PostDetails/Components/CodeBlockViewer.jsx";
-
+import axios from "axios";
 
 const StyledCardHeader = memo(
   styled(CardHeader)(({ theme }) => ({
@@ -140,6 +142,7 @@ export default function MyPosts() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refresh, setrefresh] = useState(false);
+  const [postLikes, setPostLikes] = useState({});
 
   const isLoading = useSelector((state) => state.loading.isLoading);
 
@@ -150,6 +153,16 @@ export default function MyPosts() {
     try {
       const myTopics = await axiosInstance.get(`/topic/my-topics`);
       const myTopicsData = myTopics.data.data;
+
+      let likesMap = {};
+      myTopicsData.forEach(topic => {
+        likesMap[topic.id] = {
+          count :topic.likes_count,
+          isLiked: topic.isLiked
+        }
+      });
+      setPostLikes(likesMap);
+
       dispatch(
         setPostCount({
           userPostCount: myTopicsData.length,
@@ -259,7 +272,71 @@ export default function MyPosts() {
     setDialogOpen(false);
   };
 
-  const logoutDialog = (
+  const handleLike = useCallback( async (event,topicId) => {
+    event.preventDefault()
+    try {
+      const response = await axios.post(`http://localhost:8080/topic/like/${topicId}`,
+        {},
+      {
+        "Content-Type": "application/json",
+        withCredentials: true,
+      });
+      if(response.status === 200){
+        setPostLikes(prevLikes => {   
+          return {
+            ...prevLikes,
+            [topicId]: {
+              count: prevLikes[topicId].count + 1,
+              isLiked: true
+            }
+          }});
+      }
+    } catch (error) {
+      console.error('Error liking topic:', error);
+      setPostLikes(prevLikes => { 
+        return {
+          ...prevLikes,
+          [topicId]: {
+            count: prevLikes[topicId].count - 1,
+            isLiked: false
+          }
+        }});
+    }
+  }, []);
+
+  const handleUnlike = useCallback( async (event, topicId) => {
+    event.preventDefault()
+    try {
+      const response = await axios.delete(`http://localhost:8080/topic/unlike/${topicId}`,
+        {
+          "Content-Type": "application/json",
+          withCredentials: true,
+        }
+      );
+      if(response.status === 200){
+        setPostLikes(prevLikes => {   
+          return {
+            ...prevLikes,
+            [topicId]: {
+              count: prevLikes[topicId].count - 1,
+              isLiked: false
+            }
+          }});
+      }
+    } catch (error) {
+      console.error('Error unliking topic:', error);
+      setPostLikes(prevLikes => { 
+        return {
+          ...prevLikes,
+          [topicId]: {
+            count: prevLikes[topicId].count + 1,
+            isLiked: true
+          }
+        }});
+    }
+  }, []);
+
+  const deleteDialog = (
     <Dialog open={dialogOpen} onClose={handleDialogClose}>
       <DialogContent>
         <DialogTitle sx={{ px: 0 }}>Delete Post</DialogTitle>
@@ -403,6 +480,14 @@ export default function MyPosts() {
                 </Typography>
               </CardContent>
               <CardActions disableSpacing>
+              <Button 
+                sx={{borderRadius:5}} 
+                onClick={ postLikes[topic.id]?.isLiked ? (event) => handleUnlike(event,topic.id) : (event) => handleLike(event, topic.id)} >
+                {!postLikes[topic.id]?.isLiked ? <FavoriteBorderIcon fontSize='small' /> : <FavoriteIcon fontSize='small' color='error' />}
+                <Typography variant='caption' sx={{ml:1 }}>
+                  {postLikes[topic.id]?.count || topic.likes_count}
+                </Typography>
+              </Button>
                 <IconButton onClick={() => navigate(`/post/${topic.id}`)}>
                   <ChatBubbleOutlineIcon />
                 </IconButton>
@@ -441,7 +526,7 @@ export default function MyPosts() {
             </Card>
           </Box>
         ))}
-        {dialogOpen && logoutDialog}
+        {dialogOpen && deleteDialog}
       </AnimatedLayout>
     </>
   );

@@ -133,7 +133,8 @@ const getForumBanner = asyncErrorHandler(async (req, res, next) => {
 
 const getTopicByForumId = asyncErrorHandler(async (req, res, next) => {
     const {forumId} = req.params;
-    const topics = await forumServices.getTopicByForumId(forumId);
+    const userId = req.user.id;
+    const topics = await forumServices.getTopicByForumId(forumId, userId);
     return res.status(200).json({message: 'Fetched forum topics', data: topics})
 })
 

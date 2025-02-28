@@ -6,6 +6,7 @@ import forumModel from "../features/forum/forumModel.js";
 import topicModel from "../features/topics/topicModel.js";
 import userMembershipModel from "../features/forum/userMembershipModel.js";
 import commentModel from "../features/comments/commentModel.js";
+import topicLikeModel from "../features/topics/topicLikeModel.js";
 import {createForumIndex, addDocumentsToForumIndex} from "../opensearch/forums/forumIndex.js";
 import { createTopicIndex, addDocumentsToTopicIndex } from "../opensearch/topics/topicIndex.js";
 import { createCommentIndex, addDocumentsToCommentIndex } from "../opensearch/comments/commentIndex.js"
@@ -33,6 +34,7 @@ db.Forum = forumModel(sequelize, Sequelize);
 db.Topic = topicModel(sequelize, Sequelize);
 db.UserMembership = userMembershipModel(sequelize, Sequelize);
 db.Comment = commentModel(sequelize, Sequelize);
+db.TopicLike = topicLikeModel(sequelize, Sequelize);
 
 const check = async () => {
     try {
@@ -136,6 +138,24 @@ db.Topic.hasMany(db.Comment, {
   foreignKey: 'topic_id'
 });
 db.Comment.belongsTo(db.Topic, {
+  as: 'topic',
+  foreignKey: 'topic_id'
+});
+
+
+db.User.hasMany(db.TopicLike, {
+  as: 'topicLikes',
+  foreignKey: 'user_id'
+});
+db.TopicLike.belongsTo(db.User, {
+  as: 'user',
+  foreignKey: 'user_id'
+});
+db.Topic.hasMany(db.TopicLike, {
+  as: 'topicLikes',
+  foreignKey: 'topic_id'
+});
+db.TopicLike.belongsTo(db.Topic, {
   as: 'topic',
   foreignKey: 'topic_id'
 });
