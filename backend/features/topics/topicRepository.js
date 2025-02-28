@@ -76,6 +76,7 @@ const archivePostById = async (id) => {
     const topic = await db.Topic.findByPk(id);
     topic.isActive = !topic.isActive;
     await topic.save();
+    return topic;
 }
 
 const checkIfAlreadyLiked = async (userId, topicId) => {

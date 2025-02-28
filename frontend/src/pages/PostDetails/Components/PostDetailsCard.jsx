@@ -216,9 +216,6 @@ export default function PostDetailsCard({ post, user, forum }) {
               {postLikes.count}
             </Typography>
           </Button>
-          <IconButton>
-            <ChatBubbleOutlineIcon />
-          </IconButton>
         </CardActions>
         {forum.isActive && (
           <CommentInput

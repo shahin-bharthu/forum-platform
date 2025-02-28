@@ -103,7 +103,10 @@ const searchTopics = async (query, userId) => {
 
 
 const archivePostById = async (id, userId) => {
-    const topic = await topicRepository.getTopicById(id);
+    const topic = await topicRepository.getTopicById(id, userId);
+    if (!topic) {
+        throw new CustomError("Topic not found", 404);
+    }
     if (topic.topic.createdBy !== userId) {
         throw new CustomError("Unauthorized to archive this topic", 403);
     }

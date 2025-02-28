@@ -21,6 +21,7 @@ import {
   MoreVert as MoreVertIcon,
   Edit as EditIcon,
   Archive as ArchiveIcon,
+  Unarchive as UnarchiveIcon,
   DeleteRounded as DeleteRoundedIcon,
   FavoriteBorder as FavoriteBorderIcon,
   Favorite as FavoriteIcon,
@@ -336,6 +337,32 @@ export default function MyPosts() {
     }
   }, []);
 
+  const handleArchiveTopic = async (event, topicId) => {
+    event.preventDefault();
+    handleCloseMenu();
+    try {
+      const response = await axios.post(`http://localhost:8080/topic/archive/${topicId}`, null, {withCredentials: true});
+      console.log(response);
+      
+      if(response.status === 200){
+        const message = response.data.data.isActive ? 'Post Unarchived' : 'Post Archived';
+        dispatch(setNotification({ message, type: null }));
+        setTimeout(() => {
+          dispatch(clearNotification());
+          setrefresh((prev) => !prev);
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Error archiving topic:', error);
+      dispatch(
+        setNotification({ message: "Failed to archive post", type: "error" })
+      );
+      setTimeout(() => {
+        dispatch(clearNotification());
+      }, 1500);
+    }
+  }
+
   const deleteDialog = (
     <Dialog open={dialogOpen} onClose={handleDialogClose}>
       <DialogContent>
@@ -435,9 +462,19 @@ export default function MyPosts() {
                         <DeleteRoundedIcon />
                         Delete
                       </MenuItem>
-                      <MenuItem onClick={() => handleCloseMenu()} disableRipple>
-                        <ArchiveIcon />
-                        Archive
+                      <MenuItem onClick={(e) => handleArchiveTopic(e, topic.id)} disableRipple>
+                      {
+                        topic.isActive ?
+                        <>
+                          <ArchiveIcon />
+                          Archive
+                        </>
+                        :
+                        <>
+                          <UnarchiveIcon />
+                          Unarchive
+                        </>
+                      }
                       </MenuItem>
                     </StyledMenu>
                   </>
