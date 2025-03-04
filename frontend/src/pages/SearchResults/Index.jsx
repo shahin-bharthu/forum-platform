@@ -111,7 +111,7 @@ const SearchResults = () => {
   return (
     <Box sx={{ width: '100%', mt: 10, alignSelf: 'start' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', position: 'sticky' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered>
           <Tab label="Forums" {...a11yProps(0)} />
           <Tab label="Posts" {...a11yProps(1)} />
           <Tab label="Comments" {...a11yProps(2)} />
@@ -155,7 +155,7 @@ const SearchResults = () => {
                   sx={{cursor: 'pointer', wordBreak: 'break-word'}}
                   onClick={() => navigate(`/post/${post.id}`)}
                   primary={highlightText(post.title, params.searchText)}
-                  secondary={renderHTML(highlightText(post.content, params.searchText))}
+                  secondary={highlightText(renderHTML(post.content), params.searchText)}
                   />
               </ListItem>
               <Divider variant="middle" component="li" sx={{my: 0.5}}/>

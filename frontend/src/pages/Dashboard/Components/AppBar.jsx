@@ -155,13 +155,13 @@ function CombinedAppBar({ handleDrawerToggle }) {
         setSearchForumsResults(searchResultForums.data.data);
       }
       else {
-        setSearchForumsResults([{ name: "No results found", purpose: "Try searching for something else" }]);
+        setSearchForumsResults([]);
       }
       if (searchResultTopics.data.data.length > 0) {
         setSearchTopicsResults(searchResultTopics.data.data);
       }
       else {
-        setSearchTopicsResults([{ title: "No results found", content: "Try searching for something else" }]);
+        setSearchTopicsResults([]);
       }
     }
     else {
@@ -404,11 +404,8 @@ function CombinedAppBar({ handleDrawerToggle }) {
                                   ) : (
                                     <ListItem button>
                                       <ListItemText
-                                        primary={searchForumsResults.name}
-                                        secondary={
-                                          searchForumsResults.purpose ||
-                                          "No description"
-                                        }
+                                        primary="No results found"
+                                        secondary="Try searching for something else"
                                       />
                                     </ListItem>
                                   )}
@@ -423,6 +420,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
                                   Posts
                                 </Typography>
                                 <List dense={true}>
+                                  {console.log(searchTopicsResults)}
                                   {searchTopicsResults.length >= 1 ? (
                                     searchTopicsResults.map((result, index) => (
                                       <ListItem key={index} button>
@@ -440,17 +438,19 @@ function CombinedAppBar({ handleDrawerToggle }) {
                                   ) : (
                                     <ListItem button>
                                       <ListItemText
-                                        primary={searchTopicsResults.title}
+                                        primary="No results found"
                                       />
                                     </ListItem>
                                   )}
                                 </List>
                               </Grid>
-                              <Box textAlign='end' marginBottom={1}>
-                                <Button color="black" size="small" onClick={(event) => handleAdvancedSearch(event, searchQuery, searchForumsResults, searchTopicsResults)}>
-                                  See more results...
-                                </Button>
-                              </Box>
+                              {searchForumsResults.length > 0 && searchTopicsResults.length > 0 ? (
+                                <Box textAlign='end' marginBottom={1}>
+                                  <Button color="black" size="small" onClick={(event) => handleAdvancedSearch(event, searchQuery, searchForumsResults, searchTopicsResults)}>
+                                    See more results...
+                                  </Button>
+                                </Box>
+                              ) : null}
                             </Stack>
                           </Grid>
                         </Paper>
