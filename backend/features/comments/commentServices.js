@@ -5,7 +5,7 @@ import { CustomError } from "../../util/customError.js";
 import { searchCommentIndex } from '../../opensearch/comments/commentIndex.js';
 
 const createComment = async (topic_id, content, parent_comment_id, createdBy) => {
-    const {forum, topic} = await topicRepository.getTopicById(topic_id);
+    const {forum, topic} = await topicRepository.getTopicById(topic_id, createdBy);
     const comment_content = content.trim();
     if (forum.isActive && topic.isActive) {
         return await commentRepository.createComment(topic_id, comment_content, parent_comment_id, createdBy);

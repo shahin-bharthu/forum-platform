@@ -50,7 +50,7 @@ const getRecentTopics = async (id) => {
 
 
 const updateTopic = async (userId, topicId, title, content) => {
-    const topicExists = await topicRepository.getTopicById(topicId);
+    const topicExists = await topicRepository.getTopicById(topicId, userId);
     if (!topicExists) {
         throw new CustomError("Topic not found", 404);
     }
@@ -65,7 +65,7 @@ const updateTopic = async (userId, topicId, title, content) => {
 
 
 const deleteTopic = async (userId, topicId) => {
-    const topicExists = await topicRepository.getTopicById(topicId);
+    const topicExists = await topicRepository.getTopicById(topicId, userId);
     if (!topicExists) {
         throw new CustomError("Topic not found", 404);
     }
@@ -79,7 +79,7 @@ const deleteTopic = async (userId, topicId) => {
 const searchTopics = async (query, userId) => {
     const results = await searchTopicIndex(query);
     const topicData = await Promise.all(results.map(async (result) => {
-        const topic = await topicRepository.getTopicById(result._source.id);
+        const topic = await topicRepository.getTopicById(result._source.id, userId);
         if (!topic) {
             throw new CustomError("Topic not found", 404);
         }
