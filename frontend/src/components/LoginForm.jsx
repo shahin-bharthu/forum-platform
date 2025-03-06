@@ -26,10 +26,7 @@ const LoginForm = () => {
   const [errors, setErrors] = useState({}); 
 
 
-  const dispatch = useDispatch()
-
-  console.log(message);
-  
+  const dispatch = useDispatch()  
   useEffect(() => {
     if (message === null) {
       navigate("/login/201");

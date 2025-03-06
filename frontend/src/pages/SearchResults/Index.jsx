@@ -27,8 +27,9 @@ const SearchResults = () => {
 
   const searchComments = async (searchText) => {
       const response = await axiosInstance.get(`comment/search/${searchText}`);
+      
       const results = response.data.data || [];
-      // if (results.length > 0) {
+      if (results.length > 0) {
         const commentsData = await Promise.all(results.map(async (comment) => {
           const commentResponse = (await axiosInstance.get(`comment/id/${comment.id}`)).data;
           const userAvatar = (await axiosInstance.get(`/user/avatar/${commentResponse.data.user.id}`, {responseType: 'blob'})).data;
@@ -38,7 +39,10 @@ const SearchResults = () => {
           }
         }));
         setSearchCommentsResults(commentsData);
-      // }
+      }
+      else {
+        setSearchCommentsResults([]);
+      }
   }
 
   const getForumAvatars = async (forumsList) => {
@@ -190,7 +194,7 @@ const SearchResults = () => {
 
       <CustomTabPanel value={value} index={2}>
         <List sx={{ width: '100%'}}>
-          { searchCommentsResults>0 ? searchCommentsResults.map((result) => {
+          { searchCommentsResults.length > 0 ? searchCommentsResults.map((result) => {
             return (
               <>
               <ListItem alignItems="flex-start" sx={{bgcolor: 'background.paper', borderRadius: 5}}>

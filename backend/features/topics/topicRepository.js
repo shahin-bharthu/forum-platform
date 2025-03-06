@@ -31,7 +31,6 @@ const createTopic = async (topicData) => {
 
 const getTopics = async () => {
     const topics = await db.Topic.findAll();
-    console.log(topics);
     return topics;
 }
 

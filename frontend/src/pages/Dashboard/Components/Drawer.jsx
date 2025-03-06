@@ -18,7 +18,6 @@ const drawerWidth = 200;
 export default function ClippedDrawer() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -68,6 +67,17 @@ export default function ClippedDrawer() {
       setActiveItem(path);
     setMobileOpen(false);
   };
+
+  const handleHomeClickEvent = (event) => {
+    setActiveItem(null);
+  };
+
+  useEffect(() => {
+    const homeElement = document.getElementById('home'); // Assuming ComponentA has an id 'myButton'
+    homeElement.addEventListener('homeClick', handleHomeClickEvent);
+    return () => homeElement.removeEventListener('homeClick', handleHomeClickEvent);
+
+  }, []);
 
   const drawer = (
     <div>

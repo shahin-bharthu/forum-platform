@@ -61,7 +61,6 @@ const searchTopics = asyncErrorHandler(async (req,res,next) => {
     const {topicQuery} = req.params;
     const {id} = req.user;
     const topics = await topicServices.searchTopics(topicQuery, id);
-    console.log(topics);
     return res.status(200).json({message: `Fetched ${topics.length} topics`, data: topics})
 });
 

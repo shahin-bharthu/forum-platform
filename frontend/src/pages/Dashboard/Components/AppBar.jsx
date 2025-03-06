@@ -1,4 +1,4 @@
-import { useState, useCallback, memo, useEffect } from "react";
+import { useState, useCallback, memo, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../../../../utils/axiosInstance.js";
@@ -108,6 +108,15 @@ function CombinedAppBar({ handleDrawerToggle }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const dispatch = useDispatch();
 
+  const homeRef = useRef(null);
+
+  const handleHomeClick = () => {
+    const homeClickEvent = new CustomEvent('homeClick', { 
+      bubbles: true,
+    });
+    homeRef.current.dispatchEvent(homeClickEvent);
+  }
+
   const handleClickAway = () => {
     setAnchorEl(false);
   };
@@ -165,7 +174,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
       }
     }
     else {
-      console.log("KHAALI HAI");
       setSearchForumsResults([]);
       setSearchTopicsResults([]);
       setSearchQuery();
@@ -304,7 +312,9 @@ function CombinedAppBar({ handleDrawerToggle }) {
           >
             <MenuIcon />
           </IconButton>
-          <AutoStories sx={{ display: "flex", mr: 2 }} />
+          <IconButton disableRipple onClick={() => navigate("/user/dashboard")} color="inherit"  >
+            <AutoStories sx={{ display: "flex", mr: 2 }} />
+          </IconButton>
           <Tooltip title="Go to Home Page" placement="right" arrow>
             <Typography
               variant="h6"
@@ -320,6 +330,9 @@ function CombinedAppBar({ handleDrawerToggle }) {
                 textDecoration: "none",
                 color: "inherit",
               }}
+              ref={homeRef}
+              onClick={handleHomeClick}
+              id = "home"
             >
               BookNook
             </Typography>
@@ -444,13 +457,11 @@ function CombinedAppBar({ handleDrawerToggle }) {
                                   )}
                                 </List>
                               </Grid>
-                              {/* {searchForumsResults.length > 0 || searchTopicsResults.length > 0 ? ( */}
                                 <Box textAlign='end' marginBottom={1}>
                                   <Button color="black" size="small" onClick={(event) => handleAdvancedSearch(event, searchQuery, searchForumsResults, searchTopicsResults)}>
                                     See more results...
                                   </Button>
                                 </Box>
-                              {/* ) : null} */}
                             </Stack>
                           </Grid>
                         </Paper>

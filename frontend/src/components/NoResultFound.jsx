@@ -25,9 +25,9 @@ export default function NoResultFound({searchText}) {
             <ListItemAvatar
                 sx={{mb:2}}
             >
-              <Avatar alt="no results found" src="/no-results-found.gif" 
+              <Avatar alt="no results found" src="/no-results.gif" 
                 sx={{ 
-                  width: 600, 
+                  width: 150, 
                   height: 'auto', 
                   margin: '0 auto', 
                   borderRadius: '0%',

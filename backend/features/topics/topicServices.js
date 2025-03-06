@@ -78,7 +78,6 @@ const deleteTopic = async (userId, topicId) => {
 
 const searchTopics = async (query, userId) => {
     const results = await searchTopicIndex(query);
-    console.log(results);
     const topicData = await Promise.all(results.map(async (result) => {
         const topic = await topicRepository.getTopicById(result._source.id, userId);
         if (!topic) {

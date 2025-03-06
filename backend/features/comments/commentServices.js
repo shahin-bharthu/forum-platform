@@ -77,7 +77,7 @@ const searchComments = async(searchText, userId) => {
             forum_id: comment.forum.id,
             user: comment.user.username
         }];
-    }));    
+    }));        
     return commentData.flat();
 }
 
