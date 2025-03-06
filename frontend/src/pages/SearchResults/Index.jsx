@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Children, memo, useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -13,6 +13,7 @@ import { Tooltip } from "@mui/material";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import highlightText from "../../../utils/highlightText.jsx";
 import { renderHTML } from "../PostDetails/Components/CodeBlockViewer.jsx";
+import NoResultFound from "../../components/NoResultFound.jsx";
 
 const SearchResults = () => {
   const params = useParams();
@@ -21,13 +22,13 @@ const SearchResults = () => {
   const { forumResults, postResults } = location.state || {forumResults: [], postResults: []};
   const [searchForumsResults, setSearchForumsResults] = useState([{id: '', forum_id: '', name: 'No results found', purpose: 'Try searching for something else', avatarUrl: '', }]);
   const [searchPostsResults, setSearchPostsResults] = useState([{title: 'No results found', content: 'Try searching for something else', username: '', userAvatar: '', forumName: ''}])
-  const [searchCommentsResults, setSearchCommentsResults] = useState([{comment: {content: 'Try searching for something else'}, topic: {id: ''}, forum: {}, user: {username: 'No results found'}, avatar: ''}]);
+  const [searchCommentsResults, setSearchCommentsResults] = useState([{comment: {content: 'Double-check your spelling or try different keywords'}, topic: {id: ''}, forum: {}, user: {username: 'No results found'}, avatar: ''}]);
   const [value, setValue] = useState(0);
 
   const searchComments = async (searchText) => {
       const response = await axiosInstance.get(`comment/search/${searchText}`);
       const results = response.data.data || [];
-      if (results.length > 0) {
+      // if (results.length > 0) {
         const commentsData = await Promise.all(results.map(async (comment) => {
           const commentResponse = (await axiosInstance.get(`comment/id/${comment.id}`)).data;
           const userAvatar = (await axiosInstance.get(`/user/avatar/${commentResponse.data.user.id}`, {responseType: 'blob'})).data;
@@ -37,7 +38,7 @@ const SearchResults = () => {
           }
         }));
         setSearchCommentsResults(commentsData);
-      }
+      // }
   }
 
   const getForumAvatars = async (forumsList) => {
@@ -52,9 +53,7 @@ const SearchResults = () => {
           } 
         }
       }
-    }));
-    console.log(forumData.length);
-    
+    }));    
     setSearchForumsResults(forumData)
   }
 
@@ -119,7 +118,7 @@ const SearchResults = () => {
       </Box>
       <CustomTabPanel value={value} index={0}>
         <List sx={{ width: '100%' }}>
-          {searchForumsResults.length > 0 && searchForumsResults.map((forum) => {
+          {searchForumsResults.length > 0 ? searchForumsResults.map((forum) => {
             return (
               <>
                 <ListItem alignItems="flex-start" sx={{bgcolor: 'background.paper', borderRadius: 5}}>
@@ -136,13 +135,16 @@ const SearchResults = () => {
                 <Divider variant="middle" component="li" sx={{my: 0.5}} />
               </>
             )
-          })}
+          })
+          :
+          <NoResultFound searchText={params.searchText} />
+          }
         </List>
       </CustomTabPanel>
 
       <CustomTabPanel value={value} index={1}>
         <List sx={{ width: '100%'}}>
-        {searchPostsResults.map((post) => {
+        {searchPostsResults.length >0 ? searchPostsResults.map((post) => {
           return (
             <>
               <ListItem alignItems="flex-start" sx={{bgcolor: 'background.paper', borderRadius: 5}}>
@@ -155,19 +157,40 @@ const SearchResults = () => {
                   sx={{cursor: 'pointer', wordBreak: 'break-word'}}
                   onClick={() => navigate(`/post/${post.id}`)}
                   primary={highlightText(post.title, params.searchText)}
-                  secondary={highlightText(renderHTML(post.content), params.searchText)}
+                  secondary={highlightText(Children.toArray(renderHTML(post.content)).map(child => 
+                          typeof child.props?.children === 'string' 
+                            ? child.props.children 
+                            : ''
+                        )
+                        .filter(Boolean)
+                        .join(' '), 
+                    params.searchText
+                  )}
                   />
               </ListItem>
               <Divider variant="middle" component="li" sx={{my: 0.5}}/>
             </>
           )
-        })}
+        }) 
+        :
+        <NoResultFound searchText={params.searchText} />
+        
+        // <ListItem sx={{bgcolor: 'background.paper', borderRadius: 5}}>
+        //   <ListItemAvatar>
+        //             <Avatar alt="no results found" src="/no-results-found.png" sx={{ width: 150, height: 150 }} />
+        //     </ListItemAvatar>
+        //   <ListItemText
+        //     primary={`No results found for "${params.searchText}"`}
+        //     secondary="Double-check your spelling or try different keywords"
+        //   />
+        // </ListItem>
+        }
       </List>
       </CustomTabPanel>
 
       <CustomTabPanel value={value} index={2}>
         <List sx={{ width: '100%'}}>
-          {searchCommentsResults.map((result) => {
+          { searchCommentsResults>0 ? searchCommentsResults.map((result) => {
             return (
               <>
               <ListItem alignItems="flex-start" sx={{bgcolor: 'background.paper', borderRadius: 5}}>
@@ -186,7 +209,10 @@ const SearchResults = () => {
               <Divider variant="middle" component="li" sx={{my: 0.5}}/>
               </>
             )
-          })}
+          })
+        :
+          <NoResultFound searchText={params.searchText} />
+        }
         </List>
       </CustomTabPanel>
       

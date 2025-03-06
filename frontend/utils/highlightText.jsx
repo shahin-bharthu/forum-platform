@@ -1,5 +1,4 @@
 const highlightText = (text, highlight) => {
-  console.log(text);
   
     if (!highlight.trim()) {
       return text;
