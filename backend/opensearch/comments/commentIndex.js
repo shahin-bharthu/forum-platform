@@ -60,6 +60,37 @@ export const addDocumentsToCommentIndex = async () => {
 };
 
 
+export async function updateDocumentOfCommentIndex(document) {
+    const indexName = 'comment';
+
+    try {
+        // Search for the document in the OpenSearch index using the document.id from the database
+        const searchResponse = await client.search({
+            index: indexName,
+            body: {
+                query: {
+                    match: {
+                        id: document.id
+                    }
+                }
+            }
+        });
+
+        // Update the document in the OpenSearch index
+        const response = await client.update({
+            index: indexName,
+            id: searchResponse.body.hits.hits[0]._id,
+            body: {
+                doc: document
+            }
+        });
+        console.log('Document updated:', response);
+    } catch (error) {
+        console.error('Error updating document:', error);
+    }
+}
+
+
 export async function searchCommentIndex(searchText) {
     const indexName = 'comment';
 
@@ -78,5 +109,32 @@ export async function searchCommentIndex(searchText) {
         return response.body.hits.hits;
     } catch (error) {
         console.error('Error searching index:', error);
+    }
+}
+
+export async function deleteDocumentOfCommentIndex(documentId) {
+    const indexName = 'comment';
+
+    try {
+        // Search for the document in the OpenSearch index using the document.id from the database
+        const searchResponse = await client.search({
+            index: indexName,
+            body: {
+                query: {
+                    match: {
+                        id: documentId
+                    }
+                }
+            }
+        });
+
+        // Delete the document from the OpenSearch index
+        const response = await client.delete({
+            index: indexName,
+            id: searchResponse.body.hits.hits[0]._id
+        });
+        console.log('Document deleted:', response);
+    } catch (error) {
+        console.error('Error deleting document:', error);
     }
 }

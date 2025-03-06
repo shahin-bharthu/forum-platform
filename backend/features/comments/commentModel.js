@@ -1,3 +1,5 @@
+import { addDocumentToCommentIndex, updateDocumentOfCommentIndex, deleteDocumentOfCommentIndex } from "../../opensearch/comments/commentIndex.js";
+
 export default (sequelize, Sequelize) => {
     const Comment = sequelize.define("comment", {
         id: {
@@ -33,7 +35,40 @@ export default (sequelize, Sequelize) => {
     {
         tableName:'comments',
         timeStamps: true,
+        hooks: {
+                afterCreate: async (comment) => {
+                    const document = {
+                            id: comment.id,
+                            content: comment.content,
+                    }
+                    try {
+                        await addDocumentToCommentIndex(document);
+                    } catch (error) {
+                        console.error(`Failed to add document to comment index: ${error.message}`);
+                    }
+                    console.log(`Comment created: ${comment.id}`);
+                },
+                afterUpdate: async (comment) => {    
+                    const document = {
+                        id: comment.id,
+                        content: comment.content,
+                    }
+                    try {
+                        await updateDocumentOfCommentIndex(document);
+                    } catch (error) {
+                        console.error(`Failed to update document in comment index: ${error.message}`);
+                    }
+                    console.log(`Comment updated: ${comment.id}`);
+                },
+                afterDestroy: async (comment) => {
+                    try {
+                        await deleteDocumentOfCommentIndex(comment.id);
+                        console.log(`Comment deleted: ${comment.id}`);
+                    } catch (error) {
+                        console.error(`Failed to delete document from comment index: ${error.message}`);
+                    }
+                }
     }
-);
+});
   return Comment;
 };

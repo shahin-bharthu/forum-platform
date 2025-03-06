@@ -155,7 +155,7 @@ const SearchResults = () => {
                   sx={{cursor: 'pointer', wordBreak: 'break-word'}}
                   onClick={() => navigate(`/post/${post.id}`)}
                   primary={highlightText(post.title, params.searchText)}
-                  secondary={highlightText(renderHTML(post.content), params.searchText)}
+                  secondary={highlightText(post.content, params.searchText)}
                   />
               </ListItem>
               <Divider variant="middle" component="li" sx={{my: 0.5}}/>

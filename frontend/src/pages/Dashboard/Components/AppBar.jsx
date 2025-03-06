@@ -165,7 +165,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
       }
     }
     else {
-      console.log("KHAALI HAI");
       setSearchForumsResults([]);
       setSearchTopicsResults([]);
       setSearchQuery();
@@ -444,13 +443,13 @@ function CombinedAppBar({ handleDrawerToggle }) {
                                   )}
                                 </List>
                               </Grid>
-                              {searchForumsResults.length > 0 && searchTopicsResults.length > 0 ? (
+                              {/* {searchForumsResults.length > 0 && searchTopicsResults.length > 0 ? ( */}
                                 <Box textAlign='end' marginBottom={1}>
                                   <Button color="black" size="small" onClick={(event) => handleAdvancedSearch(event, searchQuery, searchForumsResults, searchTopicsResults)}>
                                     See more results...
                                   </Button>
                                 </Box>
-                              ) : null}
+                              {/* ) : null} */}
                             </Stack>
                           </Grid>
                         </Paper>
