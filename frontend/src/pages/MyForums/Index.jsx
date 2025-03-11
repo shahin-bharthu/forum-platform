@@ -88,9 +88,9 @@ export default function MyForum() {
       try {
         const response = await axiosInstance.get("/forum/my-forums");
 
-        const publicForums = response.data.publicUserForums || [];
-        const privateForums = response.data.privateUserForums || [];
-        const archivedForums = response.data.archivedUserForums || [];
+        const publicForums = response.data.publicForums || [];
+        const privateForums = response.data.privateForums || [];
+        const archivedForums = response.data.archivedForums || [];
         const empty =
           publicForums.length === 0 &&
           privateForums.length === 0 &&
