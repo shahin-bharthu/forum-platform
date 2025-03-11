@@ -45,8 +45,14 @@ const getForumById = asyncErrorHandler(async (req,res,next) => {
 
 const getForumsByCreator = asyncErrorHandler(async (req,res,next) => {
     const {id} = req.user;
-    const {publicUserForums, privateUserForums, archivedUserForums} = await forumServices.getForumsByCreator(id);
-    return res.status(200).json({message: "Forums fetched successfully",  publicUserForums, privateUserForums, archivedUserForums});
+    const {publicUserForums} = await forumServices.getForumsByCreator(id);
+    return res.status(200).json({message: "Forums fetched successfully",  publicUserForums});
+})
+
+const getMyForums = asyncErrorHandler(async (req,res,next) => {
+    const {id} = req.user;
+    const {publicForums, privateForums, archivedForums} = await forumServices.getMyForums(id);
+    return res.status(200).json({message: "My Forums fetched successfully", publicForums, privateForums, archivedForums});
 })
 
 const subscribeToForum = asyncErrorHandler(async(req,res,next) => {
@@ -169,6 +175,7 @@ export {
   createForum,
   getForumById,
   getForumsByCreator,
+  getMyForums,
   subscribeToForum,
   getForumsToSubscribe,
   updateForum,

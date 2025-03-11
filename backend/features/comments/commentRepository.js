@@ -14,6 +14,10 @@ const getComments = async() => {
     return await db.Comment.findAll();
 }
 
+const getCommentsByCreator = async (id) => {
+    return await db.Comment.findAll({where: {createdBy: id}, order: [['createdAt', 'DESC']], include: 'topic'});
+}
+
 const getCommentById = async (id) => {
     const comment = await db.Comment.findByPk(id);
     const topic = await comment.getTopic();
@@ -34,4 +38,4 @@ const getReplies = async (parentId) => {
     return await db.Comment.findAll({where: {parent_comment_id: parentId}, include: 'user', order: [['createdAt']]});
 }
 
-export { createComment, getCommentById, getCommentsByPostId, deleteComment, getReplies, getComments }
+export { createComment, getCommentById, getCommentsByCreator, getCommentsByPostId, deleteComment, getReplies, getComments }

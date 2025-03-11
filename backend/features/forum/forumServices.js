@@ -54,12 +54,18 @@ const getForumByForumId = async (id) => {
 
 const getForumsByCreator = async (id) => {
     const userForums = await forumRepository.getForumsByCreator(id);
-
     const publicUserForums = userForums.filter(userForum => userForum.isPublic === true && userForum.isActive === true)
-    const privateUserForums = userForums.filter(userForum => userForum.isPublic === false && userForum.isActive === true)
-    const archivedUserForums = userForums.filter(userForum => userForum.isActive === false)
+    return {publicUserForums};
+}
+
+
+const getMyForums = async (id) => {
+    const myForums = await forumRepository.getForumsByCreator(id);
+    const publicForums = myForums.filter(userForum => userForum.isPublic === true && userForum.isActive === true)
+    const privateForums = myForums.filter(userForum => userForum.isPublic === false && userForum.isActive === true)
+    const archivedForums = myForums.filter(userForum => userForum.isActive === false)
     
-    return {publicUserForums, privateUserForums, archivedUserForums};
+    return {publicForums, privateForums, archivedForums};
 }
 
 
@@ -217,16 +223,7 @@ const searchForums = async (query, userId) => {
                 if (!membership) {
                     return [];
                 }
-            }
-            // if(forum.isActive === false) {
-            //     return [];
-            // }
-            // if (forum.isPublic === false) {
-            //     const membership = await forumRepository.getIsSubscribed(userId, forum.id);
-            //     if (!membership) {
-            //         return [];
-            //     }  
-            // }    
+            }    
             return [{
                 id: result._source.id,
                 name: result._source.name,
@@ -240,6 +237,7 @@ export {
   getForums,
   createForum,
   getForumsByCreator,
+  getMyForums,
   updateForum,
   archiveForum,
   updateForumBanner,

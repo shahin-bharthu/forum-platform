@@ -1,8 +1,13 @@
+import { where } from 'sequelize';
 import {db} from '../../config/connection.js'
 import deleteFile from '../../util/deleteFile.js';
 
 const getUserById = async (id) => {
     return await db.User.findByPk(id);
+}
+
+const getUserByUsername = async (username) => {
+    return await db.User.findOne({where: {username}});
 }
 
 const updateUser = async (user, {firstname, lastname, gender, dob, country }) => {    
@@ -33,4 +38,4 @@ const updateUserAvatar = async (user, { avatar }) => {
     return user;
 };
 
-export {updateUser, getUserById, updateUserAvatar}
+export {updateUser, getUserById, getUserByUsername, updateUserAvatar}

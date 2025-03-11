@@ -27,7 +27,7 @@ const getTopicById = async (id, userId) => {
 }
 
 const getMyTopics = async (id) => {
-    const myTopics= await topicRepository.getMyTopics(id);
+    const myTopics= await topicRepository.getTopicsByCreator(id);
 
     const myLikedTopics = await Promise.all(myTopics.map(async (topic) => ({
         ...topic.dataValues,
@@ -35,6 +35,27 @@ const getMyTopics = async (id) => {
     })
     ));    
     return myLikedTopics;
+}
+
+const getMyTopicsForProfile = async (id) => {
+    const myTopics = await topicRepository.getTopicsByCreator(id);
+    return myTopics;
+}
+
+const getTopicsByCreator = async (id) => {
+    const topics = await topicRepository.getTopicsByCreator(id);
+    const activeTopics = topics.filter(topic => topic.isActive === true);
+    return activeTopics;
+}
+
+const getMyLikedTopics = async (id) => {
+    return await topicRepository.getLikedTopics(id);
+}
+
+const getLikedTopicsByUser = async (id) => {
+    const likedTopics = await topicRepository.getLikedTopics(id);
+    const activeLikedTopics = likedTopics.filter((record) => record.topic.isActive === true);
+    return activeLikedTopics;
 }
 
 const getRecentTopics = async (id) => {
@@ -161,4 +182,4 @@ const unlikeTopic = async (userId, topicId) => {
     return topic
 }
 
-export { createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, searchTopics, likeTopic, unlikeTopic, archivePostById }
+export { createTopic, getTopics, getTopicById, getMyTopicsForProfile, getMyTopics, getTopicsByCreator, getMyLikedTopics, getLikedTopicsByUser, getRecentTopics, updateTopic, deleteTopic, searchTopics, likeTopic, unlikeTopic, archivePostById }

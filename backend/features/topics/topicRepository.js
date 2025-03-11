@@ -44,8 +44,13 @@ const getTopicById = async (id,userId) => {
     return {topic, username: creator.username, forum: topic_forum, user: creator, forum_creator};
 };
 
-const getMyTopics = async (id) => {
+const getTopicsByCreator = async (id) => {
     return await db.Topic.findAll({ where: { createdBy: id }, order: [['createdAt', 'DESC']] });
+}
+
+const getLikedTopics = async (id) => {
+    const myLikedTopics = await db.TopicLike.findAll({ where: { user_id: id }, include: 'topic' });
+    return myLikedTopics;
 }
 
 const getRecentTopics = async (id) => {
@@ -98,4 +103,4 @@ const likeTopic = async (userId, topicId) => {
     await db.TopicLike.create({user_id: userId, topic_id: topicId});
 }
 
-export {createTopic, getTopics, getTopicById, getMyTopics, getRecentTopics, updateTopic, deleteTopic, archivePostById, checkIfAlreadyLiked, getLikeRecord, likeTopic}
+export {createTopic, getTopics, getTopicById, getTopicsByCreator, getLikedTopics, getRecentTopics, updateTopic, deleteTopic, archivePostById, checkIfAlreadyLiked, getLikeRecord, likeTopic}

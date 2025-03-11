@@ -4,6 +4,7 @@ import {
   createForum,
   getForumById,
   getForumsByCreator,
+  getMyForums,
   subscribeToForum,
   unSubscribeForum,
   getForumsToSubscribe,
@@ -27,7 +28,7 @@ const router = Router();
 router.get('/', getForums);
 router.post('/', validateForumCreation(), createForum);
 router.post('/create-forums', validateForumCreation(), createForums);
-router.get('/my-forums', getForumsByCreator);
+router.get('/my-forums', getMyForums);
 router.get('/subscribed-forums', getSubscribedForums);
 router.get('/can-subscribe-to', getForumsToSubscribe);
 router.patch('/archive/:id', archiveForum);

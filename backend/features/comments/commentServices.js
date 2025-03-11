@@ -29,6 +29,16 @@ const getCommentById = async (id, userId) => {
     return {comment, topic, forum, user};
 }
 
+const getMyComments = async (id) => {
+    return await commentRepository.getCommentsByCreator(id);
+}
+
+const getCommentsByCreator = async (id) => {
+    const comments = await commentRepository.getCommentsByCreator(id);
+    const activeComments = comments.filter(comment => comment.topic.isActive);
+    return activeComments;
+}
+
 const getCommentsByPostId = async (postId) => {
     return await commentRepository.getCommentsByPostId(postId);
 }
@@ -82,4 +92,4 @@ const searchComments = async(searchText, userId) => {
 }
 
 
-export { createComment, getCommentsByPostId, deleteComment, getReplies, searchComments, getCommentById }
+export { createComment, getCommentsByPostId, getMyComments, getCommentsByCreator, deleteComment, getReplies, searchComments, getCommentById }

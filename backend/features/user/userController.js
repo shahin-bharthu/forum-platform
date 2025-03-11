@@ -1,9 +1,6 @@
 import { validationResult } from 'express-validator';
-import path from 'path';
-import { promises as fs } from 'fs';
 import * as userService from './userService.js';
 import { asyncErrorHandler } from '../../util/asyncErrorHandler.js';
-import os from 'os';
 import { getImage } from '../../util/getImage.js';
 
 const getUserDetails = asyncErrorHandler(async (req,res,next) => {
@@ -50,4 +47,11 @@ const getAvatarById = asyncErrorHandler (async (req,res,next) => {
 })
 
 
-export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatar, getAvatarById, getCurrentUserDetails}
+const getUserProfileDetails = asyncErrorHandler (async (req,res,next) => {
+  const {username} = req.params;
+  const currentUser = req.user;
+  const userProfileDetails = await userService.getUserProfileDetails(username, currentUser);
+  return res.status(200).json({message: `Profile details for ${username}`, data: userProfileDetails});
+});
+
+export {updateUserDetails, getUserDetails, updateUserAvatar, getAvatar, getAvatarById, getCurrentUserDetails, getUserProfileDetails}
