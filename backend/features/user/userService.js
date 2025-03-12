@@ -48,18 +48,22 @@ const getUserProfileDetails = async (username, currentUser) => {
     }
 
     if (user.username === currentUser.username) {
-        const myForums = await forumServices.getMyForums(currentUser.id); 
-        const myTopics = await topicServices.getMyTopicsForProfile(currentUser.id);
-        const myComments = await commentServices.getMyComments(currentUser.id);
-        const likedTopics = await topicServices.getMyLikedTopics(currentUser.id);
+        const [myForums, myTopics, myComments, likedTopics] = await Promise.all([
+            forumServices.getMyForums(currentUser.id),
+            topicServices.getMyTopicsForProfile(currentUser.id),
+            commentServices.getMyComments(currentUser.id),
+            topicServices.getMyLikedTopics(currentUser.id)
+        ]);
         // todo: saved posts
 
         return {myForums, myTopics, myComments, likedTopics, isCurrentUser: true}
     }
     else {
-        const userForums = await forumServices.getForumsByCreator(user.id);
-        const userTopics = await topicServices.getTopicsByCreator(user.id);
-        const userComments = await commentServices.getCommentsByCreator(user.id);
+        const [userForums, userTopics, userComments] = await Promise.all([
+            forumServices.getForumsByCreator(user.id),
+            topicServices.getTopicsByCreator(user.id),
+            commentServices.getCommentsByCreator(user.id)
+        ]);
 
         return {userForums, userTopics, userComments, isCurrentUser: false}
     }
