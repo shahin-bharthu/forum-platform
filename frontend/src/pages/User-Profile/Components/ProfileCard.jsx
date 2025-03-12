@@ -18,6 +18,7 @@ import { clearNotification, setNotification } from "../../../store/uiSlice";
 import axiosInstance from "../../../../utils/axiosInstance";
 import defaultAvatar from "../../../assets/defaultAvatar.png"
 import ImageUploadStepper from "../../../components/ImageUploadStepper";
+import { useNavigate } from "react-router-dom";
 
 const styles = {
   details: {
@@ -66,6 +67,8 @@ export default function ProfileCard(props) {
 
   const dispatch = useDispatch()
   const profilePhoto = useSelector(state => state.user.profilePhoto);
+
+  const navigate = useNavigate()
 
   const handleClose = () => {
     setOpen(false);
@@ -194,11 +197,12 @@ export default function ProfileCard(props) {
         </Grid>
 
         {/* BUTTON */}
-        <Grid container sx={{ width: "100%" }} style={styles.details}>
+        <Grid container sx={{ width: "100%" }} style={styles.details} >
           <Button
             variant="contained"
             color="primary"
             sx={{ width: "99%", p: 1, my: 2 }}
+            onClick={()=>navigate(`/user/${props.sub}`)}
           >
             View Public Profile
           </Button>

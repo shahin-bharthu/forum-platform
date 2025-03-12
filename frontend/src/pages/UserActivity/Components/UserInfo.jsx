@@ -26,6 +26,7 @@ import {
   VpnLock as VpnLockIcon,
   Check as CheckIcon,
   Share,
+  QuestionAnswerRounded,
 } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
@@ -145,7 +146,7 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
                 fontSize: { xs: "0.75rem", sm: "0.875rem" },
               }}
             >
-              Created {formatDate(forum.createdAt)}
+              user since {formatDate(forum.createdAt)}
             </Typography>
           </Stack>
 
@@ -153,16 +154,16 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
             direction="row"
             spacing={1}
             sx={{
-              justifyContent: postLength ? "space-between" : "flex-start",
+              justifyContent: "space-evenly",
               alignItems: "center",
               flexWrap: "wrap",
               gap: postLength ? 1 : 3,
             }}
           >
+            <Tooltip title="Number of posts">
             <Chip
-              icon={forum.isPublic ? <PublicIcon /> : <VpnLockIcon />}
-              label={forum.isPublic ? "Public" : "Private"}
-              color={forum.isPublic ? "primary" : "secondary"}
+              icon={ <NumbersRoundedIcon/> }
+              label={7}//insert no of posts
               sx={{
                 "& .MuiChip-icon": {
                   fontSize: { xs: "1rem", sm: "1.25rem" },
@@ -172,12 +173,11 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
                 },
               }}
             />
-
-            {postLength >= 0 && (
-              <Tooltip title="Number of posts">
+            </Tooltip>
+              <Tooltip title="Number of comments">
                 <Chip
-                  icon={<NumbersRoundedIcon />}
-                  label={postLength}
+                  icon={<QuestionAnswerRounded />}
+                  label={20}//insert noo of comments
                   sx={{
                     "& .MuiChip-icon": {
                       fontSize: { xs: "1rem", sm: "1.25rem" },
@@ -188,22 +188,6 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
                   }}
                 />
               </Tooltip>
-            )}
-
-            <Tooltip title="Number of subscribers">
-              <Chip
-                icon={<GroupsOutlinedIcon />}
-                label={forum.subscriber_count}
-                sx={{
-                  "& .MuiChip-icon": {
-                    fontSize: { xs: "1rem", sm: "1.25rem" },
-                  },
-                  "& .MuiChip-label": {
-                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  },
-                }}
-              />
-            </Tooltip>
           </Stack>
         </CardContent>
 
@@ -226,7 +210,7 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
                 mb: 1,
               }}
             >
-              Admins
+              Forums Created
             </Typography>
 
             <Stack
@@ -244,14 +228,14 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
               </Typography>
             </Stack>
 
-            <Button
+            {/* <Button
               variant="contained"
               startIcon={<EmailIcon />}
               size="small"
               sx={{ minWidth: 150 }}
             >
               Message Admin
-            </Button>
+            </Button> */}
           </Stack>
         </CardActions>
       </Card>
