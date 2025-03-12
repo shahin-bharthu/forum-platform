@@ -148,7 +148,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
   const handleEditProfile = useCallback(() => {
     handleMobileMenuClose();
     handleMenuClose();
-    navigate("/user/profile");
+    navigate("/user/edit-profile");
   }, [navigate, handleMobileMenuClose]);
 
   const handleSearch = async (e, searchText) => {

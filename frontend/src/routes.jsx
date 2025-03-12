@@ -20,6 +20,10 @@ import MyPosts from "./pages/MyPosts/Index.jsx";
 import PostDetails from "./pages/PostDetails/Index.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import SearchResults from "./pages/SearchResults/Index.jsx";
+import UserActivity from "./pages/UserActivity/Index.jsx";
+import UserOverview from "./pages/UserActivity/Components/UserOverview.jsx";
+import UserPosts from "./pages/UserActivity/Components/UserPosts.jsx";
+import UserComments from "./pages/UserActivity/Components/UserComments.jsx";
 
 
 const GoogleWrapper = ({Outlet}) => {
@@ -63,13 +67,21 @@ const router = createBrowserRouter([
     id: "user",
     children: [
       { index: true, element: <Navigate to="/user/dashboard" /> },
-      { path: "profile", element: <UserProfilePage /> },
+      { path: "edit-profile", element: <UserProfilePage /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "my-forums", id: "my-forums", element: <MyForum /> }, // loader: forumLoader
       { path: "add-forum", element: <AddForum isEdit={false}/> },
       { path: "edit-forum/:forum_id", element: <AddForum isEdit={true}/> },
       { path: "forums", element: <AllForums /> },
       { path: "create-post", element: <CreatePost isEdit={false} /> },
+      { path: ":username", element: <UserActivity />, children: [
+        { path: "", element: <UserOverview/> },
+        { path: "posts", element: <UserPosts/> },
+        { path: "comments", element: <UserComments/> },
+        { path: "liked"},
+        { path: "saved"},
+        { catchAll: true },
+      ] },
     ],
   },
   {
