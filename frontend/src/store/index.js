@@ -1,13 +1,14 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import userReducer from "./userSlice";
-import loadingReducer from "./loaderSlice";
-import userPostReducer from "./userPostSlice";
-import uiReducer from "./uiSlice";
-import userForumsReducer from "./userForumsSlice";
-import allForumsReducer from "./allForumsSlice";
-import dashboardReducer from "./dashboardSlice";
+import userReducer from "./slices/userSlice";
+import loadingReducer from "./slices/loaderSlice";
+import userPostReducer from "./slices/userPostSlice";
+import uiReducer from "./slices/uiSlice";
+import userForumsReducer from "./slices/userForumsSlice";
+import allForumsReducer from "./slices/allForumsSlice";
+import dashboardReducer from "./slices/dashboardSlice";
+import UserActivityReducer from "./slices/userActivitySlice";
 
 const persistConfig = {
     key: "root",
@@ -21,7 +22,8 @@ const rootReducer = combineReducers({
     ui: uiReducer,
     userForums: userForumsReducer,
     allForums: allForumsReducer,
-    dashboard: dashboardReducer
+    dashboard: dashboardReducer,
+    userActivity: UserActivityReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

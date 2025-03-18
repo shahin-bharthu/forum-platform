@@ -26,6 +26,14 @@ const getForums = async () => {
     return forums;
 }
 
+const getActiveForums = async () => {
+    return await db.Forum.findAll({where: {isActive: true}});
+}
+
+const getSubscribedForums = async (id) => {
+    return await db.UserMembership.findAll({where: {user_id: id}})
+}
+
 const updateForum = async (forumToBeUpdated, forum) => {
   await forumToBeUpdated.update({
     purpose: forum.purpose,
@@ -144,5 +152,7 @@ export {
   getTopicByForumId,
   getIsSubscribed,
   getMembershipRecord,
-  createUserMembership
+  createUserMembership,
+  getActiveForums,
+  getSubscribedForums
 };

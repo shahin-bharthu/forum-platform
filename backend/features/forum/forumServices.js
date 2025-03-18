@@ -112,6 +112,23 @@ const getIsSubscribed = async (user_id, forum_id) => {
     return await forumRepository.getIsSubscribed(user_id, forum_id);
 }
 
+const getForumsToSubscribe = async (id) => {
+    const allActiveForums = await forumRepository.getActiveForums();
+    const userForums = await forumRepository.getForumsByCreator(id);
+    const subscribedForums = await forumRepository.getSubscribedForums(id);
+
+    // Convert `userForums` and `subscribedForums` into sets of forum IDs
+    const userForumIds = userForums.map(forum => forum.id);
+    const subscribedForumIds = subscribedForums.map(membership => membership.forum_id);
+
+    // Filter out forums that are either created by the user or already subscribed to
+    const forumsToSubscribe = allActiveForums.filter(forum => 
+        !userForumIds.includes(forum.id) && !subscribedForumIds.includes(forum.id)
+    );
+
+    return forumsToSubscribe;
+}
+
 const getRecentForums = async (id) => {
     const allForums = await db.Forum.findAll({where: {isActive: true}, order: [['createdAt', 'DESC']]});    
     const userForums = await db.Forum.findAll({where: {createdBy: id}});
@@ -249,5 +266,6 @@ export {
   getForumBanner,
   subscribeToForum,
   unSubscribeForum,
-  searchForums
+  searchForums,
+  getForumsToSubscribe
 };

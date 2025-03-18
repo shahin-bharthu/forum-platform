@@ -10,7 +10,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import { useDispatch } from 'react-redux';
-import { clearUserProfile, setUserProfile } from '../../../store/userSlice';
+import { clearUserProfile, setUserProfile } from '../../../store/slices/userSlice';
 import axiosInstance from '../../../../utils/axiosInstance';
 
 const drawerWidth = 200;

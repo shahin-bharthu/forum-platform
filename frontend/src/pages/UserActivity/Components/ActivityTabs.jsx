@@ -37,7 +37,7 @@ LinkTab.propTypes = {
   selected: PropTypes.bool,
 };
 
-export default function ActivityTabs({ showAllTabs = true }) {
+export default function ActivityTabs({ showAllTabs = true } ) {
   const location = useLocation();
   
   //All tabs

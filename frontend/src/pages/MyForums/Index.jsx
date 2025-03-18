@@ -14,12 +14,12 @@ import VpnLockIcon from "@mui/icons-material/VpnLock";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { useDispatch, useSelector } from "react-redux";
-import { clearNotification, setNotification } from "../../store/uiSlice.js";
+import { clearNotification, setNotification } from "../../store/slices/uiSlice.js";
 import {
   setPublicForums,
   setPrivateForums,
   setArchivedForums,
-} from "../../store/userForumsSlice.js";
+} from "../../store/slices/userForumsSlice.js";
 import axios from "axios";
 import { AnimatePresence } from "motion/react";
 import AnimatedGrid from "../../components/GridMotion.jsx";

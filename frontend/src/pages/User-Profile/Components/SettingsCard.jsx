@@ -17,7 +17,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import { z } from "zod";
 import { CircularProgress, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
-import {clearNotification, setNotification} from "../../../store/uiSlice.js"
+import {clearNotification, setNotification} from "../../../store/slices/uiSlice.js"
 import axiosInstance from "../../../../utils/axiosInstance.js";
 
 export default function SettingsCard(props) {

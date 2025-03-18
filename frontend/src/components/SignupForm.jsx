@@ -8,7 +8,7 @@ import AuthFormFooter from "./AuthFormFooter";
 import axios from 'axios';
 import { z } from 'zod';
 import { useDispatch } from "react-redux";
-import { clearNotification, setNotification } from "../store/uiSlice";
+import { clearNotification, setNotification } from "../store/slices/uiSlice";
 import { Button, Divider } from "@mui/material";
 import GoogleIcon from "./GoogleIcon";
 import { useGoogleLogin } from '@react-oauth/google';

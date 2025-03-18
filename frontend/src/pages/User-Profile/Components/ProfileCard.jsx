@@ -13,8 +13,8 @@ import Grid from '@mui/material/Grid2';
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserProfile } from "../../../store/userSlice";
-import { clearNotification, setNotification } from "../../../store/uiSlice";
+import { setUserProfile } from "../../../store/slices/userSlice";
+import { clearNotification, setNotification } from "../../../store/slices/uiSlice";
 import axiosInstance from "../../../../utils/axiosInstance";
 import defaultAvatar from "../../../assets/defaultAvatar.png"
 import ImageUploadStepper from "../../../components/ImageUploadStepper";

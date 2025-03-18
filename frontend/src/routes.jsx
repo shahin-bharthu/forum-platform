@@ -75,7 +75,7 @@ const router = createBrowserRouter([
       { path: "forums", element: <AllForums /> },
       { path: "create-post", element: <CreatePost isEdit={false} /> },
       { path: ":username", element: <UserActivity />, children: [
-        { path: "", element: <UserOverview/> },
+        { path: "", element: <UserOverview /> },
         { path: "posts", element: <UserPosts/> },
         { path: "comments", element: <UserComments/> },
         { path: "liked"},

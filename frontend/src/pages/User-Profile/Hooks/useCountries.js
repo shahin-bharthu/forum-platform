@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoading } from '../../../store/loaderSlice';
+import { setLoading } from '../../../store/slices/loaderSlice';
 const useCountries=()=>{
     const [countries,setCountries]=useState([]);
     const [error,setError]=useState(null)

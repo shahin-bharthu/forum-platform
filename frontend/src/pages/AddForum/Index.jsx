@@ -12,7 +12,7 @@ import { Card, CircularProgress, Stack } from "@mui/material";
 import ForumBannerUpload from "./Components/BannerUpload.jsx";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { useDispatch } from "react-redux";
-import { clearNotification, setNotification } from "../../store/uiSlice.js";
+import { clearNotification, setNotification } from "../../store/slices/uiSlice.js";
 
 const Index = ({isEdit}) => {
   const [forumData, setForumData] = useState();

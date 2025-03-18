@@ -13,7 +13,7 @@ import PositionedSnackbar from "./SnackBar";
 import { Button } from "@mui/material";
 import Divider from '@mui/material/Divider';
 import { useDispatch } from "react-redux";
-import { clearNotification, setNotification } from "../store/uiSlice";
+import { clearNotification, setNotification } from "../store/slices/uiSlice";
 import GoogleIcon from "./GoogleIcon";
 
 const LoginForm = () => {

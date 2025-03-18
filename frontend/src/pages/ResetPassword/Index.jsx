@@ -9,7 +9,7 @@ import Avatar from "@mui/material/Avatar";
 import {blue } from "@mui/material/colors";
 import LockResetOutlinedIcon from '@mui/icons-material/LockResetOutlined';
 import { useDispatch } from "react-redux";
-import { clearNotification, setNotification } from "../../store/uiSlice";
+import { clearNotification, setNotification } from "../../store/slices/uiSlice";
 
 const Index = () => {
     const passwordInput = useRef();

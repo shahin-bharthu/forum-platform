@@ -75,19 +75,7 @@ const unSubscribeForum = asyncErrorHandler(async(req,res,next) => {
 
 const getForumsToSubscribe = asyncErrorHandler(async (req, res, next) => {    
     const {id} = req.user;    
-    const allForums = await db.Forum.findAll({where: {isActive: true}});    
-    const userForums = await db.Forum.findAll({where: {createdBy: id}});
-    const subscribedForums = await db.UserMembership.findAll({where: {user_id: id}})
-    
-    // Convert `userForums` and `subscribedForums` into sets of forum IDs
-    const userForumIds = userForums.map(forum => forum.id);
-    const subscribedForumIds = subscribedForums.map(membership => membership.forum_id);
-
-    // Filter out forums that are either created by the user or already subscribed to
-    const forumsToSubscribe = allForums.filter(forum => 
-        !userForumIds.includes(forum.id) && !subscribedForumIds.includes(forum.id)
-    );
-
+    const forumsToSubscribe = await forumServices.getForumsToSubscribe(id);
     return res.json({message: "subscribable forums list", data: forumsToSubscribe});
 })
 
@@ -143,7 +131,6 @@ const getTopicByForumId = asyncErrorHandler(async (req, res, next) => {
     const topics = await forumServices.getTopicByForumId(forumId, userId);
     return res.status(200).json({message: 'Fetched forum topics', data: topics})
 })
-
 
 const getRecentForums = asyncErrorHandler(async (req,res,next) => {
     const userId = req.user.id;

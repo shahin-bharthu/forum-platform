@@ -3,7 +3,7 @@ import { Box, TextField, IconButton } from '@mui/material';
 import { Send as SendIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import axiosInstance from '../../../../utils/axiosInstance';
 import { useDispatch } from 'react-redux';
-import { clearNotification, setNotification } from '../../../store/uiSlice';
+import { clearNotification, setNotification } from '../../../store/slices/uiSlice';
 
 const CommentInput = ({ postId, parentCommentId, username, onCommentadded, onReplySend }) => {
     const [comment, setComment] = useState('');

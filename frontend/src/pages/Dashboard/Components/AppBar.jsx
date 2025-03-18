@@ -43,7 +43,7 @@ import {
   Edit as EditIcon,
 } from "@mui/icons-material";
 // Redux actions
-import { clearUserProfile } from "../../../store/userSlice";
+import { clearUserProfile } from "../../../store/slices/userSlice.js";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",

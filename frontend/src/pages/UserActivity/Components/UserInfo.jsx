@@ -106,8 +106,8 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
                 width: "90%",
               }}
             >
-              {/* {forum.name} */}
-              Ocar Piastri
+              {forum.name}
+              {/* Ocar Piastri */}
             </Typography>
           </Tooltip>
           <Box
@@ -163,7 +163,7 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
             <Tooltip title="Number of posts">
             <Chip
               icon={ <NumbersRoundedIcon/> }
-              label={7}//insert no of posts
+              label={postLength}//insert no of posts
               sx={{
                 "& .MuiChip-icon": {
                   fontSize: { xs: "1rem", sm: "1.25rem" },

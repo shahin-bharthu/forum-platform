@@ -10,7 +10,7 @@ import Avatar from "@mui/material/Avatar";
 import { blue } from "@mui/material/colors";
 import { Navigate, useRouteLoaderData } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { clearNotification, setNotification } from "../../store/uiSlice.js";
+import { clearNotification, setNotification } from "../../store/slices/uiSlice.js";
 
 const Index = () => {
   const token = useRouteLoaderData('root');

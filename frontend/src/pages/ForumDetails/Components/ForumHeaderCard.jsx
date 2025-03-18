@@ -18,7 +18,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../../utils/axiosInstance.js';
 import { useDispatch } from 'react-redux';
-import { clearNotification, setNotification } from '../../../store/uiSlice.js';
+import { clearNotification, setNotification } from '../../../store/slices/uiSlice.js';
 import forumDetailsBackdrop from "../../../assets/ForumDetailsBackdrop.webp";
 
 

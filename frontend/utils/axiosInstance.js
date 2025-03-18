@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getAuthToken } from './auth.js';
-import { setLoading } from '../src/store/loaderSlice.js';
+import { setLoading } from '../src/store/slices/loaderSlice.js';
 import { store } from '../src/store/index.js';
 
 let activeRequests = 0;

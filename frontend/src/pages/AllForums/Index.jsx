@@ -8,11 +8,11 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { useDispatch, useSelector } from "react-redux";
-import { clearNotification, setNotification } from "../../store/uiSlice.js";
+import { clearNotification, setNotification } from "../../store/slices/uiSlice.js";
 import {
   setSubscribableForums,
   setSubscribedForums,
-} from "../../store/allForumsSlice.js";
+} from "../../store/slices/allForumsSlice.js";
 import axios from "axios";
 import { AnimatePresence } from "motion/react";
 import AnimatedGrid from "../../components/GridMotion.jsx";

@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import { Card, CircularProgress } from "@mui/material";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { useDispatch } from 'react-redux';
-import { clearNotification, setNotification } from "../../store/uiSlice.js";
+import { clearNotification, setNotification } from "../../store/slices/uiSlice.js";
 import QuillEditor from "./Components/QuillEditor.jsx";
 import 'quill/dist/quill.snow.css';
 

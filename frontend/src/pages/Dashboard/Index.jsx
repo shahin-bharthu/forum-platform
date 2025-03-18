@@ -5,7 +5,7 @@ import { Typography } from "@mui/material";
 import axiosInstance from "../../../utils/axiosInstance";
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setRecentForums } from '../../store/dashboardSlice';
+import { setRecentForums } from '../../store/slices/dashboardSlice';
 import AnimatedLayout from '../../components/AnimatedLayout';
 
 export default function Dashboard() {

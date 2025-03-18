@@ -56,7 +56,7 @@ const getUserProfileDetails = async (username, currentUser) => {
         ]);
         // todo: saved posts
 
-        return {myForums, myTopics, myComments, likedTopics, isCurrentUser: true}
+        return {user, myForums, myTopics, myComments, likedTopics, isCurrentUser: true}
     }
     else {
         const [userForums, userTopics, userComments] = await Promise.all([
@@ -65,7 +65,7 @@ const getUserProfileDetails = async (username, currentUser) => {
             commentServices.getCommentsByCreator(user.id)
         ]);
 
-        return {userForums, userTopics, userComments, isCurrentUser: false}
+        return {user, userForums, userTopics, userComments, isCurrentUser: false}
     }
 }
 

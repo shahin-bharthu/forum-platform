@@ -11,7 +11,7 @@ import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../../utils/axiosInstance";
 import { useDispatch } from "react-redux";
-import { clearNotification, setNotification } from "../../../store/uiSlice";
+import { clearNotification, setNotification } from "../../../store/slices/uiSlice";
 import defaultForumBanner from "../../../assets/defaultForumbanner.png";
 import ImageUploadStepper from "../../../components/ImageUploadStepper";
 
