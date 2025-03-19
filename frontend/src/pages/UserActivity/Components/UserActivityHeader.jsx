@@ -11,10 +11,10 @@ const UserActivityHeader = ({ avatarUrl, username, name }) => {
         sx={{ width: 90, height: 90, ml: 2 }}
       />
       <Box ml={4} mt={4} sx={{ justifyItems: "flex-start" }}>
-        {/* <Typography variant="h6">{username}</Typography>
-                <Typography variant="subtitle1">{name}</Typography> */}
-        <Typography variant="h6">OP81</Typography>
-        <Typography variant="subtitle1">Oscar Piastri</Typography>
+        <Typography variant="h6">{username}</Typography>
+        <Typography variant="subtitle1">{name}</Typography>
+        {/* <Typography variant="h6">OP81</Typography>
+        <Typography variant="subtitle1">Oscar Piastri</Typography> */}
       </Box>
     </Box>
   );

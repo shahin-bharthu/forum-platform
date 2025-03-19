@@ -49,7 +49,7 @@ const getAvatarById = asyncErrorHandler (async (req,res,next) => {
 
 const getUserProfileDetails = asyncErrorHandler (async (req,res,next) => {
   const {username} = req.params;
-  const currentUser = req.user;
+  const currentUser = req.user;  
   const userProfileDetails = await userService.getUserProfileDetails(username, currentUser);
   return res.status(200).json({message: `Profile details for ${username}`, data: userProfileDetails});
 });

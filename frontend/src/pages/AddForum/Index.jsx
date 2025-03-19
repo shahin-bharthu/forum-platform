@@ -94,10 +94,11 @@ const Index = ({isEdit}) => {
   async function editForumHandler(event, id, forum_id) {
     event.preventDefault();
     
+    const enteredName = nameInput.current.value.trim();
     const enteredPurpose = purposeInput.current.value.trim();
     const forumIsPublic = isPublic; 
 
-    const formData = { purpose: enteredPurpose, isPublic: forumIsPublic };
+    const formData = { name: enteredName, purpose: enteredPurpose, isPublic: forumIsPublic };
 
     setErrors({});
 
@@ -113,7 +114,7 @@ const Index = ({isEdit}) => {
       }, 1000);
     } catch (error) {
       setIsSubmitting(false);
-      console.error("Error:", error);
+      console.error("Error hai yehhhhhhhhhhh:", error);
       dispatch(setNotification({message:error.response?.data?.errors[0].msg || "An error occurred. Please try again later.", type:'error'}))
       setTimeout(() => {
         dispatch(clearNotification())

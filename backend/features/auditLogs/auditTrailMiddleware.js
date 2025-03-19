@@ -26,8 +26,10 @@ export const logAuditTrails = (req,res,next) => {
             });
             return originalJson.call(this,body);
         }
+        
         next();
-    }catch(error){
+    }
+    catch(error){
         console.log("An error occurred logging audit trail");
         console.log(error.message);
         next();

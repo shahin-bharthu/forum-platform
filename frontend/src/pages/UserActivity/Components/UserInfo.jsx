@@ -29,6 +29,7 @@ import {
   QuestionAnswerRounded,
 } from "@mui/icons-material";
 import { useState, useEffect } from "react";
+
 export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

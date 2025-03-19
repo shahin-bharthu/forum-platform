@@ -22,10 +22,15 @@ const getForums = asyncErrorHandler(async (req,res,next) => {
 })
 
 const updateForum = asyncErrorHandler(async (req,res,next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
+
     const {id} = req.params;
     const userId = req.user.id;
     const body = req.body;
-    
+
     const data = await forumServices.updateForum(id, userId, body);
 
     return res.status(200).json({message: "Forum details have been updated successfully", data: data});

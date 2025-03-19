@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit"
 const initialState = {
     isCurrentUser: false,
     userDetails: {},
-    userForums: [],
+    userForums: {publicForums: [], privateForums: [], archivedForums: []},
     userPosts: [],
     userComments: [],
     likedPosts: [],
@@ -28,8 +28,12 @@ const userActivitySlice = createSlice({
             // }
         },
         clearUserActivity: (state) => {
-            state.userName = "user"
-            state.profilePhoto = null
+            state.isCurrentUser = false;
+            state.userDetails = {};
+            state.userForums = {};
+            state.userPosts = [];
+            state.userComments = [];
+            state.likedPosts = [];        
         }
     },
 })

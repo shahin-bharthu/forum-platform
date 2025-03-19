@@ -1,11 +1,13 @@
 import { body, check } from 'express-validator';
 
-export const validateForumCreation = (req, res, next) => {
+export const validateForumCreation = (req, res, next) => {        
     return [
         body('name')
             .trim()
+            .isLength({ min: 3 })
+            .withMessage('Please enter a valid forum name with minimum 3 characters')
             .isAlphanumeric('en-US', {ignore: ' '})
-            .withMessage('Please enter a valid forum name. Only alphabets are allowed in forum name.'),
+            .withMessage('Only alphabets are allowed in forum name'),
         
         body('purpose')
             .trim()  

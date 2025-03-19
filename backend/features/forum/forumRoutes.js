@@ -39,7 +39,7 @@ router.get('/is-subscribed/:id', getIsSubscribed)
 router.get('/topics/:forumId', getTopicByForumId);
 router.get('/:id', getForumById);
 router.get('/forum-id/:id', getForumByForumId)
-router.patch('/:id', updateForum);
+router.patch('/:id', validateForumCreation(), updateForum);
 router.put('/banner/:id', upload.single('banner'), updateForumBanner);
 router.get('/banner/:id', getForumBanner);
 router.get('/search/:forumName', searchForums);

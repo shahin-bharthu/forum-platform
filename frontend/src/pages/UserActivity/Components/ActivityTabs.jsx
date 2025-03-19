@@ -37,22 +37,22 @@ LinkTab.propTypes = {
   selected: PropTypes.bool,
 };
 
-export default function ActivityTabs({ showAllTabs = true } ) {
+export default function ActivityTabs({ isCurrentUser } ) {
   const location = useLocation();
   
   //All tabs
   const allTabs = useMemo(() => [
-    { label: "Overview", path: "", index: 0 },
-    { label: "Posts", path: "posts", index: 1 },
-    { label: "Comments", path: "comments", index: 2 },
-    { label: "Liked", path: "liked", index: 3, optional: true },
-    { label: "Saved", path: "saved", index: 4, optional: true }
+    { label: "Overview", path: "", index: 0, optional: false },
+    { label: "Posts", path: "posts", index: 1, optional: false },
+    { label: "Comments", path: "comments", index: 2, optional: false },
+    { label: "Liked", path: "liked", index: 3, optional: !isCurrentUser },
+    { label: "Saved", path: "saved", index: 4, optional: !isCurrentUser }
   ], []);
   
-  // Filter tabs based on showAllTabs
+  // Filter tabs based o
   const visibleTabs = useMemo(() => 
-    allTabs.filter(tab => !tab.optional || showAllTabs),
-  [allTabs, showAllTabs]);
+    allTabs.filter(tab => !tab.optional),
+  [allTabs]);
   
   // Set initial tab value based on current path
   const initialValue = useMemo(() => {
@@ -72,12 +72,12 @@ export default function ActivityTabs({ showAllTabs = true } ) {
       path.endsWith(`/${tab.path}`) || (tab.path === "" && path.endsWith("/"))
     );
     
-    if (matchedTab && (!matchedTab.optional || showAllTabs)) {
+    if (matchedTab && (!matchedTab.optional)) {
       setValue(matchedTab.index);
     } else {
       setValue(0); // Default to Overview
     }
-  }, [location, allTabs, showAllTabs]);
+  }, [location, allTabs]);
   
   const handleChange = (event, newValue) => {
     setValue(newValue);

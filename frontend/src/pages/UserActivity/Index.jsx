@@ -5,28 +5,37 @@ import { Container, Grid2 as Grid, Typography } from "@mui/material";
 import ActivityTabs from "./Components/ActivityTabs";
 import { Outlet, useParams } from "react-router-dom";
 import UserInfo from "./Components/UserInfo";
+import {
+  clearUserActivity,
+  setUserActivity,
+} from "../../store/slices/userActivitySlice";
+import { setLoading } from "../../store/slices/loaderSlice";
+import axios from "axios";
 import axiosInstance from "../../../utils/axiosInstance";
-import { setUserActivity } from "../../store/slices/userActivitySlice";
 
 export default function UserActivity() {
   const userActivity = useSelector((state) => state.userActivity);
   const isLoading = useSelector((state) => state.loading.isLoading);
   const [empty, setEmpty] = useState(false);
-  const {username} = useParams();
+  const { username } = useParams();
   const dispatch = useDispatch();
 
   useEffect(() => {
-      async function userActivityLoader(username) {
-          try {
-            const userDetails = await axiosInstance.get(`/user/profile/${username}`);
-            dispatch(setUserActivity(userDetails.data.data));
-            // setEmpty(userActivityData.length === 0);
-          } catch (error) {
-            console.log(error.message);
-          }
+    async function userActivityLoader(username) {
+      try {
+        dispatch(clearUserActivity());
+        const userDetails = await axios.get(
+          `http://localhost:8080/user/profile/${username}`,
+          { withCredentials: true }
+        );
+        
+        dispatch(setUserActivity(userDetails.data.data));
+        // setEmpty(userActivityData.length === 0);
+      } catch (error) {
+        console.log(error.message);
       }
-      userActivityLoader(username);
-      console.log(userActivity);
+    }
+    userActivityLoader(username);
   }, [dispatch]);
 
   const dummyForum = {
@@ -47,10 +56,8 @@ export default function UserActivity() {
   };
 
   if (isLoading) {
-    return <h1>Loading...</h1>  
-  }
-
-  else {
+    return <h1>Loading...</h1>;
+  } else {
     return (
       <Container
         sx={{
@@ -65,16 +72,19 @@ export default function UserActivity() {
             size={{ xs: 12, sm: 7, md: 8, lg: 9, xl: 9 }}
             sx={{ position: "relative" }}
           >
-            <UserActivityHeader />
+            <UserActivityHeader
+              username={userActivity?.userDetails?.username || "Your Username"}
+              name={`${userActivity?.userDetails?.firstname} ${userActivity?.userDetails?.lastname}`}
+            />
             <Grid item xs={12} sx={{ mt: 3 }}>
-              <ActivityTabs />
+              <ActivityTabs isCurrentUser={userActivity.isCurrentUser} />
             </Grid>
           </Grid>
-          <Grid size={{ xs: 0,sm:5, md: 4, lg:3, xl:3}}>
+          <Grid size={{ xs: 0, sm: 5, md: 4, lg: 3, xl: 3 }}>
             <UserInfo
-              forum={userActivity.userForums.publicForums[0]}
-              creator={userActivity.userDetails.firstname}
-              postLength={userActivity.userPosts.length}
+              forum={dummyForum}
+              creator={dummyCreator}
+              postLength={dummyPostLength}
               setIsPrivate={dummySetIsPrivate}
             />
           </Grid>
