@@ -1,7 +1,19 @@
+import { useSelector } from "react-redux";
+
 export default function UserComments() {
+    const {userComments} = useSelector((state) => state.userActivity);
     return (
         <div>
-            UserComments
+            User Comments
+            <ul>
+                {userComments.map((comment) => {
+                    return (
+                        <li>
+                            {comment.content}
+                        </li>
+                    )
+                })}
+            </ul>
         </div>
     )
 }

@@ -1,26 +1,38 @@
 import { useSelector } from "react-redux"
 
 export default function UserOverview() {
-    const {isCurrentUser, userDetails, userForums, userPosts, userComments, likedPosts} = useSelector((state) => state.userActivity)
+    const userActivity = useSelector((state) => state.userActivity)
+    console.log(userActivity);
+    
     return (
         <>
         <div>
             FORUMS
             <ul>
-                {userForums?.publicForums?.map((forum) => {
-                    <li>
+                {userActivity?.userForums?.publicForums?.map((forum) => {
+                    return (<li>
                         {forum.name}
-                    </li>
+                    </li>)
                 })}
             </ul>
         </div>
         <div>
             POSTS
             <ul>
-                {userPosts?.map((post) => {
-                    <li>
+                {userActivity?.userPosts?.map((post) => {
+                    return(<li>
                         {post.title}
-                    </li>
+                    </li>)
+                })}
+            </ul>
+        </div>
+        <div>
+            COMMENTS
+            <ul>
+                {userActivity?.userComments?.map((comment) => {
+                    return(<li>
+                        {comment.content}
+                    </li>)
                 })}
             </ul>
         </div>

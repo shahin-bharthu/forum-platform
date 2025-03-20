@@ -49,7 +49,7 @@ export default function ActivityTabs({ isCurrentUser } ) {
     { label: "Saved", path: "saved", index: 4, optional: !isCurrentUser }
   ], []);
   
-  // Filter tabs based o
+  // Filter tabs 
   const visibleTabs = useMemo(() => 
     allTabs.filter(tab => !tab.optional),
   [allTabs]);

@@ -5,13 +5,8 @@ import { Container, Grid2 as Grid, Typography } from "@mui/material";
 import ActivityTabs from "./Components/ActivityTabs";
 import { Outlet, useParams } from "react-router-dom";
 import UserInfo from "./Components/UserInfo";
-import {
-  clearUserActivity,
-  setUserActivity,
-} from "../../store/slices/userActivitySlice";
-import { setLoading } from "../../store/slices/loaderSlice";
+import { clearUserActivity, setUserActivity } from "../../store/slices/userActivitySlice";
 import axios from "axios";
-import axiosInstance from "../../../utils/axiosInstance";
 
 export default function UserActivity() {
   const userActivity = useSelector((state) => state.userActivity);

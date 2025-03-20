@@ -59,13 +59,13 @@ const getUserProfileDetails = async (username, currentUser) => {
         return {user, myForums, myTopics, myComments, likedTopics, isCurrentUser: true}
     }
     else {
-        const [userForums, userTopics, userComments] = await Promise.all([
+        const [myForums, myTopics, myComments] = await Promise.all([
             forumServices.getForumsByCreator(user.id),
             topicServices.getTopicsByCreator(user.id),
             commentServices.getCommentsByCreator(user.id)
         ]);
 
-        return {user, userForums, userTopics, userComments, isCurrentUser: false}
+        return {user, myForums, myTopics, myComments, isCurrentUser: false}
     }
 }
 
