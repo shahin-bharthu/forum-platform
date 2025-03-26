@@ -15,7 +15,7 @@ const getComments = async() => {
 }
 
 const getCommentsByCreator = async (id) => {
-    return await db.Comment.findAll({where: {createdBy: id}, order: [['createdAt', 'DESC']], include: 'topic'});
+    return await db.Comment.findAll({ where: { createdBy: id }, order: [['createdAt', 'DESC']], include: 'topic' });
 }
 
 const getCommentById = async (id) => {

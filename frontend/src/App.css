@@ -7,3 +7,8 @@
   min-height: 100vh;
   background-color: #f0f0f0;
 }
+
+span > p {
+  color: rgb(116, 116, 116) !important;
+  margin: 0;
+}

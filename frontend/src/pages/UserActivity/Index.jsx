@@ -5,33 +5,38 @@ import { Container, Grid2 as Grid, Typography } from "@mui/material";
 import ActivityTabs from "./Components/ActivityTabs";
 import { Outlet, useParams } from "react-router-dom";
 import UserInfo from "./Components/UserInfo";
-import { clearUserActivity, setUserActivity } from "../../store/slices/userActivitySlice";
+import {
+  clearUserActivity,
+  setUserActivity,
+} from "../../store/slices/userActivitySlice";
 import axios from "axios";
 
 export default function UserActivity() {
   const userActivity = useSelector((state) => state.userActivity);
-  const isLoading = useSelector((state) => state.loading.isLoading);
+  // const isLoading = useSelector((state) => state.loading.isLoading);
+  const [loading, setLoading] = useState(true);
   const [empty, setEmpty] = useState(false);
   const { username } = useParams();
   const dispatch = useDispatch();
 
   useEffect(() => {
     async function userActivityLoader(username) {
-      try {
-        dispatch(clearUserActivity());
-        const userDetails = await axios.get(
-          `http://localhost:8080/user/profile/${username}`,
-          { withCredentials: true }
-        );
-        
-        dispatch(setUserActivity(userDetails.data.data));
-        // setEmpty(userActivityData.length === 0);
-      } catch (error) {
-        console.log(error.message);
+      if (username !== userActivity.userDetails.username) {
+        try {
+          dispatch(clearUserActivity());
+          const userDetails = await axios.get(
+            `http://localhost:8080/user/profile/${username}`,
+            { withCredentials: true }
+          );
+          dispatch(setUserActivity(userDetails.data.data));
+          // setEmpty(userActivityData.length === 0);
+        } catch (error) {
+          console.log(error.message);
+        }
       }
     }
-    userActivityLoader(username);
-  }, [dispatch]);
+    userActivityLoader(username).then(() => setLoading(false));
+  }, [dispatch, username, userActivity.userDetails.username]);
 
   const dummyForum = {
     forum_id: "123",
@@ -50,7 +55,7 @@ export default function UserActivity() {
     console.log("Is forum private:", isPrivate);
   };
 
-  if (isLoading) {
+  if (loading) {
     return <h1>Loading...</h1>;
   } else {
     return (

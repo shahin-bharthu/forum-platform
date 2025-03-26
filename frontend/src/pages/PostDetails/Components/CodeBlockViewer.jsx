@@ -13,7 +13,7 @@ const decodeHtmlEntities = (str) => {
 // CodeRenderer component to render code blocks
 const CodeRenderer = ({ code, language }) => {
   return (
-    <SyntaxHighlighter language={language} style={stackoverflowLight} wrapLongLines customStyle={{ padding: '1em' }}>
+    <SyntaxHighlighter language={language} style={stackoverflowLight} wrapLongLines customStyle={{ padding: '1em'}}>
       {code}
     </SyntaxHighlighter>
   );
@@ -30,7 +30,7 @@ export const renderHTML = (htmlContent) => {
       if (domNode.name === 'div' && domNode.attribs.class === 'ql-code-block-container') {
         const codeContent = domNode.children
           .filter(child => child.name === 'div' && child.attribs.class === 'ql-code-block') 
-          .map((child) => child.children[0]?.data || '') 
+          .map((child) => child.children[0]?.data || '')
           .join('\n'); 
 
         const decodedCode = decodeHtmlEntities(codeContent);

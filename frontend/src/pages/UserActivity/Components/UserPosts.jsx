@@ -7,35 +7,125 @@ import Avatar from "@mui/material/Avatar";
 import { useNavigate } from "react-router-dom";
 import { renderHTML } from "../../PostDetails/Components/CodeBlockViewer";
 import { formatDate } from "../../../../utils/timestamp";
+import { Tooltip, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import axiosInstance from "../../../../utils/axiosInstance";
+
 
 export default function UserPosts() {
   const { userPosts } = useSelector((state) => state.userActivity);
+  const [forumBanners, setForumBanners] = useState({});
   const navigate = useNavigate();
+
+  const getForumBanners = async (posts) => {
+    console.log("POSTS", posts);
+    try {
+      await Promise.all(posts.map(async (post) => {
+        const banner = await axiosInstance.get(`/forum/banner/${post.forum_id}`, {responseType: 'blob'});
+        
+        if (banner.data) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setForumBanners((prevBanners) => ({ ...prevBanners, [post.forum_id]: reader.result }));
+          };
+          reader.readAsDataURL(banner.data);
+        }
+      }));
+    } catch (error) {
+      console.log("ERROR FETCHING FORUM BANNER:", error);
+    }
+  }
+
+  useEffect(() => {
+    getForumBanners(userPosts);
+  }, []);
 
   return (
     <>
       <List sx={{ width: "100%" }}>
         {userPosts.map((post) => {
-            return (
-              <>
-                <ListItem
-                  alignItems="flex-start"
-                  sx={{ bgcolor: "background.paper", borderRadius: 5, my: 1 }}
-                >
-                  <ListItemAvatar>
-                    <Avatar sx={{border: "0.5px solid rgba(50, 56, 53, 0.18)"}} alt={post.title} src="https://images.pexels.com/photos/31100755/pexels-photo-31100755/free-photo-of-modern-architectural-design-in-villefranche-sur-saone.jpeg" />
-                  </ListItemAvatar>
-                  <ListItemText
-                    sx={{ cursor: "pointer", wordBreak: "break-word"}}
-                    onClick={() => navigate(`/post/${post.id}`)}
-                    primary={`${post.title} • ${ formatDate(post.createdAt)} ago`}
-                    secondary={renderHTML(post.content)}
+          return (
+            <>
+              <ListItem
+                alignItems="flex-start"
+                sx={{ bgcolor: "background.paper", borderRadius: 5, my: 1 }}
+              >
+                <ListItemAvatar sx={{ minWidth: "35px" }}>
+                  <Avatar
+                    sx={{
+                      border: "0.5px solid rgba(50, 56, 53, 0.18)",
+                      width: "25px",
+                      height: "25px",
+                    }}
+                    alt={post.forum.name}
+                    src={forumBanners[post.forum.id]}
                   />
-                </ListItem>
-              </>
-            );
-          })
-        }
+                </ListItemAvatar>
+                <ListItemText
+                  sx={{ cursor: "pointer", wordBreak: "break-word", mx: "0" }}
+                  primary={
+                    <>
+                      <span
+                        style={{
+                          fontSize: "13px",
+                          textDecoration: "underline",
+                        }}
+                        onClick={() =>
+                          navigate(`/forum/${post.forum.forum_id}`)
+                        }
+                      >
+                        {post.forum.name}
+                      </span>{" "}
+                      <Tooltip
+                        title={new Date(post.createdAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          }
+                        )}
+                        placement="right"
+                      >
+                        <span style={{ fontSize: "13px" }}>
+                          {" "}
+                          • {formatDate(post.createdAt)} ago
+                        </span>
+                      </Tooltip>
+                    </>
+                  }
+                  // secondary={<span>{renderHTML(post.content)}</span>}
+                  secondary={
+                    <div
+                      style={{
+                        marginTop: "5px",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                        width: "100%",
+                      }}
+                      onClick={() => navigate(`/post/${post.id}`)}
+                    >
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{
+                          color: "#414141",
+                          display: "inline",
+                          fontWeight: "500",
+                          fontSize: "16px",
+                        }}
+                      >
+                        {post.title} <br />
+                      </Typography>
+                      <span>{renderHTML(post.content)}</span>
+                    </div>
+                  }
+                />
+              </ListItem>
+            </>
+          );
+        })}
       </List>
     </>
   );
