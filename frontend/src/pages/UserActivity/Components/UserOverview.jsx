@@ -18,15 +18,57 @@ export default function UserOverview() {
   const userActivity = useSelector((state) => state.userActivity);
   const navigate = useNavigate();
   const [forumBanners, setForumBanners] = useState({});
-
+  const [formattedComments, setFormattedComments] = useState([
+    { topic: {}, forum: {} },
+  ]);
+  
   const combinedActivity = [
     ...(userActivity?.userPosts?.map((post) => ({ ...post, type: "post" })) ||
-      []),
-    ...(userActivity?.userComments?.map((comment) => ({
+    []),
+    ...(formattedComments.map((comment) => ({
       ...comment,
       type: "comment",
     })) || []),
   ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
+
+  const getFormattedComments = async (comments) => {
+    try {
+      const formattedComments = await Promise.all(
+        comments.map(async (comment) => {
+          const banner = await axiosInstance.get(
+            `/forum/banner/${comment.topic.forum_id}`,
+            { responseType: "blob" }
+          );
+
+          if (banner.data) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setForumBanners((prevBanners) => ({
+                ...prevBanners,
+                [comment.topic.forum_id]: reader.result,
+              }));
+            };
+            reader.readAsDataURL(banner.data);
+          }
+
+          const forumDetails = await axiosInstance.get(
+            `/forum/${comment.topic.forum_id}`
+          );
+          return {
+            ...comment,
+            forum: forumDetails.data.data,
+          };
+        })
+      );
+      console.log(formattedComments);
+
+      setFormattedComments(formattedComments);
+    } catch (error) {
+      console.log("ERROR FETCHING FORUM BANNER:", error);
+    }
+  };
+
 
   const getForumBanners = async (posts) => {
     try {
@@ -56,6 +98,7 @@ export default function UserOverview() {
 
   useEffect(() => {
     getForumBanners(userActivity?.userPosts);
+    getFormattedComments(userActivity?.userComments);
   }, []);
 
   return (
@@ -214,7 +257,7 @@ export default function UserOverview() {
                         }}
                       >
                         <span style={{ fontSize: "13px" }}>
-                          {userDetails.username} commented{" "}
+                          {userActivity?.userDetails.username} commented{" "}
                           <Tooltip
                             title={new Date(
                               activity.createdAt
