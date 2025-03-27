@@ -18,7 +18,6 @@ export default function UserPosts() {
   const navigate = useNavigate();
 
   const getForumBanners = async (posts) => {
-    console.log("POSTS", posts);
     try {
       await Promise.all(posts.map(async (post) => {
         const banner = await axiosInstance.get(`/forum/banner/${post.forum_id}`, {responseType: 'blob'});
