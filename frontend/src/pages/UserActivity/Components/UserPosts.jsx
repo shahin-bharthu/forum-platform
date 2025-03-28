@@ -7,14 +7,15 @@ import Avatar from "@mui/material/Avatar";
 import { useNavigate } from "react-router-dom";
 import { renderHTML } from "../../PostDetails/Components/CodeBlockViewer";
 import { formatDate } from "../../../../utils/timestamp";
-import { Tooltip, Typography } from "@mui/material";
+import { Box, Skeleton, Tooltip, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../../utils/axiosInstance";
 
 
 export default function UserPosts() {
-  const { userPosts } = useSelector((state) => state.userActivity);
+  const { userPosts, userDetails, isCurrentUser } = useSelector((state) => state.userActivity);
   const [forumBanners, setForumBanners] = useState({});
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const getForumBanners = async (posts) => {
@@ -36,11 +37,30 @@ export default function UserPosts() {
   }
 
   useEffect(() => {
-    getForumBanners(userPosts);
+    getForumBanners(userPosts).then(() => setLoading(false));
   }, []);
 
   return (
+    loading ? 
+    <Box sx={{ width: '100%' }}>
+    {Array.from({ length: userPosts?.length || 1 }).map((_, index) => (
+      <Skeleton key={index} variant="rounded" height={80} sx={{ my: 1 }} />
+    ))}
+    </Box> :
     <>
+      {userPosts?.length === 0 ? 
+      <Typography
+      component="span"
+      variant="h3"
+      sx={{
+        color: "#414141",
+        display: "inline",
+        fontWeight: "500",
+        fontSize: "16px",
+      }}
+      >
+        {isCurrentUser ? 'You have' : `${userDetails.username} has`} not posted yet<br />
+      </Typography> :
       <List sx={{ width: "100%" }}>
         {userPosts.map((post) => {
           return (
@@ -126,6 +146,7 @@ export default function UserPosts() {
           );
         })}
       </List>
+      }
     </>
   );
 }

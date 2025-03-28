@@ -1,10 +1,12 @@
 import { useSelector } from "react-redux";
 import {
   Avatar,
+  Box,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Skeleton,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -14,6 +16,7 @@ import { useState, useEffect } from "react";
 import { formatDate } from "../../../../utils/timestamp";
 import axiosInstance from "../../../../utils/axiosInstance";
 
+
 export default function UserOverview() {
   const userActivity = useSelector((state) => state.userActivity);
   const navigate = useNavigate();
@@ -21,6 +24,7 @@ export default function UserOverview() {
   const [formattedComments, setFormattedComments] = useState([
     { topic: {}, forum: {} },
   ]);
+  const [loading, setLoading] = useState(true);
   
   const combinedActivity = [
     ...(userActivity?.userPosts?.map((post) => ({ ...post, type: "post" })) ||
@@ -61,7 +65,6 @@ export default function UserOverview() {
           };
         })
       );
-      console.log(formattedComments);
 
       setFormattedComments(formattedComments);
     } catch (error) {
@@ -98,11 +101,32 @@ export default function UserOverview() {
 
   useEffect(() => {
     getForumBanners(userActivity?.userPosts);
-    getFormattedComments(userActivity?.userComments);
+    getFormattedComments(userActivity?.userComments).then(() => setLoading(false));
   }, []);
 
   return (
+    loading ? 
+    <Box sx={{ width: '100%' }}>
+    {Array.from({ length: (userActivity?.userPosts?.length + userActivity?.userComments?.length ) || 1 }).map((_, index) => (
+      <Skeleton key={index} variant="rounded" height={80} sx={{ my: 1 }} />
+    ))}
+    </Box>
+    :
     <>
+    {userActivity?.userPosts?.length + userActivity?.userComments?.length === 0 ? 
+      <Typography
+      component="span"
+      variant="h3"
+      sx={{
+        color: "#414141",
+        display: "inline",
+        fontWeight: "500",
+        fontSize: "16px",
+      }}
+      >
+        {userActivity?.isCurrentUser ? 'You have' : `${userDetails.username} has`} not posted anything or commented on any discussions yet<br />
+      </Typography> 
+      :
       <div>
         <List>
           {combinedActivity.map((activity) => {
@@ -292,6 +316,7 @@ export default function UserOverview() {
           })}
         </List>
       </div>
+    }
     </>
   );
 }

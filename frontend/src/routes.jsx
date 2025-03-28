@@ -24,7 +24,7 @@ import UserActivity from "./pages/UserActivity/Index.jsx";
 import UserOverview from "./pages/UserActivity/Components/UserOverview.jsx";
 import UserPosts from "./pages/UserActivity/Components/UserPosts.jsx";
 import UserComments from "./pages/UserActivity/Components/UserComments.jsx";
-
+import LikedPosts from "./pages/UserActivity/Components/LikedPosts.jsx";
 
 const GoogleWrapper = ({Outlet}) => {
   return (
@@ -78,7 +78,7 @@ const router = createBrowserRouter([
         { path: "", element: <UserOverview /> },
         { path: "posts", element: <UserPosts/> },
         { path: "comments", element: <UserComments/> },
-        { path: "liked"},
+        { path: "liked", element: <LikedPosts/>},
         { path: "saved"},
         { catchAll: true },
       ] },

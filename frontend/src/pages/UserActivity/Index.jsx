@@ -10,10 +10,10 @@ import {
   setUserActivity,
 } from "../../store/slices/userActivitySlice";
 import axios from "axios";
+import CircularSpinner from "../../components/CircularSpinner";
 
 export default function UserActivity() {
   const userActivity = useSelector((state) => state.userActivity);
-  // const isLoading = useSelector((state) => state.loading.isLoading);
   const [loading, setLoading] = useState(true);
   const [empty, setEmpty] = useState(false);
   const { username } = useParams();
@@ -21,7 +21,6 @@ export default function UserActivity() {
 
   useEffect(() => {
     async function userActivityLoader(username) {
-      if (username !== userActivity.userDetails.username) {
         try {
           dispatch(clearUserActivity());
           const userDetails = await axios.get(
@@ -33,10 +32,12 @@ export default function UserActivity() {
         } catch (error) {
           console.log(error.message);
         }
-      }
     }
+
     userActivityLoader(username).then(() => setLoading(false));
-  }, [dispatch, username, userActivity.userDetails.username]);
+    console.log(userActivity);
+    
+  }, [dispatch]);
 
   const dummyForum = {
     forum_id: "123",
@@ -56,7 +57,7 @@ export default function UserActivity() {
   };
 
   if (loading) {
-    return <h1>Loading...</h1>;
+    return <CircularSpinner />;
   } else {
     return (
       <Container
