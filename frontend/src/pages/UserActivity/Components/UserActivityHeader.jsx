@@ -5,6 +5,7 @@ const UserActivityHeader = ({ avatarUrl, username, name }) => {
     <Box display="flex" alignItems="center">
       <Avatar
         src={
+          avatarUrl ||
           "https://images.unsplash.com/photo-1495745966610-2a67f2297e5e?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGhvdG9ncmFwaGVyfGVufDB8fDB8fHww"
         }
         alt={username}

@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import userBackdrop from "../../assets/UserProfileBackdrop.png"
 import AnimatedLayout from "../../components/AnimatedLayout.jsx";
 export default function Index() {
+  const [change, setChange] = useState(0);
   const [text, setText] = useState("");
   const { userPostCount } = useSelector(state => state.userPosts.userPostCount);
   const [user, setUser] = useState({
@@ -41,7 +42,7 @@ export default function Index() {
     };
 
     fetchData(); 
-  }, []);
+  }, [change]);
 
   const getCookie = (name) => {
     const value = `; ${document.cookie}`;
@@ -120,6 +121,7 @@ export default function Index() {
             country={user.country}
             gender={user.gender}
             dob={new Date(user.dob)}
+            setChange={setChange}
           />
         </Grid>
       </Grid>

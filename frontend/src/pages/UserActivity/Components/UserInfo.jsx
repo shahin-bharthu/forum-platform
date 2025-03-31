@@ -5,7 +5,7 @@ import {
   Button,
   Typography,
   Divider,
-  Link,
+  Avatar,
   Stack,
   Tooltip,
   Chip,
@@ -29,13 +29,23 @@ import {
   QuestionAnswerRounded,
 } from "@mui/icons-material";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { stringToColor } from "../../../../utils/avatarColor";
 
-export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
+export default function UserInfo({
+  user,
+  userDoj,
+  forumsCreated,
+  postLength,
+  commentlength,
+}) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [currentUrl, setCurrentUrl] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -79,7 +89,7 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
       >
         <CardContent>
           <Tooltip
-            title={forum.name}
+            title={user}
             placement="top-start"
             slotProps={{
               popper: {
@@ -107,8 +117,7 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
                 width: "90%",
               }}
             >
-              {forum.name}
-              {/* Ocar Piastri */}
+              {user}
             </Typography>
           </Tooltip>
           <Box
@@ -147,7 +156,7 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
                 fontSize: { xs: "0.75rem", sm: "0.875rem" },
               }}
             >
-              user since {formatDate(forum.createdAt)}
+              user since {formatDate(userDoj)}
             </Typography>
           </Stack>
 
@@ -162,33 +171,33 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
             }}
           >
             <Tooltip title="Number of posts">
-            <Chip
-              icon={ <NumbersRoundedIcon/> }
-              label={postLength}//insert no of posts
-              sx={{
-                "& .MuiChip-icon": {
-                  fontSize: { xs: "1rem", sm: "1.25rem" },
-                },
-                "& .MuiChip-label": {
-                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                },
-              }}
-            />
+              <Chip
+                icon={<NumbersRoundedIcon />}
+                label={postLength}
+                sx={{
+                  "& .MuiChip-icon": {
+                    fontSize: { xs: "1rem", sm: "1.25rem" },
+                  },
+                  "& .MuiChip-label": {
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  },
+                }}
+              />
             </Tooltip>
-              <Tooltip title="Number of comments">
-                <Chip
-                  icon={<QuestionAnswerRounded />}
-                  label={20}//insert noo of comments
-                  sx={{
-                    "& .MuiChip-icon": {
-                      fontSize: { xs: "1rem", sm: "1.25rem" },
-                    },
-                    "& .MuiChip-label": {
-                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                    },
-                  }}
-                />
-              </Tooltip>
+            <Tooltip title="Number of comments">
+              <Chip
+                icon={<QuestionAnswerRounded />}
+                label={commentlength}
+                sx={{
+                  "& .MuiChip-icon": {
+                    fontSize: { xs: "1rem", sm: "1.25rem" },
+                  },
+                  "& .MuiChip-label": {
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  },
+                }}
+              />
+            </Tooltip>
           </Stack>
         </CardContent>
 
@@ -214,29 +223,50 @@ export default function UserInfo({ forum, creator, postLength, setIsPrivate }) {
               Forums Created
             </Typography>
 
-            <Stack
-              direction="row"
-              alignItems="center"
-              spacing={1}
-              sx={{ width: "100%", mb: 2 }}
-            >
-              <FaceOutlinedIcon />
-              <Typography variant="body2" fontWeight="medium">
-                {creator}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                (creator)
-              </Typography>
-            </Stack>
-
-            {/* <Button
-              variant="contained"
-              startIcon={<EmailIcon />}
-              size="small"
-              sx={{ minWidth: 150 }}
-            >
-              Message Admin
-            </Button> */}
+            {forumsCreated.length > 0 &&
+              forumsCreated.map((forum) => {
+                return (
+                  <>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={1}
+                      sx={{
+                        width: "100%",
+                        m: 0.5,
+                        cursor: "pointer",
+                        "&:hover": {
+                          backgroundColor: "rgba(105, 27, 154, 0.23)", // Optional: add a white background on hover
+                        },
+                        p: 1,
+                        borderRadius: 3,
+                      }}
+                      onClick={() => {
+                        navigate(`/forum/${forum.forum_id}`);
+                      }}
+                    >
+                      <Avatar
+                        alt={forum.name}
+                        src="/static/images/avatar/1.jpg"
+                        sx={{
+                          width: 33,
+                          height: 33,
+                          bgcolor: stringToColor(forum.name),
+                        }}
+                      />
+                      <div style={{ display:"flex", justifyContent: "space-between", width:"100%"}} >
+                      <div style={{display:"flex", flexDirection:"column", alignItems:"flex-start", justifyContent:"start"}} >
+                      <Typography variant="subtitle2" sx={{m:0,p:0}} >{forum.name}</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{m:0,p:0}} >
+                        {forum.subscriber_count} {forum.subscriber_count > 1 ? "members" : "member"}
+                        </Typography>
+                      </div>
+                      <Button size="small" sx={{}} >Subscribe</Button>
+                      </div>
+                    </Stack>
+                  </>
+                );
+              })}
           </Stack>
         </CardActions>
       </Card>

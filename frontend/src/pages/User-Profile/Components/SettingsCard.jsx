@@ -161,7 +161,7 @@ export default function SettingsCard(props) {
       dispatch(setNotification({message:response.data.message, type:null}))
       setTimeout(() => {
         dispatch(clearNotification())
-        navigate("/user/edit-profile");
+        props.setChange(prev=>prev+1);
       }, 1500);
 
       setDialogOpen(false);

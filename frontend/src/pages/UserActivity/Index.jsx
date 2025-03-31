@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import UserActivityHeader from "./Components/UserActivityHeader";
 import { useDispatch, useSelector } from "react-redux";
-import { Container, Grid2 as Grid, Typography } from "@mui/material";
+import { Container, Grid2 as Grid } from "@mui/material";
 import ActivityTabs from "./Components/ActivityTabs";
 import { Outlet, useParams } from "react-router-dom";
 import UserInfo from "./Components/UserInfo";
@@ -10,6 +10,7 @@ import {
   setUserActivity,
 } from "../../store/slices/userActivitySlice";
 import axios from "axios";
+import axiosInstance from "../../../utils/axiosInstance";
 
 export default function UserActivity() {
   const userActivity = useSelector((state) => state.userActivity);
@@ -21,22 +22,28 @@ export default function UserActivity() {
 
   useEffect(() => {
     async function userActivityLoader(username) {
-      if (username !== userActivity.userDetails.username) {
         try {
           dispatch(clearUserActivity());
           const userDetails = await axios.get(
             `http://localhost:8080/user/profile/${username}`,
             { withCredentials: true }
           );
-          dispatch(setUserActivity(userDetails.data.data));
+                    
+          const userAvatar = await axiosInstance.get(`/user/avatar/${userDetails.data.data.user.id}`,{responseType: "blob"});
+          const userAvatarUrl = URL.createObjectURL(userAvatar.data);
+          const userDetailsData = {
+            ...userDetails.data.data,
+            profilePhoto: userAvatarUrl,
+          };
+          dispatch(setUserActivity(userDetailsData));
+          // dispatch(setUserActivity(userDetails.data.data));
           // setEmpty(userActivityData.length === 0);
         } catch (error) {
           console.log(error.message);
         }
-      }
     }
     userActivityLoader(username).then(() => setLoading(false));
-  }, [dispatch, username, userActivity.userDetails.username]);
+  }, [dispatch]);
 
   const dummyForum = {
     forum_id: "123",
@@ -75,6 +82,7 @@ export default function UserActivity() {
             <UserActivityHeader
               username={userActivity?.userDetails?.username || "Your Username"}
               name={`${userActivity?.userDetails?.firstname} ${userActivity?.userDetails?.lastname}`}
+              avatarUrl={userActivity.profilePhoto}
             />
             <Grid item xs={12} sx={{ mt: 3 }}>
               <ActivityTabs isCurrentUser={userActivity.isCurrentUser} />
@@ -82,10 +90,11 @@ export default function UserActivity() {
           </Grid>
           <Grid size={{ xs: 0, sm: 5, md: 4, lg: 3, xl: 3 }}>
             <UserInfo
-              forum={dummyForum}
-              creator={dummyCreator}
-              postLength={dummyPostLength}
-              setIsPrivate={dummySetIsPrivate}
+              user={`${userActivity?.userDetails?.firstname} ${userActivity?.userDetails?.lastname}`}
+              userDoj={userActivity.userDetails.createdAt}
+              forumsCreated={userActivity.isCurrentUser? userActivity.userForums.publicForums :userActivity.userForums.publicUserForums}
+              postLength={userActivity.userPosts.length}
+              commentlength={userActivity.userComments.length}
             />
           </Grid>
         </Grid>
