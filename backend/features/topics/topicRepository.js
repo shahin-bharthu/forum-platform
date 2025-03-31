@@ -49,7 +49,7 @@ const getTopicsByCreator = async (id) => {
 }
 
 const getLikedTopics = async (id) => {
-    const myLikedTopics = await db.TopicLike.findAll({ where: { user_id: id }, include: 'topic' });
+    const myLikedTopics = await db.TopicLike.findAll({ where: { user_id: id }, order: [['createdAt', 'DESC']], include: 'topic' });
     return myLikedTopics;
 }
 

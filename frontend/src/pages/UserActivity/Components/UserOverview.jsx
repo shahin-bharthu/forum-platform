@@ -124,7 +124,7 @@ export default function UserOverview() {
         fontSize: "16px",
       }}
       >
-        {userActivity?.isCurrentUser ? 'You have' : `${userDetails.username} has`} not posted anything or commented on any discussions yet<br />
+        {userActivity?.isCurrentUser ? 'You have' : `${userActivity?.userDetails?.username} has`} not posted anything or commented on any discussions yet<br />
       </Typography> 
       :
       <div>

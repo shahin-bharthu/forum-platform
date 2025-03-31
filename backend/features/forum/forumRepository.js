@@ -55,7 +55,7 @@ const getForumByForumId = async (forum_id) => {
 }
 
 const getForumsByCreator = async (id) => {
-    return await db.Forum.findAll({ where: { createdBy: id } });
+    return await db.Forum.findAll({ where: { createdBy: id }, order: [['createdAt', 'DESC']] });
 }
 
 const archiveForum = async (userId, id) => {

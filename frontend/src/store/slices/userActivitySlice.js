@@ -7,6 +7,7 @@ const initialState = {
     userPosts: [],
     userComments: [],
     likedPosts: [],
+    profilePhoto: null
     // savedPosts: [],
 }
 
@@ -22,6 +23,7 @@ const userActivitySlice = createSlice({
                 state.userPosts = action.payload.myTopics;
                 state.userComments = action.payload.myComments;
                 state.likedPosts = action.payload.likedTopics;
+                state.profilePhoto = action.payload.profilePhoto;
             }
             // if (action.payload.profilePhoto) {
             //     state.profilePhoto = action.payload.profilePhoto;
@@ -33,7 +35,8 @@ const userActivitySlice = createSlice({
             state.userForums = {};
             state.userPosts = [];
             state.userComments = [];
-            state.likedPosts = [];        
+            state.likedPosts = [];      
+            state.profilePhoto = null;  
         }
     },
 })
