@@ -161,15 +161,16 @@ const SearchResults = () => {
                   sx={{cursor: 'pointer', wordBreak: 'break-word'}}
                   onClick={() => navigate(`/post/${post.id}`)}
                   primary={highlightText(post.title, params.searchText)}
-                  secondary={highlightText(Children.toArray(renderHTML(post.content)).map(child => 
-                          typeof child.props?.children === 'string' 
-                            ? child.props.children 
-                            : ''
-                        )
-                        .filter(Boolean)
-                        .join(' '), 
-                    params.searchText
-                  )}
+                  // secondary={highlightText(Children.toArray(renderHTML(post.content)).map(child => 
+                  //         typeof child.props?.children === 'string' 
+                  //           ? child.props.children 
+                  //           : ''
+                  //       )
+                  //       .filter(Boolean)
+                  //       .join(' '), 
+                  //   params.searchText
+                  // )}
+                  secondary={renderHTML(post.content)}
                   />
               </ListItem>
               <Divider variant="middle" component="li" sx={{my: 0.5}}/>

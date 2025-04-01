@@ -252,6 +252,7 @@ export default function MyPosts() {
                     <Avatar
                       aria-label="Forum Banner"
                       src={forumBanner[topic.forum_id]}
+                      sx={{ width: 32, height: 32 }}
                     >
                       {topic.forum.name}
                     </Avatar>
@@ -262,6 +263,7 @@ export default function MyPosts() {
                     href={`/forum/${topic.forum.forum_id}`}
                     color="inherit"
                     underline="hover"
+                    fontSize={14}
                   >
                     {topic.forum.name}
                   </Link>
@@ -287,8 +289,8 @@ export default function MyPosts() {
                 onClick={() => navigate(`/post/${topic.id}`)}
               >
                 <Typography
-                  variant="h6"
-                  sx={{ textAlign: "left", wordBreak: "break-word" }}
+                  variant="body1"
+                  sx={{ textAlign: "left", wordBreak: "break-word", fontWeight: 450 }}
                 >
                   {topic.title}
                 </Typography>
@@ -303,7 +305,7 @@ export default function MyPosts() {
                 </Typography>
               </Button>
                 <IconButton onClick={() => navigate(`/post/${topic.id}`)}>
-                  <ChatBubbleOutlineIcon />
+                  <ChatBubbleOutlineIcon sx={{width: 20, height: 20}}/>
                 </IconButton>
                 <ExpandMore
                   expand={expanded[index].isExpanded}

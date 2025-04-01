@@ -36,8 +36,6 @@ export default function UserActivity() {
             profilePhoto: userAvatarUrl,
           };
           dispatch(setUserActivity(userDetailsData));
-          // dispatch(setUserActivity(userDetails.data.data));
-          // setEmpty(userActivityData.length === 0);
         } catch (error) {
           console.log(error.message);
         }

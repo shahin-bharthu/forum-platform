@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../../../utils/timestamp";
 import { Tooltip, Typography } from "@mui/material";
 import { FavoriteRounded } from "@mui/icons-material";
+import { renderHTML } from "../../PostDetails/Components/CodeBlockViewer";
 
 
 export default function LikedPosts() {
@@ -77,7 +78,7 @@ export default function LikedPosts() {
                           fontSize: "13px",
                         }}
                       >
-                        {post.topic.content} <br />
+                        {renderHTML(post.topic.content)} <br />
                       </Typography>
                       <span style={{ fontSize: "12px", display: "flex", alignItems: "center", marginTop: "5px" }}>
                         <FavoriteRounded sx={{width: 18, height: 16}}/>

@@ -109,16 +109,16 @@ export default function RecentNewForumsCard({ recentForumData = [], }) {
               <Avatar
                 aria-label="Forum Banner"
                 src={forum.avatarUrl}
-                sx={{ width: 75, height: 75 }}>
+                sx={{ width: 40, height: 40 }}>
                 {forum.name}
               </Avatar>
             }
           />
           <CardContent sx={{ py: 0 }}>
-            <Typography gutterBottom variant="body1" component="div" fontWeight='fontWeightMedium'>
+            <Typography gutterBottom variant="subtitle2" component="div">
               {forum.name}
             </Typography>
-            <Typography gutterBottom variant="body2" sx={{ color: "text.secondary", width: '90%', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', display: 'inline-block', px: 2 }}>
+            <Typography gutterBottom variant="caption" sx={{ color: "text.secondary", width: '90%', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', display: 'inline-block', px: 1 }}>
               {forum.purpose}
             </Typography>
           </CardContent>
@@ -128,7 +128,7 @@ export default function RecentNewForumsCard({ recentForumData = [], }) {
                 size="small"
                 variant='contained'
                 color="primary"
-                sx={{ width: '70%' }}
+                sx={{ width: '60%' }}
                 onClick={(event) =>
                   handleViewDetails(event, forum.forum_id)
                 }

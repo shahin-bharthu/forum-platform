@@ -11,8 +11,8 @@ const useForumNames = () => {
             try {
                 setIsLoading(true);
                 const userForumResponse = await axiosInstance.get('http://localhost:8080/forum/my-forums');
-                const userPublicForumData = userForumResponse.data.publicUserForums
-                const userPrivateForumData = userForumResponse.data.privateUserForums
+                const userPublicForumData = userForumResponse.data.publicForums
+                const userPrivateForumData = userForumResponse.data.privateForums
 
                 const subbedForumResponse = await axiosInstance.get('http://localhost:8080/forum/subscribed-forums');
 
