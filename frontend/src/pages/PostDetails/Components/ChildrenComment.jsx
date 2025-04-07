@@ -1,4 +1,4 @@
-import { Avatar, Card, CardActions, CardContent, CardHeader, IconButton, styled, Typography, CircularProgress, Box } from "@mui/material";
+import { Avatar, Card, CardActions, CardContent, CardHeader, IconButton, styled, Typography, CircularProgress, Box, Link } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useState, useEffect, useCallback } from "react";
@@ -143,7 +143,8 @@ export default function ChildrenComments({ parentId, childRefreshKey }) {
                                 }} 
                             />
                         } 
-                        title={reply.user.username}
+                        // title={reply.user.username}
+                        title ={<Link href={`/user/${reply.user.username}`} color="inherit" underline="hover" >{reply.user.username}</Link>}
                         subheader={formatDate(reply.createdAt)}
                     />
                     <CardContent sx={{ py: 0 }}>

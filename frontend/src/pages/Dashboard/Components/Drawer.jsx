@@ -1,26 +1,55 @@
-import { useCallback, useState, useEffect } from 'react';
-import { Box, Drawer, CssBaseline, Toolbar, List, ListItem, ListItemButton, ListItemIcon, ListItemText, DialogTitle, Button } from '@mui/material';
-import CombinedAppBar from './AppBar';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import menuList from '../../../../utils/sidebarlist';
-import { useNavigate, useLocation } from 'react-router-dom';
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import { useDispatch } from 'react-redux';
-import { clearUserProfile, setUserProfile } from '../../../store/slices/userSlice';
-import axiosInstance from '../../../../utils/axiosInstance';
-
+import { useState, useEffect } from "react";
+import {
+  Box,
+  Drawer,
+  CssBaseline,
+  Toolbar,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  IconButton,
+  Button,
+  Tooltip,
+} from "@mui/material";
+import CombinedAppBar from "./AppBar";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import menuList from "../../../../utils/sidebarlist";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import axiosInstance from "../../../../utils/axiosInstance";
+import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 const drawerWidth = 200;
+
+const openedMixin = (theme) => ({
+  width: drawerWidth,
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: "hidden",
+});
+
+const closedMixin = (theme) => ({
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: "hidden",
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up("sm")]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
 
 export default function ClippedDrawer() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
-
+  const [miniOpen, setMiniOpen] = useState(false);
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,30 +57,34 @@ export default function ClippedDrawer() {
 
   useEffect(() => {
     const currentPath = location.pathname;
-    const activeMenu = menuList.find(item => item.path === currentPath);
+    const activeMenu = menuList.find((item) => item.path === currentPath);
     if (activeMenu) {
       setActiveItem(activeMenu.path);
     }
 
     async function getCurrentUser() {
       try {
-      const currentUser = await axiosInstance.get('/user');
-      
-      const response = await axiosInstance.get(`/user/avatar/${currentUser.data.user.id}`,{responseType: "blob"});
-      
-      if (response.data) {
-          const reader = new FileReader()
+        const currentUser = await axiosInstance.get("/user");
+
+        const response = await axiosInstance.get(
+          `/user/avatar/${currentUser.data.user.id}`,
+          { responseType: "blob" }
+        );
+
+        if (response.data) {
+          const reader = new FileReader();
           reader.onloadend = () => {
-            dispatch(setUserProfile({
-              userName:currentUser.data.user.username,
-              profilePhoto:reader.result
-            }))
-          }
-          reader.readAsDataURL(response.data)
+            dispatch(
+              setUserProfile({
+                userName: currentUser.data.user.username,
+                profilePhoto: reader.result,
+              })
+            );
+          };
+          reader.readAsDataURL(response.data);
         }
-      }
-      catch (error) {
-        console.error('Error fetching username or profile photo: ', error);
+      } catch (error) {
+        console.error("Error fetching username or profile photo: ", error);
       }
     }
 
@@ -63,42 +96,51 @@ export default function ClippedDrawer() {
   };
 
   const handleMenuItemClick = (path) => {
-      navigate(path);
-      setActiveItem(path);
+    navigate(path);
+    setActiveItem(path);
     setMobileOpen(false);
   };
 
   const handleHomeClickEvent = (event) => {
     setActiveItem(null);
   };
+  const handleminimizeDrawer =()=>{
+    setMiniOpen(!miniOpen);
+  }
 
   useEffect(() => {
-    const homeElement = document.getElementById('home'); // Assuming ComponentA has an id 'myButton'
-    homeElement.addEventListener('homeClick', handleHomeClickEvent);
-    return () => homeElement.removeEventListener('homeClick', handleHomeClickEvent);
-
+    const homeElement = document.getElementById("home"); // Assuming ComponentA has an id 'myButton'
+    homeElement.addEventListener("homeClick", handleHomeClickEvent);
+    return () =>
+      homeElement.removeEventListener("homeClick", handleHomeClickEvent);
   }, []);
 
   const drawer = (
     <div>
       <Toolbar />
-      <Box sx={{ overflow: 'auto' }}>
+      <Box sx={{ overflow: "hidden" }}>
         <List>
           {menuList.map((item) => (
-            <ListItem key={item.text} disablePadding>
+            <ListItem key={item.text} disablePadding sx={{mx:0.5}}>
               <ListItemButton
                 onClick={() => handleMenuItemClick(item.path)}
                 sx={{
-                  backgroundColor: item.path === activeItem ? theme.palette.action.selected : 'transparent',
-                  '&:hover': {
-                    backgroundColor: item.path === activeItem ? theme.palette.action.selected : theme.palette.action.hover,
-                  }
+                  backgroundColor:
+                    item.path === activeItem
+                      ? theme.palette.action.selected
+                      : "transparent",
+                  "&:hover": {
+                    backgroundColor:
+                      item.path === activeItem
+                        ? theme.palette.action.selected
+                        : theme.palette.action.hover,
+                  },
                 }}
               >
-                <ListItemIcon>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.text} />
+                <Tooltip title={miniOpen ? item.text : null} placement="top" >
+                <ListItemIcon sx={{my:0.5}}>{item.icon}</ListItemIcon>
+                </Tooltip>
+                { !miniOpen? <ListItemText primary={item.text} /> : null}
               </ListItemButton>
             </ListItem>
           ))}
@@ -109,7 +151,7 @@ export default function ClippedDrawer() {
 
   return (
     <>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <CombinedAppBar handleDrawerToggle={handleDrawerToggle} />
         {/* Drawer for small screens */}
@@ -122,7 +164,10 @@ export default function ClippedDrawer() {
               keepMounted: true,
             }}
             sx={{
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
             }}
           >
             {drawer}
@@ -131,13 +176,48 @@ export default function ClippedDrawer() {
           // Drawer for larger screens
           <Drawer
             variant="permanent"
-            sx={{
+            sx={
+              miniOpen ?
+              {
+                width: 65,
+                flexShrink: 0,
+                [`& .MuiDrawer-paper`]: {
+                  ...closedMixin(theme),
+                  ...(mobileOpen && openedMixin(theme)),
+                },
+              }
+              :
+              {
               width: drawerWidth,
               flexShrink: 0,
-              [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-            }}
+              [`& .MuiDrawer-paper`]: {
+                width: drawerWidth,
+                boxSizing: "border-box",
+              },
+            }
+          }
           >
             {drawer}
+            <Button 
+            onClick={handleminimizeDrawer}
+            sx={{
+              position: "absolute",
+              bottom: 20,
+              left: 0,
+              right: 0,
+              marginLeft: "auto",
+              marginRight: "auto",
+              backgroundColor: theme.palette.background.paper,
+              color: theme.palette.text.secondary,
+            }}
+            >
+                <DoubleArrowIcon
+                  sx={{
+                    transition: 'transform 0.3s ease-in-out',
+                    transform: !miniOpen ? 'rotate(180deg)' : 'rotate(360deg)',
+                  }}
+                />
+            </Button>
           </Drawer>
         )}
       </Box>

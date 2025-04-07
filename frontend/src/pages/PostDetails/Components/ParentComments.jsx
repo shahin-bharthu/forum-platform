@@ -11,7 +11,8 @@ import {
     IconButton, 
     styled, 
     Typography, 
-    CircularProgress 
+    CircularProgress, 
+    Link 
 } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -201,7 +202,8 @@ export default function ParentComments({ postId, refreshKey }) {
                                     }} 
                                 />
                             }
-                            title={comment.user.username}
+                            // title={comment.user.username}
+                            title ={<Link href={`/user/${comment.user.username}`} color="inherit" underline="hover" >{comment.user.username}</Link>}
                             subheader={formatDate(comment.createdAt)}
                         />
                         <CardContent sx={{ py: 0 }}>

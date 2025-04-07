@@ -8,7 +8,7 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Avatar, Box, Button, Grid2 as Grid, Tooltip } from '@mui/material';
+import { Avatar, Box, Button, Grid2 as Grid, Link, Tooltip } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -238,8 +238,8 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
                   {topic.username?.[0]?.toUpperCase()}
                 </Avatar>
               }
-              title={topic.user.username}
-              
+              // title={topic.user.username }
+              title = {<Link href={`/user/${topic.user.username}`} color="inherit" underline="hover" >{topic.user.username}</Link>}
               subheader={<Tooltip title={new Date(topic.createdAt).toLocaleDateString('en-US', {
                 month: 'long',
                 day: 'numeric',

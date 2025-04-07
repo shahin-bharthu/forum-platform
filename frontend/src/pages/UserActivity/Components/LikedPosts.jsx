@@ -9,6 +9,7 @@ import { FavoriteRounded } from "@mui/icons-material";
 import { renderHTML } from "../../PostDetails/Components/CodeBlockViewer";
 
 
+
 export default function LikedPosts() {
   const { likedPosts } = useSelector((state) => state.userActivity);  
   const navigate = useNavigate();
