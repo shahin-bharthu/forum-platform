@@ -48,10 +48,11 @@ import axios from "axios";
 
 const StyledCardHeader = memo(
   styled(CardHeader)(({ theme }) => ({
+    padding: '16px 16px 10px 22px',
     ".MuiCardHeader-content": {
       display: "flex",
       alignItems: "center",
-      gap: theme.spacing(3),
+      gap: theme.spacing(1),
     },
     ".MuiCardHeader-title": {
       margin: 0,
@@ -428,6 +429,7 @@ export default function MyPosts() {
                     <Avatar
                       aria-label="Forum Banner"
                       src={forumBanner[topic.forum_id]}
+                      sx={{width: 30, height: 30}}
                     >
                       {topic.forumname}
                     </Avatar>
@@ -485,8 +487,9 @@ export default function MyPosts() {
                     href={`/forum/${topic.forumids}`}
                     color="inherit"
                     underline="hover"
+                    sx={{ fontSize: 13 }}
                   >
-                    {topic.forumname}
+                    {topic.forumname}&nbsp; &bull;
                   </Link>
                 }
                 subheader={
@@ -501,7 +504,7 @@ export default function MyPosts() {
                     )}
                     placement="right"
                   >
-                    {formatDate(topic.createdAt)}
+                    <span style={{fontSize: 12}}>{formatDate(topic.createdAt)}</span>
                   </Tooltip>
                 }
               />
@@ -510,8 +513,8 @@ export default function MyPosts() {
                 onClick={() => navigate(`/post/${topic.id}`)}
               >
                 <Typography
-                  variant="h6"
-                  sx={{ textAlign: "left", wordBreak: "break-word" }}
+                  variant="subtitle1"
+                  sx={{ textAlign: "left", wordBreak: "break-word", fontWeight: 450 }}
                 >
                   {topic.title}
                 </Typography>
@@ -544,13 +547,12 @@ export default function MyPosts() {
                 unmountOnExit
               >
                 <CardContent
-                  sx={{ px: 3, cursor: "pointer" }}
+                  sx={{ px: 3, py: 0, cursor: "pointer" }}
                   onClick={() => navigate(`/post/${topic.id}`)}
                 >
                   <Typography
                     variant="body2"
                     sx={{
-                      marginBottom: 2,
                       textAlign: "left",
                       wordBreak: "break-word",
                       whiteSpace: "pre-wrap",

@@ -21,7 +21,6 @@ export default function SelectList({ selectedForumName, getForum }) {
     <Box sx={{ minWidth: 120 }}>
       <FormControl
         sx={{
-          mt: 2,
           width: "40%",
           "& .MuiOutlinedInput-root": {
             borderRadius: "28px",
