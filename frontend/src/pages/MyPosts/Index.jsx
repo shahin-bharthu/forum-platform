@@ -489,7 +489,7 @@ export default function MyPosts() {
                     underline="hover"
                     sx={{ fontSize: 13 }}
                   >
-                    {topic.forumname}&nbsp; &bull;
+                    {topic.forumname}
                   </Link>
                 }
                 subheader={
@@ -504,6 +504,7 @@ export default function MyPosts() {
                     )}
                     placement="right"
                   >
+                    &bull; &nbsp;
                     <span style={{fontSize: 12}}>{formatDate(topic.createdAt)}</span>
                   </Tooltip>
                 }

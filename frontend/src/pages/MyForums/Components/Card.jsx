@@ -60,10 +60,8 @@ const ForumCardSkeleton = memo(() => (
           alignItems: 'center'
         }}
       >
-        <Skeleton variant="circular" width={24} height={24}/>
-        <Skeleton variant="circular" width={24} height={24}/>
-        <Skeleton variant="circular" width={24} height={24}/>
-
+        <Skeleton variant="rounded" width={75} height={24}/>
+        {/* <Skeleton variant="circular" width={24} height={24}/> */}
       </Stack>
     </CardActions>
   </Card>
@@ -124,21 +122,17 @@ export default function MediaCard({
   if (isLoading) {
     return (
       <Grid container spacing={2}>
-        {/* {[1, 2, 3,4].map((_, index) => ( */}
-          {/* <Grid key={index} size={{ xs: 6, sm: 6, md: 12 }}          > */}
-            <ForumCardSkeleton />
-          {/* </Grid> */}
-        {/* ))} */}
+          <ForumCardSkeleton />
       </Grid>
     );
   }
 
   return (
-    <Card sx={{ maxWidth: 345, height: 300, transition: "transform 0.3s", transform: isHovered ? 'scale(1.03)' : 'scale(1)' , boxShadow: isHovered ? "0 0 10px rgba(0, 0, 0, 0.3)" : "none" }}>
+    <Card sx={{ maxWidth: 345, height: 270, transition: "transform 0.3s", transform: isHovered ? 'scale(1.03)' : 'scale(1)' , boxShadow: isHovered ? "0 0 10px rgba(0, 0, 0, 0.3)" : "none", borderRadius: 3 }}>
       <CardMedia sx={{ height: 140, cursor: "pointer" }} image={bannerUrl || defaultForumBanner } title={name} onClick={onViewDetails} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} />
-      <CardContent sx={{cursor: "pointer"}} onClick={onViewDetails} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+      <CardContent sx={{cursor: "pointer", paddingBottom: '0px'}} onClick={onViewDetails} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
         <Tooltip title={name} placement="top" >
-        <Typography gutterBottom variant="h5" component="div" sx={{width:'100%',textOverflow:'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', px: 2}}>
+        <Typography gutterBottom variant="h6" component="div" sx={{width:'100%',textOverflow:'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', px: 2}}>
           {name}
         </Typography>
         </Tooltip>
@@ -146,7 +140,7 @@ export default function MediaCard({
           {purpose}
         </Typography>
       </CardContent>
-      <CardActions sx={{justifyContent: 'right'}}>
+      <CardActions sx={{justifyContent: 'right', padding: '0px 8px 0px 8px'}}>
         {myForum && (
           <>
           <Tooltip title="Edit Forum">
