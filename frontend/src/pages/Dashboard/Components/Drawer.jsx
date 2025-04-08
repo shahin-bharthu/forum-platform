@@ -12,6 +12,7 @@ import {
   IconButton,
   Button,
   Tooltip,
+  Divider,
 } from "@mui/material";
 import CombinedAppBar from "./AppBar";
 import { useTheme } from "@mui/material/styles";
@@ -20,7 +21,7 @@ import menuList from "../../../../utils/sidebarlist";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import axiosInstance from "../../../../utils/axiosInstance";
-import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
+import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
 const drawerWidth = 200;
 
 const openedMixin = (theme) => ({
@@ -30,6 +31,7 @@ const openedMixin = (theme) => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: "hidden",
+  whiteSpace: "nowrap",
 });
 
 const closedMixin = (theme) => ({
@@ -42,6 +44,7 @@ const closedMixin = (theme) => ({
   [theme.breakpoints.up("sm")]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
+  whiteSpace: "nowrap",
 });
 
 export default function ClippedDrawer() {
@@ -104,9 +107,9 @@ export default function ClippedDrawer() {
   const handleHomeClickEvent = (event) => {
     setActiveItem(null);
   };
-  const handleminimizeDrawer =()=>{
+  const handleminimizeDrawer = () => {
     setMiniOpen(!miniOpen);
-  }
+  };
 
   useEffect(() => {
     const homeElement = document.getElementById("home"); // Assuming ComponentA has an id 'myButton'
@@ -121,7 +124,7 @@ export default function ClippedDrawer() {
       <Box sx={{ overflow: "hidden" }}>
         <List>
           {menuList.map((item) => (
-            <ListItem key={item.text} disablePadding sx={{mx:0.5}}>
+            <ListItem key={item.text} disablePadding sx={{ mx: 0.5 }}>
               <ListItemButton
                 onClick={() => handleMenuItemClick(item.path)}
                 sx={{
@@ -137,10 +140,10 @@ export default function ClippedDrawer() {
                   },
                 }}
               >
-                <Tooltip title={miniOpen ? item.text : null} placement="top" >
-                <ListItemIcon sx={{my:0.5}}>{item.icon}</ListItemIcon>
+                <Tooltip title={miniOpen ? item.text : null} placement="top">
+                  <ListItemIcon sx={{ my: 0.5 }}>{item.icon}</ListItemIcon>
                 </Tooltip>
-                { !miniOpen? <ListItemText primary={item.text} /> : null}
+                {<ListItemText primary={item.text} /> }
               </ListItemButton>
             </ListItem>
           ))}
@@ -151,7 +154,7 @@ export default function ClippedDrawer() {
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
+      <Box component="nav" sx={{ display: "flex" }}>
         <CssBaseline />
         <CombinedAppBar handleDrawerToggle={handleDrawerToggle} />
         {/* Drawer for small screens */}
@@ -177,46 +180,60 @@ export default function ClippedDrawer() {
           <Drawer
             variant="permanent"
             sx={
-              miniOpen ?
-              {
-                width: 65,
-                flexShrink: 0,
-                [`& .MuiDrawer-paper`]: {
-                  ...closedMixin(theme),
-                  ...(mobileOpen && openedMixin(theme)),
-                },
-              }
-              :
-              {
-              width: drawerWidth,
-              flexShrink: 0,
-              [`& .MuiDrawer-paper`]: {
-                width: drawerWidth,
-                boxSizing: "border-box",
-              },
+              miniOpen
+                ? {
+                    width: 65,
+                    flexShrink: 0,
+                    [`& .MuiDrawer-paper`]: {
+                      ...closedMixin(theme),
+                    },
+                  }
+                : {
+                    width: drawerWidth,
+                    flexShrink: 0,
+                    [`& .MuiDrawer-paper`]: {
+                      width: drawerWidth,
+                      boxSizing: "border-box",
+                      ...openedMixin(theme),
+                    },
+                  }
             }
-          }
           >
             {drawer}
-            <Button 
-            onClick={handleminimizeDrawer}
-            sx={{
-              position: "absolute",
-              bottom: 20,
-              left: 0,
-              right: 0,
-              marginLeft: "auto",
-              marginRight: "auto",
-              backgroundColor: theme.palette.background.paper,
-              color: theme.palette.text.secondary,
-            }}
+            {/* <Divider
+              sx={{
+                position: "absolute",
+                bottom: 70,
+                left: 0,
+                right: 0,
+              }}
+            /> */}
+            <Button
+              size="large"
+              variant="standard"
+              onClick={handleminimizeDrawer}
+              sx={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                p:2,
+                borderRadius:0,
+                marginLeft: "auto",
+                marginRight: "auto",
+                borderTopWidth: 1,
+                borderTopStyle: "solid",
+                borderTopColor: "#ccc",
+                backgroundColor: theme.palette.background.paper,
+                color: theme.palette.text.secondary,
+              }}
             >
-                <DoubleArrowIcon
-                  sx={{
-                    transition: 'transform 0.3s ease-in-out',
-                    transform: !miniOpen ? 'rotate(180deg)' : 'rotate(360deg)',
-                  }}
-                />
+              <DoubleArrowIcon
+                sx={{
+                  transition: "transform 0.3s ease-in-out",
+                  transform: !miniOpen ? "rotate(180deg)" : "rotate(360deg)",
+                }}
+              />
             </Button>
           </Drawer>
         )}
