@@ -15,6 +15,7 @@ import { renderHTML } from "../../PostDetails/Components/CodeBlockViewer";
 import { useState, useEffect } from "react";
 import { formatDate } from "../../../../utils/timestamp";
 import axiosInstance from "../../../../utils/axiosInstance";
+import axios from "axios";
 
 
 export default function UserOverview() {
@@ -40,9 +41,9 @@ export default function UserOverview() {
     try {
       const formattedComments = await Promise.all(
         comments.map(async (comment) => {
-          const banner = await axiosInstance.get(
-            `/forum/banner/${comment.topic.forum_id}`,
-            { responseType: "blob" }
+          const banner = await axios.get(
+            `http://localhost:8080/forum/banner/${comment.topic.forum_id}`,
+            { responseType: "blob", withCredentials: true }
           );
 
           if (banner.data) {
@@ -56,8 +57,8 @@ export default function UserOverview() {
             reader.readAsDataURL(banner.data);
           }
 
-          const forumDetails = await axiosInstance.get(
-            `/forum/${comment.topic.forum_id}`
+          const forumDetails = await axios.get(
+            `http://localhost:8080/forum/${comment.topic.forum_id}`, {withCredentials: true}
           );
           return {
             ...comment,
@@ -77,9 +78,9 @@ export default function UserOverview() {
     try {
       await Promise.all(
         posts.map(async (post) => {
-          const banner = await axiosInstance.get(
-            `/forum/banner/${post.forum_id}`,
-            { responseType: "blob" }
+          const banner = await axios.get(
+            `http://localhost:8080/forum/banner/${post.forum_id}`,
+            { responseType: "blob", withCredentials: true }
           );
 
           if (banner.data) {

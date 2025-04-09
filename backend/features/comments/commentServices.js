@@ -35,7 +35,7 @@ const getMyComments = async (id) => {
 
 const getCommentsByCreator = async (id) => {
     const comments = await commentRepository.getCommentsByCreator(id);
-    const activeComments = comments.filter(comment => comment.topic.isActive);
+    const activeComments = comments.filter(comment => (comment.topic.isActive));
     return activeComments;
 }
 

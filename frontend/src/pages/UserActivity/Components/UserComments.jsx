@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { formatDate } from "../../../../utils/timestamp";
 import axiosInstance from "../../../../utils/axiosInstance";
+import axios from "axios";
 
 
 export default function UserComments() {
@@ -30,9 +31,9 @@ export default function UserComments() {
     try {
       const formattedComments = await Promise.all(
         comments.map(async (comment) => {
-          const banner = await axiosInstance.get(
-            `/forum/banner/${comment.topic.forum_id}`,
-            { responseType: "blob" }
+          const banner = await axios.get(
+            `http://localhost:8080/forum/banner/${comment.topic.forum_id}`,
+            { responseType: "blob", withCredentials: true }
           );
 
           if (banner.data) {
@@ -172,7 +173,7 @@ export default function UserComments() {
                               year: "numeric",
                             }
                           )}>
-                          {" "}{formatDate(comment.createdAt)} ago <br />
+                          {" "}{formatDate(comment.createdAt)} {formatDate(comment.createdAt) ==='just now' ? '' : 'ago'} <br />
                         </Tooltip>
                       </span>
                       <Typography

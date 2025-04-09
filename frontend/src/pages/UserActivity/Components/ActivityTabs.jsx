@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import {Box, Tabs, Tab} from "@mui/material";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import { styled } from "@mui/system";
+
 
 const AntTabs = styled(Tabs)({
   borderBottom: "1px solid rgba(255, 255, 255, 0)",
@@ -37,12 +38,12 @@ LinkTab.propTypes = {
   selected: PropTypes.bool,
 };
 
-export default function ActivityTabs({ isCurrentUser } ) {
+export default function ActivityTabs({ isCurrentUser, tab } ) {
   const location = useLocation();
   
   //All tabs
   const allTabs = useMemo(() => [
-    { label: "Overview", path: "", index: 0, optional: false },
+    { label: "Overview", path: "overview", index: 0, optional: false },
     { label: "Posts", path: "posts", index: 1, optional: false },
     { label: "Comments", path: "comments", index: 2, optional: false },
     { label: "Liked", path: "liked", index: 3, optional: !isCurrentUser },
@@ -68,8 +69,10 @@ export default function ActivityTabs({ isCurrentUser } ) {
   // Update tab value when location changes
   useEffect(() => {
     const path = location.pathname;
+    const queryParams = new URLSearchParams(location.search);
+    const tabParam = queryParams.get("tab") || "overview";    
     const matchedTab = allTabs.find(tab => 
-      path.endsWith(`/${tab.path}`) || (tab.path === "" && path.endsWith("/"))
+      tabParam === tab.path || (tab.path === "" && path.endsWith("/"))
     );
     
     if (matchedTab && (!matchedTab.optional)) {
@@ -98,12 +101,11 @@ export default function ActivityTabs({ isCurrentUser } ) {
             <LinkTab 
               key={tab.path} 
               label={tab.label} 
-              to={tab.path} 
+              to={`?tab=${tab.path}`} 
             />
           ))}
         </AntTabs>
       </Box>
-      <Outlet />
     </>
   );
 }

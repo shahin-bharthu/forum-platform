@@ -10,6 +10,7 @@ import { formatDate } from "../../../../utils/timestamp";
 import { Box, Skeleton, Tooltip, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../../utils/axiosInstance";
+import axios from "axios";
 
 
 export default function UserPosts() {
@@ -21,7 +22,7 @@ export default function UserPosts() {
   const getForumBanners = async (posts) => {
     try {
       await Promise.all(posts.map(async (post) => {
-        const banner = await axiosInstance.get(`/forum/banner/${post.forum_id}`, {responseType: 'blob'});
+        const banner = await axios.get(`http://localhost:8080/forum/banner/${post.forum_id}`, {responseType: 'blob', withCredentials: true});
         
         if (banner.data) {
           const reader = new FileReader();
@@ -108,12 +109,11 @@ export default function UserPosts() {
                       >
                         <span style={{ fontSize: "13px" }}>
                           {" "}
-                          • {formatDate(post.createdAt)} ago
+                          • {formatDate(post.createdAt)} {formatDate(post.createdAt) ==='just now' ? '' : 'ago'}
                         </span>
                       </Tooltip>
                     </>
                   }
-                  // secondary={<span>{renderHTML(post.content)}</span>}
                   secondary={
                     <div
                       style={{

@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import UserActivityHeader from "./Components/UserActivityHeader";
 import { useDispatch, useSelector } from "react-redux";
 import { Container, Grid2 as Grid } from "@mui/material";
 import ActivityTabs from "./Components/ActivityTabs";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useLoaderData, useParams } from "react-router-dom";
 import UserInfo from "./Components/UserInfo";
 import {
   clearUserActivity,
@@ -12,8 +12,11 @@ import {
 import axios from "axios";
 import axiosInstance from "../../../utils/axiosInstance";
 import CircularSpinner from "../../components/CircularSpinner";
+import UserTabRouter from "./Components/UserTabRouter";
+
 
 export default function UserActivity() {
+  const {tab} = useLoaderData() || "overview";
   const userActivity = useSelector((state) => state.userActivity);
   const [loading, setLoading] = useState(true);
   const [empty, setEmpty] = useState(false);
@@ -29,7 +32,7 @@ export default function UserActivity() {
             { withCredentials: true }
           );
                     
-          const userAvatar = await axiosInstance.get(`/user/avatar/${userDetails.data.data.user.id}`,{responseType: "blob"});
+          const userAvatar = await axios.get(`http://localhost:8080/user/avatar/${userDetails.data.data.user.id}`,{responseType: "blob", withCredentials: true});
           const userAvatarUrl = URL.createObjectURL(userAvatar.data);
           const userDetailsData = {
             ...userDetails.data.data,
@@ -84,6 +87,7 @@ export default function UserActivity() {
             />
             <Grid item xs={12} sx={{ mt: 3 }}>
               <ActivityTabs isCurrentUser={userActivity.isCurrentUser} />
+              <UserTabRouter tab={tab} />
             </Grid>
           </Grid>
           <Grid size={{ xs: 0, sm: 5, md: 4, lg: 3, xl: 3 }}>
@@ -100,3 +104,5 @@ export default function UserActivity() {
     );
   }
 }
+
+

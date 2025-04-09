@@ -7,12 +7,12 @@ import CustomButton from "../../components/Button";
 import Button from "@mui/material/Button";
 import { useNavigate, useParams } from "react-router-dom";
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import { Card, CircularProgress, Stack } from "@mui/material";
 import ForumBannerUpload from "./Components/BannerUpload.jsx";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { useDispatch } from "react-redux";
 import { clearNotification, setNotification } from "../../store/slices/uiSlice.js";
+import ControlledSwitches from "./Components/Switch.jsx";
 
 const Index = ({isEdit}) => {
   const [forumData, setForumData] = useState();
@@ -31,6 +31,7 @@ const Index = ({isEdit}) => {
       if (forum_id) {
         const response = await axiosInstance.get(`/forum/forum-id/${forum_id}`);  
         setForumData(response.data.data);
+        setIsPublic(response.data.data.isPublic);
       }
       else {
         dispatch(setNotification({message: "Error fetching forum details. Please try again later!", type: "error"}));
@@ -114,7 +115,6 @@ const Index = ({isEdit}) => {
       }, 1000);
     } catch (error) {
       setIsSubmitting(false);
-      console.error("Error hai yehhhhhhhhhhh:", error);
       dispatch(setNotification({message:error.response?.data?.errors[0].msg || "An error occurred. Please try again later.", type:'error'}))
       setTimeout(() => {
         dispatch(clearNotification())
@@ -158,7 +158,7 @@ const Index = ({isEdit}) => {
         />
 
         <FormControlLabel 
-          control={<Switch checked={isPublic} onClick={handleSwitchToggle} />} 
+          control={<ControlledSwitches isChecked={isPublic} clickEvent={handleSwitchToggle} />} 
           label="Keep forum public" 
         />
         

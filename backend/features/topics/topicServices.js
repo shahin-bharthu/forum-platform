@@ -44,7 +44,7 @@ const getMyTopicsForProfile = async (id) => {
 
 const getTopicsByCreator = async (id) => {
     const topics = await topicRepository.getTopicsByCreator(id);
-    const activeTopics = topics.filter(topic => topic.isActive === true);
+    const activeTopics = topics.filter(topic => (topic.isActive === true && topic.forum.isPublic === true));
     return activeTopics;
 }
 

@@ -22,6 +22,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import axiosInstance from "../../../../utils/axiosInstance";
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
+import { setUserProfile } from "../../../store/slices/userSlice";
+
+
 const drawerWidth = 200;
 
 const openedMixin = (theme) => ({

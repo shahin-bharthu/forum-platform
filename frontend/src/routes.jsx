@@ -25,6 +25,7 @@ import UserOverview from "./pages/UserActivity/Components/UserOverview.jsx";
 import UserPosts from "./pages/UserActivity/Components/UserPosts.jsx";
 import UserComments from "./pages/UserActivity/Components/UserComments.jsx";
 import LikedPosts from "./pages/UserActivity/Components/LikedPosts.jsx";
+import UserTabRouter from "./pages/UserActivity/Components/UserTabRouter.jsx";
 
 const GoogleWrapper = ({Outlet}) => {
   return (
@@ -74,14 +75,16 @@ const router = createBrowserRouter([
       { path: "edit-forum/:forum_id", element: <AddForum isEdit={true}/> },
       { path: "forums", element: <AllForums /> },
       { path: "create-post", element: <CreatePost isEdit={false} /> },
-      { path: ":username", element: <UserActivity />, children: [
-        { path: "", element: <UserOverview /> },
-        { path: "posts", element: <UserPosts/> },
-        { path: "comments", element: <UserComments/> },
-        { path: "liked", element: <LikedPosts/>},
-        { path: "saved"},
-        { catchAll: true },
-      ] },
+      { 
+        path: ":username", 
+        element: <UserActivity />, 
+        loader: ({ request }) => {
+          const url = new URL(request.url);
+          const tab = url.searchParams?.get("tab") || "overview";
+          console.log(tab);
+          return { tab };
+        },
+      },
     ],
   },
   {
