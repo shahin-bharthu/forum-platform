@@ -305,7 +305,7 @@ export default function MyPosts() {
                 </Typography>
               </Button>
                 <IconButton onClick={() => navigate(`/post/${topic.id}`)}>
-                  <ChatBubbleOutlineIcon sx={{width: 20, height: 20}}/>
+                  <ChatBubbleOutlineIcon sx={{width: 20, height: 20, color: 'primary.dark'}}/>
                 </IconButton>
                 <ExpandMore
                   expand={expanded[index].isExpanded}

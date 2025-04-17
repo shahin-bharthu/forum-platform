@@ -299,7 +299,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
     <>
       <AppBar
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: "primary.main" }}
       >
         <Toolbar>
           <IconButton
@@ -328,7 +328,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
                 fontWeight: 700,
                 letterSpacing: ".3rem",
                 textDecoration: "none",
-                color: "inherit",
+                color: "primary.contrastText",
               }}
               ref={homeRef}
               onClick={handleHomeClick}
@@ -339,7 +339,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
           </Tooltip>
 
           <Box sx={{ flexGrow: 1 }} />
-          <Search>
+          <Search sx={{backgroundColor: "primary.light", borderRadius: 2}}>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -359,9 +359,10 @@ function CombinedAppBar({ handleDrawerToggle }) {
                 {searchForumsResults.length >= 0 && (
                   <Popper
                     sx={{
-                      width: "30%",
+                      width: { xs: "65%", sm: "38%", md: "70%", lg: "29%" },
                       height: "75%",
-                      mx: 53,
+                      ml: { xs: 15, sm: 30, md: 20, lg: 64 },
+                      mr: { xs: 15, sm: 10, md: 20, lg: 30 },
                       zIndex: "1300",
                       mt: 5,
                     }}
@@ -479,7 +480,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
                 onClick={handleCreatePost}
                 variant="contained"
                 startIcon={<AddIcon />}
-                sx={{ borderRadius: 28 }}
+                sx={{ borderRadius: 28, mr: 1, backgroundColor: "primary.light", ":hover": { opacity: 0.8 } }}
                 disableElevation
               >
                 Create
@@ -500,8 +501,10 @@ function CombinedAppBar({ handleDrawerToggle }) {
                 size="small"
                 onClick={handleProfileMenuOpen}
                 sx={{
+                  backgroundColor: "primary.light",
                   "&:hover": {
-                    backgroundColor: "rgba(255, 255, 255, 0.1)", // Optional: add a white background on hover
+                    backgroundColor: "primary.light",
+                    opacity: 0.8 // Optional: add a white background on hover
                   },
                   "& .MuiTouchRipple-root": {
                     color: "white", // Set the ripple color to white

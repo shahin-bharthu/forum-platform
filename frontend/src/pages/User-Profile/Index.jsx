@@ -83,11 +83,11 @@ export default function Index() {
           alt="avatar"
           style={{
             width: "100%",
-            height: "40vh",
+            height: "35vh",
             objectFit: "cover",
             objectPosition: "50% 50%",
           }}
-          src={userBackdrop}
+          src="https://cdn.pixabay.com/photo/2016/10/29/02/20/yellow-1779696_1280.jpg"
         />
       </Grid>
 

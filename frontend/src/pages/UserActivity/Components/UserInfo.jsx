@@ -133,7 +133,7 @@ export default function UserInfo({
               sx={{
                 mb: 1,
                 borderRadius: 5,
-                bgcolor: "#6a1b9a",
+                bgcolor: "primary.light",
                 justifyItems: "flex-start",
               }}
               startIcon={<Share />}

@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import { CardHeader, Grid2 as Grid, IconButton, Skeleton, Stack, styled, Tooltip } from '@mui/material';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import ArchiveIcon from '@mui/icons-material/Archive';
-import InfoIcon from '@mui/icons-material/Info';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import axiosInstance from '../../../../utils/axiosInstance';
 import { useSelector } from 'react-redux';
@@ -128,7 +127,7 @@ export default function MediaCard({
   }
 
   return (
-    <Card sx={{ maxWidth: 345, height: 270, transition: "transform 0.3s", transform: isHovered ? 'scale(1.03)' : 'scale(1)' , boxShadow: isHovered ? "0 0 10px rgba(0, 0, 0, 0.3)" : "none", borderRadius: 3 }}>
+    <Card sx={{ maxWidth: 345, height: 270, transition: "transform 0.3s", transform: isHovered ? 'scale(1.03)' : 'scale(1)' , boxShadow: isHovered ? "0 0 10px rgba(0, 0, 0, 0.3)" : "0 0 5px rgba(0, 0, 0, 0.06)", borderRadius: 3 }}>
       <CardMedia sx={{ height: 140, cursor: "pointer" }} image={bannerUrl || defaultForumBanner } title={name} onClick={onViewDetails} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} />
       <CardContent sx={{cursor: "pointer", paddingBottom: '0px'}} onClick={onViewDetails} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
         <Tooltip title={name} placement="top" >
@@ -145,27 +144,27 @@ export default function MediaCard({
           <>
           <Tooltip title="Edit Forum">
             <IconButton color="primary" aria-label="edit-note" sx={{'& .MuiCardActions-root': {ml: 0}}} onClick={onEditForum}>
-              <EditNoteIcon />
+              <EditNoteIcon sx={{color: 'secondary.dark'}} />
             </IconButton>
           </Tooltip> 
           {!isArchived && 
           <Tooltip title="Archive Forum">
             <IconButton color="primary" aria-label="archive" onClick={onArchive}>
-              <ArchiveIcon />
+              <ArchiveIcon sx={{color: 'secondary.dark'}}/>
             </IconButton>
           </Tooltip>
           }
           {isArchived && 
           <Tooltip title="Unarchive Forum">
             <IconButton color="primary" aria-label="un-archive" onClick={onArchive}>
-              <UnarchiveIcon />
+              <UnarchiveIcon sx={{color: 'secondary.dark'}}/>
             </IconButton>
           </Tooltip>
           }
           </>
         )}
         {canSubscribe && (
-          <Button size="small" onClick={onSubscribe}>
+          <Button variant='outlined' disableElevation sx={{ mt: 1, mr: 1, pl: 1, pr: 1, fontSize: '10px', borderRadius: 30, borderColor: 'secondary.dark', borderWidth: '2px', color: 'secondary.contrastText', ":hover": {borderColor: 'secondary.dark', backgroundColor: "secondary.dark", color: "primary.contrastText"}}} size="small" onClick={onSubscribe}>
             Subscribe
           </Button>
         )}

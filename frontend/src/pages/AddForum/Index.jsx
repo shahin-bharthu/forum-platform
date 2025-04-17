@@ -130,7 +130,7 @@ const Index = ({isEdit}) => {
 
   return (
     loading && isEdit ? <CircularProgress/> : 
-    <Card variant="outlined" sx={{ m:2,p:3,justifyContent: 'left' }}>
+    <Card variant="outlined" sx={{ mt:8, p:3 ,justifyContent: 'left', boxShadow: 2 }}>
       <h3 className={classes["heading"]}>{isEdit? 'Edit': 'Create'} Forum</h3>
       {isEdit && <ForumBannerUpload forumId={forumData.id}></ForumBannerUpload>}
       <form onSubmit={ isEdit? (event) => editForumHandler(event, forumData.id, forumData.forum_id) : createForumHandler } noValidate> 

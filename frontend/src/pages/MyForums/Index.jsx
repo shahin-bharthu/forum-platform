@@ -41,18 +41,13 @@ function CustomTabPanel(props) {
   );
 }
 
-// CustomTabPanel.propTypes = {
-//   children: PropTypes.node,
-//   index: PropTypes.number.isRequired,
-//   value: PropTypes.number.isRequired,
-// };
-
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
+
 export function FloatingActionButtons({ onClick }) {
   return (
     <Box
@@ -63,7 +58,7 @@ export function FloatingActionButtons({ onClick }) {
         "& > :not(style)": { m: 0.5 },
       }}
     >
-      <Fab color="primary" aria-label="add" onClick={onClick}>
+      <Fab sx={{backgroundColor: "secondary.dark", ":hover": {backgroundColor: 'secondary.main'}}} color="primary" aria-label="add" onClick={onClick}>
         <AddIcon />
       </Fab>
     </Box>
@@ -174,13 +169,20 @@ export default function MyForum() {
         <Box
           sx={{ borderBottom: 1, borderColor: "divider", position: "sticky" }}
         >
-          <Tabs value={value} onChange={handleChange} centered>
+          <Tabs value={value} onChange={handleChange} centered indicatorColor="primary">
             <Tab
               icon={<PublicIcon />}
               iconPosition="start"
               label="Public"
               {...a11yProps(0)}
               wrapped
+              sx={{
+                color: '#697565',
+                '&.Mui-selected': {
+                  color: '#3C3D37',
+                  fontWeight: 'bold',
+                },
+              }}
             />
             <Tab
               icon={<VpnLockIcon />}
@@ -188,6 +190,13 @@ export default function MyForum() {
               label="Private"
               {...a11yProps(1)}
               wrapped
+              sx={{
+                color: '#697565',
+                '&.Mui-selected': {
+                  color: '#3C3D37',
+                  fontWeight: 'bold',
+                },
+              }}
             />
             <Tab
               icon={<ArchiveIcon />}
@@ -195,6 +204,13 @@ export default function MyForum() {
               label="Archived"
               {...a11yProps(2)}
               wrapped
+              sx={{
+                color: '#697565',
+                '&.Mui-selected': {
+                  color: '#3C3D37',
+                  fontWeight: 'bold',
+                },
+              }}
             />
           </Tabs>
         </Box>

@@ -5,7 +5,7 @@ import { blue } from "@mui/material/colors";
 const AuthFormHeader = ({ authHeading, authPara }) => {
   return (
     <>
-      <Avatar sx={{ bgcolor: blue[600] }}>
+      <Avatar sx={{ bgcolor: theme => theme.palette.primary.main}}>
         <LockOutlinedIcon data-testid="LockOutlinedIcon" />
       </Avatar>
       <h3>{authHeading}</h3>

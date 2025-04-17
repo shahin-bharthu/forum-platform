@@ -131,6 +131,8 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
             label={forum.isPublic ? 'Public' : 'Private'}
             color={forum.isPublic ? 'primary' : 'secondary'}
             sx={{
+              backgroundColor: forum.isPublic ? 'secondary.dark' : 'primary.dark',
+              color: 'primary.contrastText',
               '& .MuiChip-icon': {
                 fontSize: { xs: '1rem', sm: '1.25rem' }
               },
@@ -160,6 +162,7 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
               icon={<GroupsOutlinedIcon />}
               label={forum.subscriber_count}
               sx={{
+
                 '& .MuiChip-icon': {
                   fontSize: { xs: '1rem', sm: '1.25rem' }
                 },
@@ -209,14 +212,14 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
             </Typography>
           </Stack>
 
-          <Button
+          {/* <Button
             variant="contained"
             startIcon={<EmailIcon />}
             size="small"
             sx={{ minWidth: 150 }}
           >
             Message Admin
-          </Button>
+          </Button> */}
         </Stack>
       </CardActions>
     </Card>

@@ -264,7 +264,7 @@ export default function ForumMainCard({ forum, setPostLength, isBlur,style }) {
                 </Typography>
               </Button>
               <IconButton onClick={() => navigate(`/post/${topic.id}`)} >
-                <ChatBubbleOutlineIcon fontSize='small' />
+                <ChatBubbleOutlineIcon sx={{color:'primary.main'}} fontSize='small' />
               </IconButton>
               <ExpandMore
                 expand={expanded[index].isExpanded}

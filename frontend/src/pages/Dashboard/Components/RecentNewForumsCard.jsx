@@ -127,15 +127,14 @@ export default function RecentNewForumsCard({ recentForumData = [], }) {
               <Button
                 size="small"
                 variant='contained'
-                color="primary"
-                sx={{ width: '60%' }}
+                sx={{ width: '60%', backgroundColor: 'secondary.main', color: 'secondary.contrastText', ":hover": { backgroundColor: 'secondary.dark', color: 'primary.contrastText'}}}
                 onClick={(event) =>
                   handleViewDetails(event, forum.forum_id)
                 }
               >
                 View
               </Button>
-              {forum.isPublic === false ? <Tooltip title="Private" arrow><VpnLockIcon sx={{ alignSelf: 'center' }} /></Tooltip> : <Tooltip title="Public" arrow><PublicIcon sx={{ alignSelf: 'center' }} /></Tooltip>}
+              {forum.isPublic === false ? <Tooltip title="Private" arrow><VpnLockIcon sx={{color: 'primary.dark', alignSelf: 'center' }} /></Tooltip> : <Tooltip title="Public" arrow><PublicIcon sx={{ color: 'primary.dark', alignSelf: 'center' }} /></Tooltip>}
             </Stack>
           </CardActions>
         </Card>

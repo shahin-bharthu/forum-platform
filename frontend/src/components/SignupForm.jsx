@@ -177,7 +177,7 @@ const SignupForm = () => {
           variant="outlined"
           size="small"
           disabled={isSubmitting}
-        >{isSubmitting ? "Logging you in..." : "Sign Up with Google"}</Button>
+        >{isSubmitting ? "Signing you in..." : "Sign Up with Google"}</Button>
         <Divider>or</Divider>
 
         <InputField

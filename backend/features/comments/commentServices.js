@@ -34,9 +34,16 @@ const getMyComments = async (id) => {
 }
 
 const getCommentsByCreator = async (id) => {
-    const comments = await commentRepository.getCommentsByCreator(id);
-    const activeComments = comments.filter(comment => (comment.topic.isActive));
-    return activeComments;
+    const comments = await commentRepository.getCommentsByCreator(id);    
+    
+    // Filter comments that belong to active topics and active, unarchived forums
+    const publicActiveComments = [];
+    for (const comment of comments) {
+        const forum = await forumRepository.getForumById(comment.topic.forum_id);
+        if (comment.topic.isActive && forum.isActive && forum.isPublic) {
+            publicActiveComments.push(comment);
+        }
+    }    return publicActiveComments;
 }
 
 const getCommentsByPostId = async (postId) => {

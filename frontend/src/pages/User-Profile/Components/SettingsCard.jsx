@@ -171,7 +171,7 @@ export default function SettingsCard(props) {
   };
 
   return (
-    <Card variant="outlined" sx={{ height: "100%", width: "100%" }}>
+    <Card variant="outlined" sx={{ height: "100%", width: "100%", boxShadow: '0 0 10px rgba(0,0,0,0.3)' }}>
       <br />
 
       {/* MAIN CONTENT CONTAINER */}

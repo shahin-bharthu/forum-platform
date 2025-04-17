@@ -8,7 +8,10 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { useDispatch, useSelector } from "react-redux";
-import { clearNotification, setNotification } from "../../store/slices/uiSlice.js";
+import {
+  clearNotification,
+  setNotification,
+} from "../../store/slices/uiSlice.js";
 import {
   setSubscribableForums,
   setSubscribedForums,
@@ -130,61 +133,86 @@ export default function AllForums() {
   };
 
   if (subscribableEmpty && subscribedEmpty) {
-    return <motion.p
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-  >No forums</motion.p>;
+    return (
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        No forums
+      </motion.p>
+    );
   }
 
   return (
     <Box sx={{ flexGrow: 1, mt: 10, width: "100%", mx: 2, alignSelf: "start" }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider", position: "sticky" }}>
         <Tabs value={value} onChange={handleChange} centered>
-          <Tab label="Subscribed Forums" {...a11yProps(0)} />
-          <Tab label="More Forums" {...a11yProps(1)} />
+          <Tab
+            label="Subscribed Forums"
+            {...a11yProps(0)}
+            sx={{
+              color: "#697565",
+              "&.Mui-selected": {
+                color: "#3C3D37",
+                fontWeight: "bold",
+              },
+            }}
+          />
+          <Tab
+            label="More Forums"
+            {...a11yProps(1)}
+            sx={{
+              color: "#697565",
+              "&.Mui-selected": {
+                color: "#3C3D37",
+                fontWeight: "bold",
+              },
+            }}
+          />
         </Tabs>
       </Box>
       <AnimatePresence mode="wait">
         <CustomTabPanel value={value} index={0}>
-          
-          {subscribedEmpty && <motion.p
+          {subscribedEmpty && (
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
               Subscribe to forums to see here.
-            </motion.p>}
+            </motion.p>
+          )}
           {!subscribedEmpty && (
             <Grid size={12}>
               <Grid
                 container
-                  spacing={{ xs: 2, md: 3 }}
-                  columns={{ xs: 3, sm: 8, md: 12 }}
-                  sx={{
-                    mx: 1,
-                    py: 1,
-                    justifyContent: "center",
-                    alignContent: "center",
-                  }}
-                >
-                  {subscribedForums.map((forum,index) => {
-                    return (
-                      <Grid size={{ xs: 2, sm: 3, md: 3 }}>
-                        <AnimatedGrid delay={index} key={forum.id}>
-                          <MediaCard
-                            id={forum.id}
-                            name={forum.name}
-                            purpose={forum.purpose}
-                            logo={forum.logo}
-                            createdBy={forum.createdBy}
-                            forumId={forum.forum_id}
-                            canSubscribe={false}
-                            onSubscribe={null}
-                            onViewDetails={(event) =>
-                              handleViewDetails(event, forum.forum_id)
-                            }
-                            myForum={false}
+                spacing={{ xs: 2, md: 3 }}
+                columns={{ xs: 3, sm: 8, md: 12 }}
+                sx={{
+                  mx: 1,
+                  py: 1,
+                  justifyContent: "center",
+                  alignContent: "center",
+                }}
+              >
+                {subscribedForums.map((forum, index) => {
+                  return (
+                    <Grid size={{ xs: 2, sm: 3, md: 3 }}>
+                      <AnimatedGrid delay={index} key={forum.id}>
+                        <MediaCard
+                          id={forum.id}
+                          name={forum.name}
+                          purpose={forum.purpose}
+                          logo={forum.logo}
+                          createdBy={forum.createdBy}
+                          forumId={forum.forum_id}
+                          canSubscribe={false}
+                          onSubscribe={null}
+                          onViewDetails={(event) =>
+                            handleViewDetails(event, forum.forum_id)
+                          }
+                          myForum={false}
                           onEditForum={null}
                         />
                       </AnimatedGrid>
@@ -196,12 +224,15 @@ export default function AllForums() {
           )}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          {subscribableEmpty &&  <motion.p
+          {subscribableEmpty && (
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-            >Nothing to show here!
-            </motion.p>}
+            >
+              Nothing to show here!
+            </motion.p>
+          )}
           {!subscribableEmpty && (
             <Grid size={12}>
               <Grid
@@ -215,7 +246,7 @@ export default function AllForums() {
                   alignContent: "center",
                 }}
               >
-                {subscribableForums.map((forum,index) => {
+                {subscribableForums.map((forum, index) => {
                   return (
                     <Grid size={{ xs: 2, sm: 3, md: 3 }}>
                       <AnimatedGrid delay={index} key={forum.id}>

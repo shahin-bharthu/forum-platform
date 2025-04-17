@@ -140,7 +140,7 @@ export default function ProfileCard(props) {
   }, [props.id, props.email, dispatch]);
 
   return (
-    <Card variant="outlined">
+    <Card sx={{boxShadow: '0 0 10px rgba(0,0,0,0.3)'}} variant="outlined">
       <Grid
         container
         direction="column"

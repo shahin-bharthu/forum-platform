@@ -21,11 +21,12 @@ function LinkTab(props) {
       sx={{
         borderRadius: 7,
         border: "none",
-        color: "#ab47bc",
-        "&.Mui-selected": { color: "#7b1fa2", bgcolor: "#e1bee7" },
+        color: "secondary.contrastText",
+        "&.Mui-selected": { color: "primary.contrastText", bgcolor: "secondary.dark" },
         m: 1,
         "&:hover": {
-          color: "#6a1b9a",
+          color: "primary.contrastText",
+          bgcolor: "secondary.dark"
         },
       }}
       component={Link}

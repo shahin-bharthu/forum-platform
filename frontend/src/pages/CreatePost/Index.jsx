@@ -207,6 +207,8 @@ const CreatePost = ({ isEdit }) => {
           sx={{ mt: 1, pt: 2, justifyContent: "right" }}
         >
           <Button
+            variant="standard"
+            sx={{fontWeight: "bold", color:"error.dark"}}
             disableElevation
             onClick={() => {
               navigate(-1);
@@ -214,11 +216,19 @@ const CreatePost = ({ isEdit }) => {
           >
             Cancel
           </Button>
-          <CustomButton
+          <Button
+            sx={{
+              backgroundColor: "secondary.main",
+              color: "secondary.contrastText",
+              p: "10px 15px",
+              ":hover": {
+                backgroundColor: "secondary.dark",
+                color: "primary.contrastText"              
+              }}}
             type="submit"
-            label={isEdit ? "Edit Post" : "Create Post"}
+            // label={isEdit ? "Edit Post" : "Create Post"}
             disabled={isSubmitting}
-          />
+          > {isEdit ? "Edit Post" : "Create Post"} </ Button>
         </Stack>
       </form>
     </Card>

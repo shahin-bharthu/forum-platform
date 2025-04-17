@@ -4,7 +4,6 @@ h3 {
     font-size: xx-large;
     margin-top: 1rem;
     margin-bottom: 0;
-
 }
 
 p {
@@ -19,6 +18,7 @@ p {
 
 .constant-color-link:visited {
     color: rgb(25, 118, 210);
+    /* color: #9d5d39;  */
 }
 
 .forgot-password{
