@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import * as forumServices from "./forumServices.js";
 import { db } from "../../config/connection.js";
 import { asyncErrorHandler } from "../../util/asyncErrorHandler.js";
+import { log } from "console";
 
 const createForum = asyncErrorHandler(async (req,res,next) => {
     const errors = validationResult(req);
@@ -133,7 +134,9 @@ const getForumBanner = asyncErrorHandler(async (req, res, next) => {
 const getTopicByForumId = asyncErrorHandler(async (req, res, next) => {
     const {forumId} = req.params;
     const userId = req.user.id;
-    const topics = await forumServices.getTopicByForumId(forumId, userId);
+    const limit = parseInt(req.query.limit) || 3;
+    const offset = parseInt(req.query.offset) || 0;    
+    const topics = await forumServices.getTopicByForumId(forumId, userId, limit, offset);
     return res.status(200).json({message: 'Fetched forum topics', data: topics})
 })
 

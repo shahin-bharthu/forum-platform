@@ -140,7 +140,7 @@ export default function ProfileCard(props) {
   }, [props.id, props.email, dispatch]);
 
   return (
-    <Card sx={{boxShadow: '0 0 10px rgba(0,0,0,0.3)'}} variant="outlined">
+    <Card variant="outlined" sx={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)"}}>
       <Grid
         container
         direction="column"
@@ -162,7 +162,7 @@ export default function ProfileCard(props) {
                   padding: ".2rem",
                   width: 30,
                   height: 30,
-                  color: '#1e88e5'
+                  color: "primary.main",
                 }} />
               </IconButton>
             }

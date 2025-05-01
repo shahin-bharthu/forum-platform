@@ -33,8 +33,8 @@ export default function LikedPosts() {
       <List sx={{ width: "100%" }}>
         {likedPosts.map((post) => {
           return (
-            <>
               <ListItem
+                key={post.topic_id}
                 alignItems="flex-start"
                 sx={{ bgcolor: "background.paper", borderRadius: 5, my: 1 }}
               >
@@ -101,7 +101,6 @@ export default function LikedPosts() {
                   }
                 />
               </ListItem>
-            </>
           );
         })}
       </List>

@@ -12,7 +12,6 @@ export default function SelectList({ selectedForumName, getForum }) {
   const [forum, setForum] = useState('');
 
   const handleChange = (event) => {
-    // console.log("",event.target.value);
     setForum(event.target.value);
     getForum(event.target.value);
   };

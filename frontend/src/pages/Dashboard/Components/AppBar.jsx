@@ -88,6 +88,8 @@ function CombinedAppBar({ handleDrawerToggle }) {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
 
+  const searchRef = useRef(null);
+
   const [searchForumsResults, setSearchForumsResults] = useState([
     { name: "No results found", purpose: "Try searching for something else" },
   ]);
@@ -339,7 +341,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
           </Tooltip>
 
           <Box sx={{ flexGrow: 1 }} />
-          <Search sx={{backgroundColor: "primary.light", borderRadius: 2}}>
+          <Search ref={searchRef} sx={{backgroundColor: "primary.light", borderRadius: 2}}>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -347,7 +349,7 @@ function CombinedAppBar({ handleDrawerToggle }) {
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   handleSearch(event, event.target.value);
-                  setAnchorEl(true);
+                  setAnchorEl(searchRef.current);
                 }
               }}
               placeholder="Search…"
@@ -359,10 +361,10 @@ function CombinedAppBar({ handleDrawerToggle }) {
                 {searchForumsResults.length >= 0 && (
                   <Popper
                     sx={{
-                      width: { xs: "65%", sm: "38%", md: "70%", lg: "29%" },
+                      width: { xs: "68%", sm: "25%", md: "32%", lg: "26.5%" },
                       height: "75%",
-                      ml: { xs: 15, sm: 30, md: 20, lg: 64 },
-                      mr: { xs: 15, sm: 10, md: 20, lg: 30 },
+                      // ml: { xs: 15, sm: 30, md: 20, lg: 64 },
+                      // mr: { xs: 15, sm: 10, md: 20, lg: 30 },
                       zIndex: "1300",
                       mt: 5,
                     }}
@@ -434,7 +436,6 @@ function CombinedAppBar({ handleDrawerToggle }) {
                                   Posts
                                 </Typography>
                                 <List dense={true}>
-                                  {/* {console.log(searchTopicsResults)} */}
                                   {searchTopicsResults.length >= 1 ? (
                                     searchTopicsResults.map((result, index) => (
                                       <ListItem key={index} button>

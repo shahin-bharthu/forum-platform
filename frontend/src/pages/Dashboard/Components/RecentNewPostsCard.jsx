@@ -21,6 +21,7 @@ import axiosInstance from "../../../../utils/axiosInstance.js";
 import { useSelector } from "react-redux";
 import { renderHTML } from "../../PostDetails/Components/CodeBlockViewer.jsx";
 import axios from "axios";
+import { ForumHoverCard } from "../../../components/ForumHoverInfo.jsx";
 
 
 const StyledCardHeader = memo(
@@ -259,14 +260,7 @@ export default function MyPosts() {
                   </Link>
                 }
                 title={
-                  <Link
-                    href={`/forum/${topic.forum.forum_id}`}
-                    color="inherit"
-                    underline="hover"
-                    fontSize={14}
-                  >
-                    {topic.forum.name}
-                  </Link>
+                    <ForumHoverCard forum_id={topic.forum.forum_id} forumname={topic.forum.name} />
                 }
                 subheader={
                   <Tooltip
@@ -280,7 +274,7 @@ export default function MyPosts() {
                     )}
                     placement="right"
                   >
-                    {formatDate(topic.createdAt)}
+                    <span>{formatDate(topic.createdAt)}</span>
                   </Tooltip>
                 }
               />

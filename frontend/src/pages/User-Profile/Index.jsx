@@ -6,7 +6,6 @@ import SettingsCard from "./Components/SettingsCard";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { formatDate } from "../../../utils/timestamp.js";
 import { useSelector } from "react-redux";
-import userBackdrop from "../../assets/UserProfileBackdrop.png"
 import AnimatedLayout from "../../components/AnimatedLayout.jsx";
 export default function Index() {
   const [change, setChange] = useState(0);

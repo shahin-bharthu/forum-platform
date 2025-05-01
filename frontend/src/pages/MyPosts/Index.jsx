@@ -41,14 +41,19 @@ import TopicSkeleton from "../../components/PostsSkeleton";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { useDispatch, useSelector } from "react-redux";
 import { setPostCount } from "../../store/slices/userPostSlice.js";
-import { clearNotification, setNotification } from "../../store/slices/uiSlice.js";
+import {
+  clearNotification,
+  setNotification,
+} from "../../store/slices/uiSlice.js";
 import AnimatedLayout from "../../components/AnimatedLayout.jsx";
 import { renderHTML } from "../PostDetails/Components/CodeBlockViewer.jsx";
 import axios from "axios";
+import { ForumHoverCard } from "../../components/ForumHoverInfo.jsx";
+
 
 const StyledCardHeader = memo(
   styled(CardHeader)(({ theme }) => ({
-    padding: '16px 16px 10px 22px',
+    padding: "16px 16px 10px 22px",
     ".MuiCardHeader-content": {
       display: "flex",
       alignItems: "center",
@@ -155,13 +160,14 @@ export default function MyPosts() {
     try {
       const myTopics = await axiosInstance.get(`/topic/my-topics`);
       const myTopicsData = myTopics.data.data;
+      
 
       let likesMap = {};
-      myTopicsData.forEach(topic => {
+      myTopicsData.forEach((topic) => {
         likesMap[topic.id] = {
-          count :topic.likes_count,
-          isLiked: topic.isLiked
-        }
+          count: topic.likes_count,
+          isLiked: topic.isLiked,
+        };
       });
       setPostLikes(likesMap);
 
@@ -184,6 +190,7 @@ export default function MyPosts() {
         forumname: forumNames[index],
         forumids: forumIds[index],
       }));
+
 
       setForumTopics(updatedForumTopics);
       setExpanded(updatedForumTopics.map(() => ({ isExpanded: false })));
@@ -274,67 +281,74 @@ export default function MyPosts() {
     setDialogOpen(false);
   };
 
-  const handleLike = useCallback( async (event,topicId) => {
-    event.preventDefault()
+  const handleLike = useCallback(async (event, topicId) => {
+    event.preventDefault();
     try {
-      const response = await axios.post(`http://localhost:8080/topic/like/${topicId}`,
+      const response = await axios.post(
+        `http://localhost:8080/topic/like/${topicId}`,
         {},
-      {
-        "Content-Type": "application/json",
-        withCredentials: true,
-      });
-      if(response.status === 200){
-        setPostLikes(prevLikes => {   
-          return {
-            ...prevLikes,
-            [topicId]: {
-              count: prevLikes[topicId].count + 1,
-              isLiked: true
-            }
-          }});
-      }
-    } catch (error) {
-      console.error('Error liking topic:', error);
-      setPostLikes(prevLikes => { 
-        return {
-          ...prevLikes,
-          [topicId]: {
-            count: prevLikes[topicId].count - 1,
-            isLiked: false
-          }
-        }});
-    }
-  }, []);
-
-  const handleUnlike = useCallback( async (event, topicId) => {
-    event.preventDefault()
-    try {
-      const response = await axios.delete(`http://localhost:8080/topic/unlike/${topicId}`,
         {
           "Content-Type": "application/json",
           withCredentials: true,
         }
       );
-      if(response.status === 200){
-        setPostLikes(prevLikes => {   
+      if (response.status === 200) {
+        setPostLikes((prevLikes) => {
+          return {
+            ...prevLikes,
+            [topicId]: {
+              count: prevLikes[topicId].count + 1,
+              isLiked: true,
+            },
+          };
+        });
+      }
+    } catch (error) {
+      console.error("Error liking topic:", error);
+      setPostLikes((prevLikes) => {
+        return {
+          ...prevLikes,
+          [topicId]: {
+            count: prevLikes[topicId].count - 1,
+            isLiked: false,
+          },
+        };
+      });
+    }
+  }, []);
+
+  const handleUnlike = useCallback(async (event, topicId) => {
+    event.preventDefault();
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/topic/unlike/${topicId}`,
+        {
+          "Content-Type": "application/json",
+          withCredentials: true,
+        }
+      );
+      if (response.status === 200) {
+        setPostLikes((prevLikes) => {
           return {
             ...prevLikes,
             [topicId]: {
               count: prevLikes[topicId].count - 1,
-              isLiked: false
-            }
-          }});
+              isLiked: false,
+            },
+          };
+        });
       }
     } catch (error) {
-      console.error('Error unliking topic:', error);
-      setPostLikes(prevLikes => { 
+      console.error("Error unliking topic:", error);
+      setPostLikes((prevLikes) => {
         return {
           ...prevLikes,
           [topicId]: {
             count: prevLikes[topicId].count + 1,
-            isLiked: true
-          }
-        }});
+            isLiked: true,
+          },
+        };
+      });
     }
   }, []);
 
@@ -342,11 +356,17 @@ export default function MyPosts() {
     event.preventDefault();
     handleCloseMenu();
     try {
-      const response = await axios.post(`http://localhost:8080/topic/archive/${topicId}`, null, {withCredentials: true});
+      const response = await axios.post(
+        `http://localhost:8080/topic/archive/${topicId}`,
+        null,
+        { withCredentials: true }
+      );
       console.log(response);
-      
-      if(response.status === 200){
-        const message = response.data.data.isActive ? 'Post Unarchived' : 'Post Archived';
+
+      if (response.status === 200) {
+        const message = response.data.data.isActive
+          ? "Post Unarchived"
+          : "Post Archived";
         dispatch(setNotification({ message, type: null }));
         setTimeout(() => {
           dispatch(clearNotification());
@@ -354,7 +374,7 @@ export default function MyPosts() {
         }, 1000);
       }
     } catch (error) {
-      console.error('Error archiving topic:', error);
+      console.error("Error archiving topic:", error);
       dispatch(
         setNotification({ message: "Failed to archive post", type: "error" })
       );
@@ -362,7 +382,7 @@ export default function MyPosts() {
         dispatch(clearNotification());
       }, 1500);
     }
-  }
+  };
 
   const deleteDialog = (
     <Dialog open={dialogOpen} onClose={handleDialogClose}>
@@ -419,7 +439,7 @@ export default function MyPosts() {
         {forumTopics.map((topic, index) => (
           <Box key={index} mb={2}>
             <Card>
-              <StyledCardHeader
+            <StyledCardHeader
                 avatar={
                   <Link
                     href={`/forum/${topic.forumids}`}
@@ -483,14 +503,7 @@ export default function MyPosts() {
                 }
                 // title={topic.forumname}
                 title={
-                  <Link
-                    href={`/forum/${topic.forumids}`}
-                    color="inherit"
-                    underline="hover"
-                    sx={{ fontSize: 13 }}
-                  >
-                    {topic.forumname}
-                  </Link>
+                  <ForumHoverCard forumname={topic.forumname} forum_id={topic.forumids}/>
                 }
                 subheader={
                   <Tooltip
@@ -504,8 +517,10 @@ export default function MyPosts() {
                     )}
                     placement="right"
                   >
+                    <>
                     &bull; &nbsp;
                     <span style={{fontSize: 12}}>{formatDate(topic.createdAt)}</span>
+                    </>
                   </Tooltip>
                 }
               />
@@ -515,20 +530,33 @@ export default function MyPosts() {
               >
                 <Typography
                   variant="subtitle1"
-                  sx={{ textAlign: "left", wordBreak: "break-word", fontWeight: 450 }}
+                  sx={{
+                    textAlign: "left",
+                    wordBreak: "break-word",
+                    fontWeight: 450,
+                  }}
                 >
                   {topic.title}
                 </Typography>
               </CardContent>
               <CardActions disableSpacing>
-              <Button 
-                sx={{borderRadius:5}} 
-                onClick={ postLikes[topic.id]?.isLiked ? (event) => handleUnlike(event,topic.id) : (event) => handleLike(event, topic.id)} >
-                {!postLikes[topic.id]?.isLiked ? <FavoriteBorderIcon fontSize='small' /> : <FavoriteIcon fontSize='small' color='error' />}
-                <Typography variant='caption' sx={{ml:1 }}>
-                  {postLikes[topic.id]?.count || topic.likes_count}
-                </Typography>
-              </Button>
+                <Button
+                  sx={{ borderRadius: 5 }}
+                  onClick={
+                    postLikes[topic.id]?.isLiked
+                      ? (event) => handleUnlike(event, topic.id)
+                      : (event) => handleLike(event, topic.id)
+                  }
+                >
+                  {!postLikes[topic.id]?.isLiked ? (
+                    <FavoriteBorderIcon fontSize="small" />
+                  ) : (
+                    <FavoriteIcon fontSize="small" color="error" />
+                  )}
+                  <Typography variant="caption" sx={{ ml: 1 }}>
+                    {postLikes[topic.id]?.count || topic.likes_count}
+                  </Typography>
+                </Button>
                 <IconButton onClick={() => navigate(`/post/${topic.id}`)}>
                   <ChatBubbleOutlineIcon />
                 </IconButton>

@@ -4,7 +4,7 @@ import LikedPosts from "./LikedPosts";
 import UserOverview from "./UserOverview";
 import { CircularProgress } from "@mui/material";
 
-const UserTabRouter = ({tab}) => {
+const UserTabRouter = ({ tab }) => {
   switch (tab) {
     case "posts":
       return <UserPosts />;
@@ -12,10 +12,16 @@ const UserTabRouter = ({tab}) => {
       return <UserComments />;
     case "liked":
       return <LikedPosts />;
-    case "overview": 
-        return <UserOverview />;
+    case "overview":
+      return <UserOverview />;
+    case "saved":
+      return (
+        <div>
+          <h1>Coming soon...</h1>
+        </div>
+      );
     default:
-        return <CircularProgress sx={{mt: 15}}/>;
+      return <CircularProgress sx={{ mt: 15 }} />;
   }
 };
 

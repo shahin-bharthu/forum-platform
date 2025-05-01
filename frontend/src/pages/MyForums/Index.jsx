@@ -14,7 +14,10 @@ import VpnLockIcon from "@mui/icons-material/VpnLock";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import axiosInstance from "../../../utils/axiosInstance.js";
 import { useDispatch, useSelector } from "react-redux";
-import { clearNotification, setNotification } from "../../store/slices/uiSlice.js";
+import {
+  clearNotification,
+  setNotification,
+} from "../../store/slices/uiSlice.js";
 import {
   setPublicForums,
   setPrivateForums,
@@ -215,62 +218,72 @@ export default function MyForum() {
           </Tabs>
         </Box>
         <AnimatePresence mode="wait">
-          <CustomTabPanel value={value} index={0}>
-            {publicForums.length === 0 && <motion.p
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                        >No Public Forums found</motion.p>}
-            {publicForums.length > 0 && (
-              <Grid size={12}>
-                <Grid
-                  container
-                  spacing={{ xs: 2, md: 3 }}
-                  columns={{ xs: 3, sm: 8, md: 12 }}
-                  sx={{
-                    mx: 1,
-                    py: 1,
-                    justifyContent: "center",
-                    alignContent: "center",
-                  }}
+          {value === 0 && (
+            <CustomTabPanel value={value} index={0}>
+              {publicForums.length === 0 && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                 >
-                  {publicForums.map((forum, index) => (
-                    <Grid size={{ xs: 2, sm: 3, md: 3 }}>
-                      <AnimatedGrid delay={index} key={forum.id}>
-                        <MediaCard
-                          id={forum.id}
-                          name={forum.name}
-                          purpose={forum.purpose}
-                          logo={forum.logo}
-                          createdBy={forum.createdBy}
-                          forumId={forum.forum_id}
-                          canSubscribe={false}
-                          onViewDetails={(event) =>
-                            handleViewDetails(event, forum.forum_id)
-                          }
-                          myForum={true}
-                          onEditForum={(event) =>
-                            handleEditForum(event, forum.forum_id)
-                          }
-                          isArchived={false}
-                          onArchive={(event) =>
-                            handleArchiveForum(event, forum.id, true)
-                          }
-                        />
-                      </AnimatedGrid>
-                    </Grid>
-                  ))}
+                  No Public Forums found
+                </motion.p>
+              )}
+              {publicForums.length > 0 && (
+                <Grid size={12}>
+                  <Grid
+                    container
+                    spacing={{ xs: 2, md: 3 }}
+                    columns={{ xs: 3, sm: 8, md: 12 }}
+                    sx={{
+                      mx: 1,
+                      py: 1,
+                      justifyContent: "center",
+                      alignContent: "center",
+                    }}
+                  >
+                    {publicForums.map((forum, index) => (
+                      <Grid size={{ xs: 2, sm: 3, md: 3 }} key={index}>
+                        <AnimatedGrid delay={index} key={forum.id}>
+                          <MediaCard
+                            id={forum.id}
+                            name={forum.name}
+                            purpose={forum.purpose}
+                            logo={forum.logo}
+                            createdBy={forum.createdBy}
+                            forumId={forum.forum_id}
+                            canSubscribe={false}
+                            onViewDetails={(event) =>
+                              handleViewDetails(event, forum.forum_id)
+                            }
+                            myForum={true}
+                            onEditForum={(event) =>
+                              handleEditForum(event, forum.forum_id)
+                            }
+                            isArchived={false}
+                            onArchive={(event) =>
+                              handleArchiveForum(event, forum.id, true)
+                            }
+                          />
+                        </AnimatedGrid>
+                      </Grid>
+                    ))}
+                  </Grid>
                 </Grid>
-              </Grid>
-            )}
-          </CustomTabPanel>
-
+              )}
+            </CustomTabPanel>
+          )}
+          {value === 1 && (
           <CustomTabPanel value={value} index={1}>
-            {privateForums.length === 0 && <motion.p
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                        >No Private Forums found</motion.p>}
+            {privateForums.length === 0 && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                No Private Forums found
+              </motion.p>
+            )}
             {privateForums.length > 0 && (
               <Grid size={12}>
                 <Grid
@@ -284,8 +297,8 @@ export default function MyForum() {
                     alignContent: "center",
                   }}
                 >
-                  {privateForums.map((forum,index) => (
-                    <Grid size={{ xs: 2, sm: 3, md: 3 }}>
+                  {privateForums.map((forum, index) => (
+                    <Grid size={{ xs: 2, sm: 3, md: 3 }} key={index}>
                       <AnimatedGrid key={forum.id} delay={index}>
                         <MediaCard
                           id={forum.id}
@@ -314,12 +327,18 @@ export default function MyForum() {
               </Grid>
             )}
           </CustomTabPanel>
+          )}
+          {value === 2 && (
           <CustomTabPanel value={value} index={2}>
-            {archivedForums.length === 0 && <motion.p
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                        >No Archived Forums found</motion.p>}
+            {archivedForums.length === 0 && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                No Archived Forums found
+              </motion.p>
+            )}
             {archivedForums.length > 0 && (
               <Grid size={12}>
                 <Grid
@@ -333,8 +352,8 @@ export default function MyForum() {
                     alignContent: "center",
                   }}
                 >
-                  {archivedForums.map((forum,index) => (
-                    <Grid size={{ xs: 2, sm: 3, md: 3 }}>
+                  {archivedForums.map((forum, index) => (
+                    <Grid size={{ xs: 2, sm: 3, md: 3 }} key={index}>
                       <AnimatedGrid key={forum.id} delay={index}>
                         <MediaCard
                           id={forum.id}
@@ -363,6 +382,7 @@ export default function MyForum() {
               </Grid>
             )}
           </CustomTabPanel>
+          )}
         </AnimatePresence>
       </Box>
       <FloatingActionButtons onClick={handleCreate} />

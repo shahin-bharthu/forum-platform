@@ -23,6 +23,7 @@ import {
   setNotification,
 } from "../../../store/slices/uiSlice.js";
 import forumDetailsBackdrop from "../../../assets/ForumDetailsBackdrop.webp";
+import Notification from "./Notification.jsx";
 
 export default function ForumHeaderCard({ forum, setIsSubbed }) {
   const navigate = useNavigate();
@@ -128,16 +129,23 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
 
   return (
     <Card sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
-      {/* <CardMedia
-        component="img"
+      <CardMedia
         height={isMobile ? "80" : "100"}
-        sx={{
-          m: 0,
-          p: 0,
-          background:
-            "linear-gradient(180deg, rgba(144, 173, 198, 1) 0%, rgba(233, 234, 236, 1) 0%, rgba(240, 223, 154, 1) 34%, rgba(250, 208, 44, 1) 80%)",
-        }}
-      /> */}
+        component="svg"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 100 100" // This helps the SVG scale properly
+        preserveAspectRatio="none" // This ensures the SVG stretches to fill the container
+      >
+        <rect width="100%" height="100%" fill="url(#grad)" />
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style={{ stopColor: "rgba(144, 173, 198, 1)" }} />
+            <stop offset="0%" style={{ stopColor: "rgba(233, 234, 236, 1)" }} />
+            <stop offset="34%" style={{ stopColor: "rgba(240, 223, 154, 1)" }} />
+            <stop offset="80%" style={{ stopColor: "rgba(250, 208, 44, 1)" }} />
+          </linearGradient>
+        </defs>
+      </CardMedia>
       <Box
         sx={{
           display: "flex",
@@ -253,6 +261,7 @@ export default function ForumHeaderCard({ forum, setIsSubbed }) {
               {subscribed ? "Subscribed" : "Subscribe"}
             </Button>
           </Tooltip>
+          {subscribed && <Notification forumId={forum.id} />}
         </CardActions>
       </Box>
     </Card>

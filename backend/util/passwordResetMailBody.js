@@ -4,7 +4,7 @@ const passwordResetMailBody = (username, userId, token) => {
                           <p>Click the link below to reset your password:</p>
                           <p style="text-align: center;">
                             <a href="http://localhost:5173/reset-password/${token}"
-                               style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #1976d2; text-decoration: none; border-radius: 5px;">
+                               style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #333652; text-decoration: none; border-radius: 5px;">
                               Reset Password
                             </a>
                           </p>

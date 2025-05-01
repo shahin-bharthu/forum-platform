@@ -22,6 +22,10 @@ export default (sequelize, Sequelize) => {
       membership_role: {
         type: Sequelize.ENUM('MEMBER', 'ADMIN'),
         defaultValue: 'MEMBER'
+      },
+      digestFreqency:{
+        type: Sequelize.ENUM('NONE','DAILY', 'WEEKLY', 'MONTHLY'),
+        defaultValue: 'DAILY'
       }
   }, 
   {

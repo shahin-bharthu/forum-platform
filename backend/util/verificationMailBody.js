@@ -4,7 +4,7 @@ const verificationMailBody = (username, userId, token) => {
                           <p>Thank you for signing up! To complete your registration, please verify your email address by clicking the link below:</p>
                           <p style="text-align: center;">
                             <a href="http://localhost:8080/auth/verify-email/${userId}/${token}"
-                               style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #1976d2; text-decoration: none; border-radius: 5px;">
+                               style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #333652; text-decoration: none; border-radius: 5px;">
                               Verify Your Email
                             </a>
                           </p>

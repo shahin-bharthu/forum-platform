@@ -26,6 +26,9 @@ const createTopic = async (topicData) => {
         forum_id: topicData.forum_id
     });
     
+    forumExists.posts_count += 1;
+    await forumExists.save();
+    
     return topic;
 };
 

@@ -7,12 +7,16 @@ import userRoutes from "./features/user/userRoutes.js";
 import forumRoutes from "./features/forum/forumRoutes.js";
 import topicRoutes from "./features/topics/topicRoutes.js";
 import commentRoutes from "./features/comments/commentRoutes.js";
+import emailDigestRoutes from "./features/emailDigest/emailDigestRoutes.js";
 import {check} from "./config/connection.js";
 import { globalErrorHandler } from "./util/globalErrorHandler.js";
 import { logAuditTrails } from "./features/auditLogs/auditTrailMiddleware.js";
 import { authMiddleware } from "./features/auth/authMiddleware.js";
 import client from "./lib/openSearchConnection.js";
 import archivePost from "./util/archiveInactivePosts.js";
+import "./features/emailDigest/emailDigestCron.js";
+
+import { scheduleEmailDigest } from "./features/emailDigest/emailDigestCron.js";
 
 const port = process.env.PORT;
 
@@ -32,10 +36,14 @@ app.use('/user', authMiddleware, logAuditTrails, userRoutes);
 app.use('/forum', authMiddleware, logAuditTrails, forumRoutes);
 app.use('/topic', authMiddleware, logAuditTrails, topicRoutes);
 app.use('/comment', authMiddleware, logAuditTrails, commentRoutes);
+app.use('/digest', authMiddleware, logAuditTrails, emailDigestRoutes );
 
 client.info().then().catch(console.error);
 
+
+
 archivePost();
+// scheduleEmailDigest();//for manually testing the email digest
 app.use(globalErrorHandler);
 
 try {

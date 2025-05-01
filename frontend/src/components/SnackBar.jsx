@@ -16,7 +16,7 @@ const createSnackbarTheme = (type) => createTheme({
                             ? '#d32f2f'     // Red for error
                             : type === 'success' 
                                 ? '#2e7d32' // Green for success 
-                                : '#1976d2',// Blue for default
+                                : '#C8A400',// Blue for default
                         color: '#ffffff',
                     },
                 },

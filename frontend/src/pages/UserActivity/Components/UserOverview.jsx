@@ -103,7 +103,7 @@ export default function UserOverview() {
   useEffect(() => {
     getForumBanners(userActivity?.userPosts);
     getFormattedComments(userActivity?.userComments).then(() => setLoading(false));
-  }, []);
+  }, []);  
 
   return (
     loading ? 
@@ -134,6 +134,7 @@ export default function UserOverview() {
             if (activity.type === "post") {
               return (
                 <ListItem
+                  key={activity.id}
                   alignItems="flex-start"
                   sx={{ bgcolor: "background.paper", borderRadius: 5, my: 1 }}
                 >
@@ -212,6 +213,7 @@ export default function UserOverview() {
             } else {
               return (
                 <ListItem
+                key={activity.id}
                   alignItems="flex-start"
                   sx={{ bgcolor: "background.paper", borderRadius: 5, my: 1 }}
                 >
@@ -292,8 +294,10 @@ export default function UserOverview() {
                               year: "numeric",
                             })}
                           >
+                            <span>
                             {" "}
                             {formatDate(activity.createdAt)} ago <br />
+                            </span>
                           </Tooltip>
                         </span>
                         <Typography

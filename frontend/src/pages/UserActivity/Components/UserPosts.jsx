@@ -65,8 +65,8 @@ export default function UserPosts() {
       <List sx={{ width: "100%" }}>
         {userPosts.map((post) => {
           return (
-            <>
               <ListItem
+                key={post.id}
                 alignItems="flex-start"
                 sx={{ bgcolor: "background.paper", borderRadius: 5, my: 1 }}
               >
@@ -142,7 +142,6 @@ export default function UserPosts() {
                   }
                 />
               </ListItem>
-            </>
           );
         })}
       </List>

@@ -13,7 +13,7 @@ const decodeHtmlEntities = (str) => {
 // CodeRenderer component to render code blocks
 const CodeRenderer = ({ code, language }) => {
   return (
-    <SyntaxHighlighter language={language} style={stackoverflowLight} wrapLongLines customStyle={{ padding: '1em'}}>
+    <SyntaxHighlighter language={language} style={stackoverflowLight} wrapLongLines customStyle={{ padding: '1em', fontSize:'0.85rem'}}>
       {code}
     </SyntaxHighlighter>
   );
@@ -21,7 +21,7 @@ const CodeRenderer = ({ code, language }) => {
 
 export const renderHTML = (htmlContent) => {
   //sanitizing the HTML content to prevent XSS
-  const sanitizedHTML = DOMPurify.sanitize(htmlContent);
+  const sanitizedHTML = DOMPurify.sanitize(htmlContent,{ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],});
 
   // html-react-parser to parse the HTML content
   return parse(sanitizedHTML, {

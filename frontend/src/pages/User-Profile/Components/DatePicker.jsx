@@ -19,7 +19,7 @@ export default function DatePickerValue({ value, onChange, help,error }) {
           margin: "dense",
           InputProps: {
             readOnly: true,
-            disableUnderline: true,
+            // disableUnderline: true,
           },
           inputProps: {
             readOnly: true,
@@ -28,7 +28,7 @@ export default function DatePickerValue({ value, onChange, help,error }) {
       }}
         value={dayjs(value)} 
         onChange={(newValue) => onChange(newValue?.toDate())} 
-        variant='standard'
+        // variant='standard'
         disableFuture 
         required
       />

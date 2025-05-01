@@ -23,7 +23,7 @@ import {
   VpnLock as VpnLockIcon
 } from '@mui/icons-material';
 
-export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate }) {
+export default function ForumInfoCard({ forum, creator, setIsPrivate }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -120,10 +120,10 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
           direction="row"
           spacing={1}
           sx={{
-            justifyContent: postLength ? 'space-between' : 'flex-start',
+            justifyContent: forum.posts_count ? 'space-between' : 'flex-start',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: postLength ? 1 : 3
+            gap: forum.posts_count ? 1 : 3
           }}
         >
           <Chip
@@ -142,10 +142,10 @@ export default function ForumInfoCard({ forum, creator, postLength, setIsPrivate
             }}
           />
 
-          {postLength>=0 && <Tooltip title="Number of posts">
+          {forum.posts_count>=0 && <Tooltip title="Number of posts">
             <Chip
               icon={<NumbersRoundedIcon />}
-              label={postLength}
+              label={forum.posts_count}
               sx={{
                 '& .MuiChip-icon': {
                   fontSize: { xs: '1rem', sm: '1.25rem' }

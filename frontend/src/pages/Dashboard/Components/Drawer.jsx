@@ -9,10 +9,8 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  IconButton,
   Button,
   Tooltip,
-  Divider,
 } from "@mui/material";
 import CombinedAppBar from "./AppBar";
 import { useTheme } from "@mui/material/styles";

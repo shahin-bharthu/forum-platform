@@ -151,7 +151,6 @@ const SignupForm = () => {
         withCredentials: true
       })
 
-      console.log(response);
       setIsSubmitting(false);
       dispatch(setNotification({message:response.data.message, type:'success'}))
       setTimeout(() => {

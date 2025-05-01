@@ -11,7 +11,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 export default function IntroDivider() {
     const [forumDetails, setForumDetails] = useState();
     const [forumCreatedBy, setForumCreatedBy] = useState();
-    const [postLength, setPostLength] = useState();
     const [isSubbed, setIsSubbed] = useState();
     const isPrivate = !(forumDetails?.isPublic);
     const isBlur = (isPrivate && !isSubbed);
@@ -49,7 +48,6 @@ export default function IntroDivider() {
                     >
                         <ForumMainCard
                             forum={forumDetails}
-                            setPostLength={setPostLength}
                             isSubbed={isSubbed}
                             isBlur={isBlur}
                             style={isBlur ? {
@@ -82,7 +80,7 @@ export default function IntroDivider() {
                         }
                     </Grid>
                     <Grid size={{ xs: 0,sm:5, md: 4, lg:3, xl:3}}>
-                        <ForumInfoCard creator={forumCreatedBy} forum={forumDetails} postLength={postLength} />
+                        <ForumInfoCard creator={forumCreatedBy} forum={forumDetails} />
                     </Grid>
                 </Grid>
             </Grid>

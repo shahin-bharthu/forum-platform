@@ -17,25 +17,34 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, memo } from "react";
 import CommentInput from "./CommentInput";
 import ParentComments from "./ParentComments";
 import { formatDate } from "../../../../utils/timestamp";
 import axiosInstance from "../../../../utils/axiosInstance.js";
 import { renderHTML } from "./CodeBlockViewer.jsx";
 import axios from "axios";
+import { UserHoverCard } from "../../../components/UserHoverCard.jsx";
+import { ForumHoverCard } from "../../../components/ForumHoverInfo.jsx";
 
-const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
-  ".MuiCardHeader-content": {
-    display: "flex",
-    alignItems: "center",
-    gap: theme.spacing(3),
-  },
-  ".MuiCardHeader-title, .MuiCardHeader-subheader, .MuiCardHeader-action": {
-    margin: 0,
-  },
-}));
+const StyledCardHeader = memo(
+  styled(CardHeader)(({ theme }) => ({
+    padding: "16px 16px 10px 22px",
+    ".MuiCardHeader-content": {
+      display: "flex",
+      flexDirection: "column",
+    },
+    ".MuiCardHeader-title": {
+      margin: 0,
+      display: "flex",
+      alignItems: "center",
+      gap: theme.spacing(1),
+    },
+    ".MuiCardHeader-subheader": {
+      margin: 0,
+    },
+  }))
+);
 
 export default function PostDetailsCard({ post, user, forum }) {
   const navigate = useNavigate();
@@ -76,7 +85,6 @@ export default function PostDetailsCard({ post, user, forum }) {
         isliked: false,
       }));
     }
-    console.log("Like button clicked");
   }, []);
 
   const handleUnlike = useCallback(async (event, postId) => {
@@ -108,7 +116,6 @@ export default function PostDetailsCard({ post, user, forum }) {
         isliked: true,
       }));
     }
-    console.log("Unlike button clicked");
   }, []);
 
   const handleRefresh = useCallback(() => {
@@ -165,18 +172,33 @@ export default function PostDetailsCard({ post, user, forum }) {
               <ArrowBackIcon />
             </IconButton>
           }
-          title={<Link href={`/user/${user.username}`} color="inherit" underline="hover" >{user.username}</Link>}
+          title={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <UserHoverCard username={user.username} userId={user.id} />
+              <Tooltip
+                title={new Date(post.createdAt).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+                placement="right"
+              >
+                <span style={{ fontSize: 12 }}>
+                  &bull; &nbsp;{formatDate(post.createdAt)}
+                </span>
+              </Tooltip>
+            </Box>
+          }
           subheader={
-            <Tooltip
-              title={new Date(post.createdAt).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-              placement="right"
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                mt: -0.5,
+              }}
             >
-              {formatDate(post.createdAt)}
-            </Tooltip>
+                <ForumHoverCard forum_id={forum.name} forumname={forum.name} ispostDetails={true}/>
+            </Box>
           }
         />
         <CardContent sx={{ py: 0, px: 3 }}>
@@ -188,6 +210,7 @@ export default function PostDetailsCard({ post, user, forum }) {
           </Typography>
           <Typography
             variant="body2"
+            component={"div"}
             sx={{
               mt: 3,
               marginBottom: 2,

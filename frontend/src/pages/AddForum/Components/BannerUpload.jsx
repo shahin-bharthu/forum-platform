@@ -44,7 +44,6 @@ const ForumBannerUpload = ({ forumId }) => {
     async (event) => {
       event.preventDefault();
       const file = event.target.files[0];
-      console.log(file);
       
       if (!file) return;
 

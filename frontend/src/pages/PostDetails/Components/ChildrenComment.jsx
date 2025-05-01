@@ -1,176 +1,229 @@
-import { Avatar, Card, CardActions, CardContent, CardHeader, IconButton, styled, Typography, CircularProgress, Box, Link } from "@mui/material";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import {
+  Avatar,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  IconButton,
+  styled,
+  Typography,
+  CircularProgress,
+  Box,
+  Link,
+} from "@mui/material";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useState, useEffect, useCallback } from "react";
 import { formatDate } from "../../../../utils/timestamp";
 import axiosInstance from "../../../../utils/axiosInstance.js";
 import { useSelector } from "react-redux";
+import { useRef } from "react";
+import { UserHoverCard } from "../../../components/UserHoverCard.jsx";
 
 const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
-    ".MuiCardHeader-content": {
-        display: "flex",
-        alignItems: "center",
-        gap: theme.spacing(2),
-    },
-    ".MuiCardHeader-title, .MuiCardHeader-subheader": {
-        margin: 0,
-    },
-    ".MuiCardHeader-action": {
-        margin: 0
-    }
+  ".MuiCardHeader-content": {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(2),
+  },
+  ".MuiCardHeader-title, .MuiCardHeader-subheader": {
+    margin: 0,
+  },
+  ".MuiCardHeader-action": {
+    margin: 0,
+  },
 }));
 
-export default function ChildrenComments({ parentId, childRefreshKey }) {
-  
-    const [replies, setReplies] = useState([]);
-    const [likedReplies, setLikedReplies] = useState({});
-    const [error, setError] = useState(null);
+export default function ChildrenComments({
+  parentId,
+  childRefreshKey,
+  highlightId,
+  isHighlighting,
+  expandParent,
+}) {
+  const [replies, setReplies] = useState([]);
+  const [likedReplies, setLikedReplies] = useState({});
+  const [error, setError] = useState(null);
+  const [ishighlighted, setIsHighlighted] = useState(false);
 
-    const isLoading = useSelector(state => state.loading.isLoading);
-    const fetchReplies = useCallback(async () => {
+  const childRefs = useRef({});
 
-        setError(null);
+  const isLoading = useSelector((state) => state.loading.isLoading);
+  const fetchReplies = useCallback(async () => {
+    setError(null);
 
-        try {
-            const commentReplies = await axiosInstance.get(`/comment/replies/${parentId}`);
-            const repliesData = commentReplies.data.data;
+    try {
+      const commentReplies = await axiosInstance.get(
+        `/comment/replies/${parentId}`
+      );
+      const repliesData = commentReplies.data.data;
 
-            const enrichedReplies = await Promise.all(
-                repliesData.map(async (reply) => {
-                    try {
-                        const avatarResponse = await axiosInstance.get(
-                            `/user/avatar/${reply.user.id}`,
-                            {
-                                responseType: "blob",
-                            }
-                        );
-
-                        return {
-                            ...reply,
-                            avatarUrl: avatarResponse.data 
-                                ? URL.createObjectURL(avatarResponse.data) 
-                                : null
-                        };
-                    } catch (error) {
-                        console.error('Error fetching avatar', error);
-                        return {
-                            ...reply,
-                            avatarUrl: null
-                        };
-                    }
-                })
+      const enrichedReplies = await Promise.all(
+        repliesData.map(async (reply) => {
+          try {
+            const avatarResponse = await axiosInstance.get(
+              `/user/avatar/${reply.user.id}`,
+              {
+                responseType: "blob",
+              }
             );
 
-            setReplies(enrichedReplies);
-        } catch (error) {
-            console.error('Error fetching replies', error);
-            setError('Failed to load replies');
-        } 
-    }, [parentId]);
+            return {
+              ...reply,
+              avatarUrl: avatarResponse.data
+                ? URL.createObjectURL(avatarResponse.data)
+                : null,
+            };
+          } catch (error) {
+            console.error("Error fetching avatar", error);
+            return {
+              ...reply,
+              avatarUrl: null,
+            };
+          }
+        })
+      );
 
-    useEffect(() => {
+      setReplies(enrichedReplies);
+    } catch (error) {
+      console.error("Error fetching replies", error);
+      setError("Failed to load replies");
+    }
+  }, [parentId]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      fetchReplies();
+    }, 250);
+  }, [fetchReplies, parentId, childRefreshKey]);
+
+  useEffect(() => {
+    if (highlightId && replies.length > 0 && !ishighlighted) {
+      const replyFound = replies.find((reply) => reply.id == highlightId);
+
+      if (replyFound) {
+        // expandParent(parentId);
+        setIsHighlighted(true);
         setTimeout(() => {
-            fetchReplies();
-        }, 250);
-    }, [fetchReplies, parentId, childRefreshKey]);
-
-    const handleLike = (replyId) => {
-        setLikedReplies(prev => ({
-            ...prev,
-            [replyId]: !prev[replyId]
-        }));
-    };
-
-    if (isLoading) {
-        return (
-            <Box 
-                sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    width: '100%', 
-                    py: 2 
-                }}
-            >
-                <CircularProgress size={24} />
-            </Box>
-        );
+          if (childRefs.current[highlightId]) {
+            childRefs.current[highlightId].scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        }, 300);
+      }
     }
+  }, [highlightId, replies, expandParent, parentId]);
 
-    if (error) {
-        return (
-            <Box 
-                sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    width: '100%', 
-                    py: 2,
-                    color: 'error.main'
-                }}
-            >
-                <Typography variant="body2">{error}</Typography>
-            </Box>
-        );
-    }
+  const handleLike = (replyId) => {
+    setLikedReplies((prev) => ({
+      ...prev,
+      [replyId]: !prev[replyId],
+    }));
+  };
 
+  if (isLoading) {
     return (
-        <>
-            {replies.map((reply) => (
-                <Card 
-                    key={reply.id} 
-                    sx={{
-                        boxShadow: 0,
-                        width: {
-                            xs: '85%',
-                            sm: '87%',
-                            md: '91%',
-                            lg: '93%',
-                            xl: '95%'
-                        },
-                    }}
-                >
-                    <StyledCardHeader
-                        sx={{ pb: 1, pl:0.25 }}
-                        avatar={
-                            <Avatar 
-                                aria-label="avatar" 
-                                src={reply.avatarUrl} 
-                                sx={{
-                                    width: 30, 
-                                    height: 30, 
-                                    boxShadow: 2
-                                }} 
-                            />
-                        } 
-                        // title={reply.user.username}
-                        title ={<Link href={`/user/${reply.user.username}`} color="inherit" underline="hover" >{reply.user.username}</Link>}
-                        subheader={formatDate(reply.createdAt)}
-                    />
-                    <CardContent sx={{ py: 0 }}>
-                        <Typography 
-                            variant="body2" 
-                            sx={{ 
-                                mx: 2.5, 
-                                pl: 1.5, 
-                                textAlign: 'left' ,
-                                wordBreak: "break-word" ,
-                                whiteSpace: "pre-wrap" 
-                            }}
-                        >
-                            {reply.content}
-                        </Typography>
-                    </CardContent>
-                    <CardActions sx={{ mx: 1 }}>
-                        <IconButton onClick={() => handleLike(reply.id)} sx={{ mx: 3 }}>
-                            {!likedReplies[reply.id] 
-                                ? <FavoriteBorderIcon fontSize="small" />
-                                : <FavoriteIcon color="error" fontSize="small" />
-                            }
-                        </IconButton>
-                    </CardActions>
-                </Card>
-            ))}
-        </>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          py: 2,
+        }}
+      >
+        <CircularProgress size={24} />
+      </Box>
     );
+  }
+
+  if (error) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          py: 2,
+          color: "error.main",
+        }}
+      >
+        <Typography variant="body2">{error}</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      {replies.map((reply) => (
+        <Card
+          key={reply.id}
+          ref={(el) => (childRefs.current[reply.id] = el)}
+          sx={{
+            boxShadow: 0,
+            width: {
+              xs: "85%",
+              sm: "87%",
+              md: "91%",
+              lg: "93%",
+              xl: "95%",
+            },
+            transition: "all 0.3s ease",
+            backgroundColor:
+              isHighlighting && highlightId === reply.id
+                ? "#fff59d"
+                : "inherit",
+          }}
+        >
+          <StyledCardHeader
+            sx={{ pb: 1, pl: 0.25 }}
+            avatar={
+              <Avatar
+                aria-label="avatar"
+                src={reply.avatarUrl}
+                sx={{
+                  width: 30,
+                  height: 30,
+                  boxShadow: 2,
+                }}
+              />
+            }
+            title={
+              <UserHoverCard
+                username={reply.user.username}
+                userId={reply.user.id}
+              />
+            }
+            subheader={formatDate(reply.createdAt)}
+          />
+          <CardContent sx={{ py: 0 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                mx: 2.5,
+                pl: 1.5,
+                textAlign: "left",
+                wordBreak: "break-word",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {reply.content}
+            </Typography>
+          </CardContent>
+          <CardActions sx={{ mx: 1 }}>
+            <IconButton onClick={() => handleLike(reply.id)} sx={{ mx: 3 }}>
+              {!likedReplies[reply.id] ? (
+                <FavoriteBorderIcon fontSize="small" />
+              ) : (
+                <FavoriteIcon color="error" fontSize="small" />
+              )}
+            </IconButton>
+          </CardActions>
+        </Card>
+      ))}
+    </>
+  );
 }

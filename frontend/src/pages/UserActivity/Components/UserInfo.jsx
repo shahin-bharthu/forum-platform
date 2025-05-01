@@ -226,8 +226,8 @@ export default function UserInfo({
             {forumsCreated.length > 0 &&
               forumsCreated.map((forum) => {
                 return (
-                  <>
                     <Stack
+                      key={forum.forum_id}
                       direction="row"
                       alignItems="center"
                       spacing={1}
@@ -287,7 +287,6 @@ export default function UserInfo({
                         </Typography>
                       </div>
                     </Stack>
-                  </>
                 );
               })}
           </Stack>
@@ -301,7 +300,7 @@ export default function UserInfo({
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <SnackbarContent
-          sx={{ bgcolor: "#6a1b9a", color: "white" }}
+          sx={{ bgcolor: "primary.main", color: "white" }}
           message="Link copied to clipboard!"
         />
       </Snackbar>

@@ -39,7 +39,7 @@ export default (sequelize, Sequelize) => {
           },
         posts_count: {
             type: Sequelize.BIGINT,
-            defaultValue: 1
+            defaultValue: 0
         },        
         createdBy: {
             type: Sequelize.UUID,

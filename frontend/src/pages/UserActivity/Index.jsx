@@ -46,23 +46,6 @@ export default function UserActivity() {
     userActivityLoader(username).then(() => setLoading(false));
   }, [dispatch]);
 
-  const dummyForum = {
-    forum_id: "123",
-    name: "Tech Innovations Forum",
-    purpose: "A place to discuss the latest tech innovations and trends.",
-    createdAt: "2024-01-15T10:30:00Z",
-    isPublic: true,
-    subscriber_count: 1500,
-  };
-
-  const dummyCreator = "Jane Doe";
-
-  const dummyPostLength = 120; // Number of posts
-
-  const dummySetIsPrivate = (isPrivate) => {
-    console.log("Is forum private:", isPrivate);
-  };
-
   if (loading) {
     return <CircularSpinner />;
   } else {
@@ -85,7 +68,7 @@ export default function UserActivity() {
               name={`${userActivity?.userDetails?.firstname} ${userActivity?.userDetails?.lastname}`}
               avatarUrl={userActivity.profilePhoto}
             />
-            <Grid item xs={12} sx={{ mt: 3 }}>
+            <Grid xs={12} sx={{ mt: 3 }}>
               <ActivityTabs isCurrentUser={userActivity.isCurrentUser} />
               <UserTabRouter tab={tab} />
             </Grid>

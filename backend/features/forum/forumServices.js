@@ -94,8 +94,8 @@ const updateForumBanner = async (id, userId, {logo}) => {
     return await forumRepository.updateForumBanner(id, userId, {logo});
 }
 
-const getTopicByForumId = async (forumId, userId) => {
-    const topics=await forumRepository.getTopicByForumId(forumId);
+const getTopicByForumId = async (forumId, userId,limit,offset) => {
+    const topics=await forumRepository.getTopicByForumId(forumId,limit,offset);
     
     const modifiedTopics = await Promise.all(
         topics.map(async (topic) => ({

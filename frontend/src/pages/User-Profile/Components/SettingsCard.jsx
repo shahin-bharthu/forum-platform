@@ -151,7 +151,6 @@ export default function SettingsCard(props) {
       };
 
       if (!validateForm(formattedUser)) {
-        console.log("validation error");
         handleDialogClose()
         return;
       }
@@ -171,7 +170,7 @@ export default function SettingsCard(props) {
   };
 
   return (
-    <Card variant="outlined" sx={{ height: "100%", width: "100%", boxShadow: '0 0 10px rgba(0,0,0,0.3)' }}>
+    <Card variant="outlined" sx={{ height: "100%", width: "100%", boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)" }}>
       <br />
 
       {/* MAIN CONTENT CONTAINER */}
